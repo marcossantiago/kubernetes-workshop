@@ -30,6 +30,7 @@ You will learn how to:
 ### Create a Service
 
 Explore the hello-node service configuration file:
+(./resources/hello-node-service.yaml)
 
 ```
 apiVersion: v1
@@ -47,14 +48,15 @@ spec:
     app: hello-node
 ```
 
-Setting nodePort is optional. If not set, a random high port is assigned.
+*Setting nodePort is optional.
 
 ----
 
 Create the hello-node service using kubectl:
 
 ```
-kubectl create -f configs/service.yaml
+$ kubectl create -f resources/hello-node-service.yaml
+service "hello-node" created
 ```
 
 ----
@@ -64,7 +66,7 @@ kubectl create -f configs/service.yaml
 Use the IP of any of your nodes.
 
 ```
-curl -i [cluster-node-ip]:30080
+$ curl -i [cluster-node-ip]:30080
 ```
 
 ----
@@ -72,11 +74,13 @@ curl -i [cluster-node-ip]:30080
 ### Explore the hello-node Service
 
 ```bash
-kubectl get services hello-node
+$ kubectl get services hello-node
+NAME         CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+hello-node   10.0.0.142   <nodes>       8080:30080/TCP   1m
 ```
 
 ```bash
-kubectl describe services hello-node
+$ kubectl describe services hello-node
 ```
 
 ----
@@ -114,7 +118,7 @@ kubectl describe services hello-node
 
 ### Do it yourself
 
-* Create a service for the nginx pods.
+* Create a service for the nginx pods (Created earlier).
 * Expose port 80 to a static nodePort 31000.
 * Access the service using `curl` or a browser.
 
@@ -129,4 +133,4 @@ kubectl delete svc --all
 
 ----
 
-[Next up Deployments...](../05_deployments.md)
+[Next up Deployments...](../04_deployments.md)

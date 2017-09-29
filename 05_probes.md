@@ -1,6 +1,7 @@
 ### What is Liveness and Readiness
 
 Kubernetes health checks are divided into liveness and readiness probes. 
+
 Kubernetes is focusing on running containers in production. Production means that we need a way to ensure pods are actually running and healthy.
 
 ----
@@ -254,3 +255,9 @@ In this section you learned:
 * How Kubernetes supports application monitoring using liveness and readiness probes. 
 * How to add readiness and liveness probes to Pods 
 * What happens when probes fail.
+
+
+----
+
+[Next up Sock Shop](../06_sockshop.md)
+

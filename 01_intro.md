@@ -7,14 +7,14 @@ kubectl [action] [resource]
 * This performs the specified action  (like `create`, `describe`) on the specified resource (like `node`, `container`). 
 * Use `--help` after the command to get additional info about possible parameters
 ```
-kubectl get nodes --help
+$ kubectl get nodes --help
 ```
 
 ----
 
 Check that kubectl is configured to talk to your cluster, by running the kubectl version command:
 ```bash
-kubectl version
+$ kubectl version
 ```
 
 You can see both the client and the server versions.
@@ -23,7 +23,7 @@ You can see both the client and the server versions.
 
 To view the nodes in the cluster, run the `kubectl get nodes` command:
 ```bash	
-kubectl get nodes
+$ kubectl get nodes
 NAME       STATUS    AGE       VERSION
 minikube   Ready     7m        v1.6.0
 ```
@@ -37,7 +37,7 @@ Here we see the available nodes, just one in our case. Kubernetes will choose wh
 Let’s run our first app on Kubernetes with the kubectl run command. The `run` command creates a new deployment for the specified container. This is the simpliest way of deploying a container.
 
 ```bash
-kubectl run hello-kubernetes \
+$ kubectl run hello-kubernetes \
 --image=gcr.io/google_containers/echoserver:1.4 --port=8080
 
 deployment "hello-kubernetes" created
@@ -55,7 +55,7 @@ This performed a few things:
 ### List your deployments
 
 ```bash
-kubectl get deployments
+$ kubectl get deployments
 NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hello-kubernetes   1         1         1            1           31s
 ```
@@ -97,7 +97,7 @@ We now have a connection between our host and the Kubernetes cluster.
 
 To see the output of our application, run a curl request in a new terminal window:
 ```bash
-curl http://localhost:8080
+$ curl http://localhost:8080
 CLIENT VALUES:
 client_address=127.0.0.1
 command=GET
@@ -121,18 +121,18 @@ BODY:
 
 ### Expose service while creating the deployment
 
-`kubectl port-forward` is meant for testing services that are not exposed. To expose the application, use a service.
+`kubectl port-forward` is meant for testing services that are not exposed. To expose the application, use a service (covered later).
 
 Delete old deployment
 ```
-kubectl delete deployment hello-kubernetes
+$ kubectl delete deployment hello-kubernetes
 ```
 
 ----
 
 Create a new deployment and a service
 ```
-kubectl run hello-kubernetes \
+$ kubectl run hello-kubernetes \
 --image=gcr.io/google_containers/echoserver:1.4 \
 --port=8080 --expose \
 --service-overrides='{ "spec": { "type": "NodePort" } }'
@@ -146,8 +146,7 @@ This creates a new deployment and a service of type:NodePort. A random high port
 
 View the service:
 ```
-kubectl get service
-kubectl get svc
+$ kubectl get service
 NAME             CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
 hello-kubernetes   10.0.0.233   <nodes>       8080:31075/TCP   24s
 kubernetes       10.0.0.1     <none>        443/TCP          28m
@@ -158,7 +157,7 @@ Access the application with curl
 (use the IP of one of your nodes)
 
 ```
-curl 0.0.0.0:31075
+$ curl 0.0.0.0:31075
 ```
 
 ----
@@ -166,12 +165,12 @@ curl 0.0.0.0:31075
 ### Cleanup
 
 ```
-kubectl delete deployment,service hello-kubernetes
+$ kubectl delete deployment,service hello-kubernetes
 deployment "hello-kubernetes" deleted
 service "hello-kubernetes" deleted
 ```
 
 ----
 
-[Next up Pods...](../03_pods.md)
+[Next up Pods...](../02_pods.md)
 

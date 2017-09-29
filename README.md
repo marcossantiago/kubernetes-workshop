@@ -16,4 +16,4 @@ This repository contains the materials for the workshop. Clone this reposiotory 
 * [Autoscaling](./08_autoscaling.md)
 * [Monitoring](./09_monitoring.md)
 * [RBAC](./10_rbac.md)
-
+* [Launching a Cluster](./11_cluster.md)

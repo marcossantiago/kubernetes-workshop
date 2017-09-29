@@ -184,4 +184,4 @@ kubectl delete -f configs/deployment-v2.yaml
 
 ----
 
-[FIN](../01_outline.md)
+[Next up Probes](../05_probes.md)
