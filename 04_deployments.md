@@ -1,3 +1,7 @@
+## Deployments
+
+---
+
 ### Creating and Managing Deployments
 In this section we will
 * Combine what we learned about Pods and Services
@@ -5,7 +9,7 @@ In this section we will
 * Scale our Deployment / ReplicaSet
 * Update our application (Rolling Update | Recreate)
 
-----
+---
 
 ### ReplicaSet
 A ReplicaSet ensures that a specified number of Pods are running at any given time.
@@ -13,7 +17,7 @@ A ReplicaSet ensures that a specified number of Pods are running at any given ti
 ### Deployment
 A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
 
-----
+---
 
 ### Creating a Deployment
 
@@ -36,7 +40,7 @@ spec:
         - containerPort: 8080
 ```
 
-----
+---
 
 ### Deploy to K8s
 
@@ -44,7 +48,7 @@ spec:
 kubectl create -f configs/deployment-v1.yaml
 ```
 
-----
+---
 
 ### Scaling Deployments
 
@@ -57,7 +61,7 @@ NAME                   DESIRED   CURRENT   READY     AGE
 hello-node-364036756   1         1         1         16s
 ```
 
-----
+---
 
 ### Scale up/down the Deployment
 
@@ -66,7 +70,7 @@ kubectl scale deployments hello-node --replicas=2
 deployment "hello-node" scaled
 ```
 
-----
+---
 
 ### Check the status of the Deployment
 
@@ -77,7 +81,7 @@ kubectl describe deployment hello-node
 kubectl get pods
 ```
 
-----
+---
 
 ### Updating Deployments 
 
@@ -86,7 +90,7 @@ kubectl get pods
 * RollingUpdate is the default strategy.
 * Updates Pods one (or a few) at a time.
 
-----
+---
 
 ### Common workflow
 
@@ -104,7 +108,7 @@ kubectl set image deployment/hello-node hello-node=muellermich/hello-node:v2
 kubectl rollout status deployment hello-node
 ```
 
-----
+---
 
 ### Cleanup
 
@@ -116,7 +120,7 @@ kubectl delete -f configs/deployment-v1.yaml
 use `--cascade=false`.
 * If you try to delete the Pods before deleting the Deployment, the ReplicaSet will just replace them.
 
-----
+---
 
 ### Updating Deployments (Recreate)
 
@@ -144,7 +148,7 @@ spec:
         - containerPort: 8080
 ```
 
-----
+---
 
 ### Deploy to K8s
 
@@ -152,7 +156,7 @@ spec:
 kubectl create -f configs/deployment-v2.yaml
 ```
 
-----
+---
 
 ### Updating Deployments (Recreate)
 
@@ -163,7 +167,7 @@ kubectl set image deployment/hello-node hello-node=muellermich/hello-node:v2
 kubectl get pods -w
 ```
 
-----
+---
 
 ### Cleanup
 
@@ -171,7 +175,7 @@ kubectl get pods -w
 kubectl delete -f configs/deployment-v2.yaml
 ```
 
-----
+---
 
 ### Do it yourself
 
@@ -182,6 +186,20 @@ kubectl delete -f configs/deployment-v2.yaml
 * Update the deployment to use nginx:1.13
 * Cleanup
 
-----
+---
+
+### Exercise - Deploy Deals microservice
+
+* Remove existing deals pod
+* Tag the image as `v1`
+* Create a deployment config for the `v1` Deals image 
+* Deploy on the cluster
+* Scale the deployment to 3 instances
+* Verify the scaling was successful
+* Modify the `./resources/deals-app/deals.json` file to return different deals
+* Build the image and tag as `v2`
+* Update the deployment to use the new tag
+
+---
 
 [Next up Probes](../05_probes.md)

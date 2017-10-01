@@ -1,3 +1,7 @@
+## Pods
+
+---
+
 ## Creating and managing pods
 
 In this section you will:
@@ -8,7 +12,7 @@ In this section you will:
 * Create and inspect Pods.
 * Interact with Pods remotely using kubectl.
 
-----
+---
 
 ### What is a Pod?
 
@@ -19,7 +23,7 @@ In this section you will:
 * Unit of deployment
 * Unit of scaling
 
-----
+---
 
 ### Deploy application to Kubernetes
 ```
@@ -28,7 +32,7 @@ $ kubectl run hello-node --image=nginx:1.12 --port=80
 deployment "hello-node" created
 ```
 
-----
+---
 
 ### Check Deployment and Pod
 
@@ -42,9 +46,9 @@ NAME                          READY     STATUS    RESTARTS   AGE
 hello-node-2399519400-02z6l   1/1       Running   0          54s
 ```
 
-----
+---
 
-### Check metadata about the cluster, events and kubectl configuration
+#### Check metadata about the cluster, events and kubectl configuration
 
 ```
 kubectl cluster-info
@@ -54,7 +58,7 @@ kubectl get events
 kubectl config view
 ```
 
-----
+---
 
 ### Creating a Pod manifest
 
@@ -76,7 +80,7 @@ spec:
         - containerPort: 80
 ```
 
-----
+---
 
 ### Create the Pod using kubectl:
 
@@ -90,7 +94,7 @@ $ kubectl delete deployment hello-node
 $ kubectl create -f resources/hello-node-pod.yaml
 ```
 
-----
+---
 
 ### View Pod details
 
@@ -104,7 +108,7 @@ $ kubectl get pods
 $ kubectl describe pods <pod-name>
 ```
 
-----
+---
 
 ### Interact with a Pod remotely
 
@@ -113,9 +117,9 @@ $ kubectl describe pods <pod-name>
 * Use `kubectl port-forward` to map a local port to a port inside the `hello-node` pod.
 
 
-----
+---
 
-Use two terminals.
+### Use two terminals
 
 * Terminal 1
 
@@ -130,9 +134,9 @@ $ curl 0.0.0.0:8080
 Hello World!
 ```
 
-----
+---
 
-### Do it yourself
+### Try it yourself
 * Modify the `./resources/nginx.conf` to return a custom message.
 
 * Create a custom Nginx docker image (see ./resources/Dockerfile-nginx)
@@ -142,7 +146,7 @@ Hello World!
 * Access the pod on port 80 using port-forward.
 * View the logs of the nginx container.
 
-----
+---
 
 ### Debugging
 
@@ -156,7 +160,7 @@ $ kubectl logs <PODNAME>
 
 > Use the -f flag and observe what happens.
 
-----
+---
 
 ### Run an interactive shell inside a Pod
 
@@ -166,7 +170,19 @@ Execute a shell in a Pod, like in Docker:
 $ kubectl exec -ti <PODNAME> /bin/sh
 ```
 
-----
+---
+
+### Exercise - Deploy the Deals microservice
+
+Modify the `./resources/deals-app/deals.json` file to return custom deals
+
+* Build and push the docker image
+* Create a pod configuration file for the new image
+* Create the pod on your cluster
+* Access the application via `curl` or a browser
+* Check the logs of the application
+
+---
 
 [Next up Services...](../03_services.md)
 

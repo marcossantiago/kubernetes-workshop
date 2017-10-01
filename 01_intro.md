@@ -1,3 +1,7 @@
+## Kubernetes Basics
+
+---
+
 ### Step 1 kubectl basics
 
 * The format of a kubectl command is: 
@@ -10,7 +14,7 @@ kubectl [action] [resource]
 $ kubectl get nodes --help
 ```
 
-----
+---
 
 Check that kubectl is configured to talk to your cluster, by running the kubectl version command:
 ```bash
@@ -19,18 +23,17 @@ $ kubectl version
 
 You can see both the client and the server versions.
 
-----
+---
 
-To view the nodes in the cluster, run the `kubectl get nodes` command:
-```bash	
-$ kubectl get nodes
-NAME       STATUS    AGE       VERSION
-minikube   Ready     7m        v1.6.0
+To view how to reach the cluster, run the `cluster-info` command:
+```bash
+$ kubectl cluster-info
+Kubernetes master is running at https://35.189.206.159
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-Here we see the available nodes, just one in our case. Kubernetes will choose where to deploy our application based on the available Node resources.
-
-----
+---
 
 ### Step 2 deploy a simple application 
 
@@ -43,14 +46,14 @@ $ kubectl run hello-kubernetes \
 deployment "hello-kubernetes" created
 ```
 
-----
+---
 
 This performed a few things:
 * Searched for a suitable node.
 * Scheduled the application to run on that node.
 * Configured the cluster to reschedule the instance on a new node when needed.
 
-----
+---
 
 ### List your deployments
 
@@ -62,7 +65,7 @@ hello-kubernetes   1         1         1            1           31s
 
 We see that there is 1 deployment running a single instance of your app. 
 
-----
+---
 
 ### Inspect your application
 
@@ -76,22 +79,24 @@ kubectl describe <object>
 ```
 you can gather information about the status of your objects like pods, deployments, services, etc.
 
-----
+---
 
 ### Step 3 View our app
 
 By default applications are only visible inside the cluster. We can create a proxy to connect to our application.  
 Find out the pod name:
 ```
-kubectl get pod
+$ kubectl get pod
+NAME                               READY     STATUS    RESTARTS   AGE
+hello-kubernetes-624527933-nth9d   1/1       Running   0          2m
 ```
 Create the proxy:
 ```bash
-kubectl port-forward hello-kubernetes-3015430129-g95j6 8080 
+$ kubectl port-forward hello-kubernetes-624527933-nth9d 8080 
 ```
 We now have a connection between our host and the Kubernetes cluster.
 
-----
+---
 
 ### Accessing the application
 
@@ -117,7 +122,7 @@ BODY:
 -no body in request-
 ```
 
-----
+---
 
 ### Expose service while creating the deployment
 
@@ -128,49 +133,82 @@ Delete old deployment
 $ kubectl delete deployment hello-kubernetes
 ```
 
-----
+---
 
-Create a new deployment and a service
-```
-$ kubectl run hello-kubernetes \
---image=gcr.io/google_containers/echoserver:1.4 \
---port=8080 --expose \
---service-overrides='{ "spec": { "type": "NodePort" } }'
+Create a new **Deployment** and a **Service**
 
-service "hello-kubernetes" created
-deployment "hello-kubernetes" created
 ```
+$ kubectl run hello --image=gcr.io/google_containers/echoserver:1.4 \
+   --port=8080 \
+   --expose \
+   --service-overrides='{ "spec": { "type": "NodePort" } }'
+service "hello" created
+deployment "hello" created
+```
+
 This creates a new deployment and a service of type:NodePort. A random high port will be allocated to which we can connect.
 
-----
+---
 
-View the service:
+View the **Service**:
+
 ```
 $ kubectl get service
-NAME             CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
-hello-kubernetes   10.0.0.233   <nodes>       8080:31075/TCP   24s
-kubernetes       10.0.0.1     <none>        443/TCP          28m
+NAME               CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+hello   			10.0.122.112   <nodes>       8080:30659/TCP   10m
 ```
 
-Access the application with curl
+We can see the port on which it is exposed, but what is the external IP?
 
-(use the IP of one of your nodes)
+---
+
+To find the IP on which to call we need information on the nodes:
 
 ```
-$ curl 0.0.0.0:31075
+$ kubectl get nodes -o wide
+NAME                           STATUS                     AGE       VERSION   EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION
+kubernetes-master              Ready,SchedulingDisabled   17m       v1.7.5    35.187.38.163    Container-Optimized OS from Google   4.4.52+
+kubernetes-minion-group-c9bz   Ready                      17m       v1.7.5    35.189.206.159   Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
+kubernetes-minion-group-cfzx   Ready                      17m       v1.7.5    35.195.36.237    Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
+kubernetes-minion-group-ftw1   Ready                      17m       v1.7.5    35.195.61.242    Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
+```
+---
+
+
+Access the external IP with curl:
+
+```
+$ curl 35.189.206.159:30659
+CLIENT VALUES:
+client_address=10.132.0.3
+command=GET
+real path=/
+query=nil
+request_version=1.1
+request_uri=http://35.187.76.71:8080/
+
+SERVER VALUES:
+server_version=nginx: 1.10.0 - lua: 10001
+
+HEADERS RECEIVED:
+accept=*/*
+host=35.187.76.71:8080
+user-agent=curl/7.52.1
+BODY:
+-no body in request-
 ```
 
-----
+---
 
 ### Cleanup
 
 ```
-$ kubectl delete deployment,service hello-kubernetes
-deployment "hello-kubernetes" deleted
-service "hello-kubernetes" deleted
+$ kubectl delete deployment,service hello
+deployment "hello" deleted
+service "hello" deleted
 ```
 
-----
+---
 
 [Next up Pods...](../02_pods.md)
 

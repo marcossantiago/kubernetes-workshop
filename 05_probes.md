@@ -1,10 +1,14 @@
+## Liveness and Readiness
+
+---
+
 ### What is Liveness and Readiness
 
 Kubernetes health checks are divided into liveness and readiness probes. 
 
 Kubernetes is focusing on running containers in production. Production means that we need a way to ensure pods are actually running and healthy.
 
-----
+---
 
 ### ReadinessProbe
 
@@ -22,7 +26,7 @@ readinessProbe:
 
 `timeoutSeconds: 1` means that the readiness probe must respond within one second and needs to be HTTP 200 or greater and less than 400
 
-----
+---
 
 ### Liveness probes
 
@@ -42,7 +46,7 @@ livenessProbe:
 
 `periodSeconds: 10` means that the check will be every 10 seconds performed
 
-----
+---
 
 ### Liveness Probes
 
@@ -55,7 +59,7 @@ http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
 http.ListenAndServe(":8080", nil)
 ```
 
-----
+---
 
 And this needs to be added into the Pod manifest
 ```
@@ -67,7 +71,7 @@ livenessProbe:
   timeoutSeconds: 1
 ```
 
-----
+---
 
 ### Readiness Probes
 
@@ -97,7 +101,7 @@ http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
 http.ListenAndServe(":8080", nil)
 ```
 
-----
+---
 
 And this needs to be added into the Pod manifest
 
@@ -112,7 +116,7 @@ readinessProbe:
 
 Combining the readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you can monitor also downstream dependencies.
 
-----
+---
 
 ### Advanced liveness probe example
 
@@ -130,7 +134,7 @@ livenessProbe:
 
 `httpHeaders` describes a custom header to be used in HTTP probes
 
-----
+---
 
 ### Creating Pods with Liveness and Readiness Probes
 
@@ -155,7 +159,7 @@ Relevant part
         timeoutSeconds: 1
 ```
 
-----
+---
 
 Create the healthy-monolith pod using 
 ```
@@ -164,7 +168,7 @@ kubectl create -f readiness/healthy-monolith.yaml
 
 Thanks to Kelsey Hightower for this application
 
-----
+---
 
 ### View Pod details
 
@@ -172,7 +176,7 @@ Pods will not be marked ready until the readiness probe returns an HTTP 200 resp
 
 The healthy-monolith Pod logs each health check. Use the `kubectl logs` command to view them.
 
-----
+---
 
 ### Experiment with Readiness Probes
 
@@ -185,7 +189,7 @@ kubectl port-forward healthy-monolith 10081:81
 ```
 You now have access to the /healthz and /readiness HTTP endpoints
 
-----
+---
 
 Force the monolith container readiness probe to fail. Use the curl command to toggle the readiness probe status:
 
@@ -210,7 +214,7 @@ Liveness:     http-get http://:81/healthz delay=5s timeout=5s period=15s #succes
 Readiness:    http-get http://:81/readiness delay=5s timeout=1s period=10s #success=1 #failure=3
 ```
 
-----
+---
 
 Force the monolith container readiness probe to pass. Use the curl command to toggle the readiness probe status:
 
@@ -223,7 +227,7 @@ Wait about 15 seconds and get the status of the healthy-monolith Pod using the k
 kubectl get pods healthy-monolith
 ```
 
-----
+---
 
 ### Experiment with Liveness Probes
 
@@ -233,14 +237,14 @@ Building on what you learned in the previous tutorial use the kubectl port-forwa
 curl http://127.0.0.1:10081/healthz/status
 ```
 
-----
+---
 
 ### Quiz
 
 What happened when the liveness probe failed?
 What events where created when the liveness probe failed?
 
-----
+---
 
 
 ### Cleanup
@@ -249,7 +253,17 @@ What events where created when the liveness probe failed?
 kubectl delete -f readiness/healthy-monolith.yaml
 ```
 
-----
+---
+
+### Exercise - Add Probes for Deals microservice
+
+* Add Readiness probe to the Deals deployment
+ (hint: endpoint already exists)
+* Deploy the updated config
+* Add Liveness probe to the Deals deployment
+* Deploy the updated config
+
+---
 
 In this section you learned:
 * How Kubernetes supports application monitoring using liveness and readiness probes. 
@@ -257,7 +271,7 @@ In this section you learned:
 * What happens when probes fail.
 
 
-----
+---
 
-[Next up Sock Shop](../06_sockshop.md)
+[Next up Resources](../06_resources.md)
 
