@@ -26,6 +26,7 @@ func main() {
 	}
 
 	http.HandleFunc("/deals", dealsHandler)
+	http.HandleFunc("/healthz", healthHandler)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -66,6 +67,11 @@ fmt.Println("request receiveed")
 	fmt.Println("success.")
 }
 
+// Handle healthcheck
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "OK")
+}
+
 // Retrieve Deal by ID
 func fetchDeal(id int) (Deal, error) {
 	if id > len(deals) || id < 0 {
@@ -80,16 +86,16 @@ func initData() {
 	jsonConfig, err := ioutil.ReadFile("deals.json")
 	if err != nil {
 		fmt.Println("Error reading data: ", err)
+		return
 	}
 	var dealsConfig DealConfig
 	err = json.Unmarshal(jsonConfig, &dealsConfig)
 	if err != nil {
 		fmt.Println("Error reading json config.")
+		return
 	}
 
-	fmt.Printf("deals: %d\n", dealsConfig.Deals)
 	for i, deal := range dealsConfig.Deals {
-		fmt.Printf("Appending: %s at index %d\n", deal, i)
 		deals = append(deals, Deal{Id: i, Name: deal})
 	}
 }

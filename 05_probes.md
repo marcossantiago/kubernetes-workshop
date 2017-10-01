@@ -1,8 +1,8 @@
-## Liveness and Readiness
+## Liveness & Readiness
 
 ---
 
-### What is Liveness and Readiness
+### What is Liveness and Readiness?
 
 Kubernetes health checks are divided into liveness and readiness probes. 
 
@@ -10,7 +10,7 @@ Kubernetes is focusing on running containers in production. Production means tha
 
 ---
 
-### ReadinessProbe
+### Readiness Probe
 
 Readiness probes allow you to specify checks to verify if a Pod is ready for use. There are three methods that can be used to determine readiness. HTTP, Exec or TCPSocket.
 
@@ -19,20 +19,18 @@ readinessProbe:
   httpGet:
     path: /readiness
     port: 8080
-  initialDelaySeconds: 20
-  timeoutSeconds: 5
+  initialDelaySeconds: 5  # Delay before probe is called
+  timeoutSeconds: 1       # Probe must respond within this timeout
 ```
-`initialDelaySeconds: 5` means that there is a delay of 5 seconds until the readiness probe will be called
-
-`timeoutSeconds: 1` means that the readiness probe must respond within one second and needs to be HTTP 200 or greater and less than 400
+Response must be HTTP Status Code between 200 and 399
 
 ---
 
-### Liveness probes
+### Liveness probe
 
-Once the application pod is up and running we need a way to confirm that it’s healthy and ready for serving traffic.
+Once the application pod is up we need to confirm that it’s healthy and ready for serving traffic.
 
-Liveness probes are for situations when an app has crashed or isn't responding anymore. Just like the readiness probe, a liveness probe can be used to preform a set of health checks.
+Liveness probes are for situations when an app has crashed or isn't responding anymore.
 
 ```
 livenessProbe:
@@ -40,11 +38,9 @@ livenessProbe:
     path: /healthcheck
     port: 8080
   initialDelaySeconds: 15
-  periodSeconds: 10
-  timeoutSeconds: 1
+  periodSeconds: 10        # Will be called every 10 seconds
+  timeoutSeconds: 1        # Probe must respond within 1 second 
 ```
-
-`periodSeconds: 10` means that the check will be every 10 seconds performed
 
 ---
 
@@ -75,7 +71,7 @@ livenessProbe:
 
 ### Readiness Probes
 
-A simple check if connections to the database are possible
+Can check other pieces, such as a database connection
 
 ```
 http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +159,7 @@ Relevant part
 
 Create the healthy-monolith pod using 
 ```
-kubectl create -f readiness/healthy-monolith.yaml
+kubectl create -f ./resources/healthy-monolith.yaml
 ```
 
 Thanks to Kelsey Hightower for this application
@@ -180,7 +176,11 @@ The healthy-monolith Pod logs each health check. Use the `kubectl logs` command 
 
 ### Experiment with Readiness Probes
 
-In this tutorial you'll see how Kubernetes handels failed readiness probes. The monolith container supports the ability to force failures of it's readiness and liveness probes, again thanks to Kelsey!!!
+Let's see how Kubernetes handels failed readiness probes. 
+
+The monolith container supports the ability to force failures of it's readiness and liveness probes (again thanks to Kelsey)
+
+---
 
 Use the `kubectl port-forward` command to forward a local port to the health port of the healthy-monolith Pod.
 
@@ -201,6 +201,9 @@ Wait about 45 seconds and get the status of the healthy-monolith Pod using the k
 ```
 kubectl get pods healthy-monolith
 ```
+
+---
+
 Use the kubectl describe command to get more details about the failing readiness probe:
 
 ```
@@ -241,8 +244,8 @@ curl http://127.0.0.1:10081/healthz/status
 
 ### Quiz
 
-What happened when the liveness probe failed?
-What events where created when the liveness probe failed?
+* What happened when the liveness probe failed?
+* What events where created when the liveness probe failed?
 
 ---
 
@@ -250,7 +253,7 @@ What events where created when the liveness probe failed?
 ### Cleanup
 
 ```
-kubectl delete -f readiness/healthy-monolith.yaml
+kubectl delete -f ./resources/healthy-monolith.yaml
 ```
 
 ---
@@ -262,14 +265,6 @@ kubectl delete -f readiness/healthy-monolith.yaml
 * Deploy the updated config
 * Add Liveness probe to the Deals deployment
 * Deploy the updated config
-
----
-
-In this section you learned:
-* How Kubernetes supports application monitoring using liveness and readiness probes. 
-* How to add readiness and liveness probes to Pods 
-* What happens when probes fail.
-
 
 ---
 
