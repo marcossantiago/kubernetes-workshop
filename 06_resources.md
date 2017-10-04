@@ -25,9 +25,7 @@ What exactly is a resource in Kubernetes?
 
 ---
 
-### From the Top
-
-There are two main kinds of resource management for pods.
+There are two main kinds of resource management for contianers/pods.
 
 * Requests
 * Limits
@@ -94,9 +92,9 @@ Kubernetes only supports CPU at the moment.
 Kubernetes only supports memory at the moment.
 
 * Pods will get the amount of memory they request.
-* If They exceed their request, they may be killed.
+* If they exceed their request, they may be killed.
   * only if another pod needs the memory.
-* If Pods consume less memory than requested, they will not be killed
+* If pods consume less memory than requested, they will not be killed
   * Except where QoS comes in to play.
 
 ---
@@ -290,8 +288,9 @@ By default, a container is able to consume as much memory on the node as possibl
 Let's demonstrate this by creating a Pod that runs a single container which requests 100Mi of memory. The container will allocate and write to 200MB of memory every 2 seconds.
 
 ```
-$ kubectl run memhog --image=derekwaynecarr/memhog --requests=memory=100Mi \
---command -- /bin/sh -c "while true; do memhog -r100 200m; sleep 1; done"
+$ kubectl run memhog --image=derekwaynecarr/memhog \
+  --requests=memory=100Mi --command -- /bin/sh \
+  -c "while true; do memhog -r100 200m; sleep 1; done"
 ```
 
 ---
@@ -307,6 +306,15 @@ We request 100Mi, but have burst our memory usage to a greater value. That's cal
 
 ---
 
+Clean up
+
+```
+$ kubectl delete deploy memhog
+deployment "memhog" deleted
+```
+
+---
+
 ### Memory limits
 
 If you specify a memory limit, you can constrain the amount of memory your container can use.
@@ -314,8 +322,9 @@ If you specify a memory limit, you can constrain the amount of memory your conta
 For example, let's limit our container to 200Mi of memory, and just consume 100MB.
 
 ```
-$ kubectl run memhog --image=derekwaynecarr/memhog --limits=memory=200Mi \
---command -- /bin/sh -c "while true; do memhog -r100 100m; sleep 1; done"
+$ kubectl run memhog --image=derekwaynecarr/memhog \
+  --limits=memory=200Mi --command -- /bin/sh \
+  -c "while true; do memhog -r100 100m; sleep 1; done"
 ```
 
 ```
@@ -330,8 +339,8 @@ As you can see we are only consuming 100MB on the node.
 Let's demonstrate what happens if you exceed your allowed memory usage by creating a replication controller whose Pod will keep being OOM killed because it attempts to allocate 300MB of memory, but is limited to 200Mi.
 
 ```
-$ kubectl run memhog-oom --image=derekwaynecarr/memhog --limits=memory=200Mi \
---command -- memhog -r100 300m
+$ kubectl run memhog-oom --image=derekwaynecarr/memhog \
+  --limits=memory=200Mi --command -- memhog -r100 300m
 ```
 
 ---
@@ -381,7 +390,7 @@ Containers with *Guaranteed* memory are given a lower value than *Burstable* con
 
 ### Example
 
-This may cause unwanted behavior...
+Don't run this. Try this one at home :)
 
 ```
 $ kubectl run mem-guaranteed --image=derekwaynecarr/memhog --replicas=2 \
@@ -420,19 +429,14 @@ Pods which explicitly specify resource limits and requests will not pick up the 
 
 ---
 
-Before you continue ensure you have checked out the training materials repository:
+Create a namespace (replace with your user number)
 ```
-$ git clone https://github.com/ContainerSolutions/$MODULE_NAME
-```
-
-Create a namespace
-```
-$ kubectl create namespace limit-example
+$ kubectl create namespace limit-example-user-<X>
 ```
 
-Apply the LimitRange (`configs/limits.yaml`) to the new namespace
+Apply the LimitRange (`resources/limits.yaml`) to the new namespace
 ```
-$ kubectl create -f configs/limits.yaml -n limit-example
+$ kubectl create -f resources/limits.yaml -n limit-example
 ```
 
 ```
@@ -469,7 +473,8 @@ spec:
 Create a deployment in this namespace
 
 ```
-$ kubectl run nginx --image=nginx --replicas=1 --namespace=limit-example
+$ kubectl run nginx --image=nginx --replicas=1 \
+  --namespace=limit-example-user-<X>
 deployment "nginx" created
 ```
 
@@ -478,10 +483,10 @@ deployment "nginx" created
 The default values of the namespace limit will be applied to this Pod
 (`kubectl describe pod <pod_name> --namespace=<namespace_name>`)
 ```
-$ kubectl get pods --namespace=limit-example
+$ kubectl get pods --namespace=limit-example-user-<X>
 NAME                     READY     STATUS    RESTARTS   AGE
 nginx-2371676037-tfncs   1/1       Running   0          4m
-$ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example
+$ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example-user-<X>  
 ...
 Containers:
   nginx:
@@ -522,15 +527,18 @@ spec:
 ```
 The output of kubectl is
 ```
-$ kubectl create -f configs/invalid-cpu-pod.yaml -n limit-example
+$ kubectl create -f configs/invalid-cpu-pod.yaml \
+  -n limit-example-user-<X>
 Error from server (Forbidden): error when creating "configs/invalid-cpu-pod.yaml": pods "invalid-pod" is forbidden: [maximum cpu usage per Pod is 2, but limit is 3., maximum cpu usage per Container is 2, but limit is 3.]
 ```
+
+---
 
 Clean up the resources used during this module:
 ```
 $ kubectl delete --all pods
 $ kubectl delete --all deployments
-$ kubectl delete namespace limit-example
+$ kubectl delete namespace limit-example-user-<X>
 ```
 
 ---
@@ -541,6 +549,6 @@ $ kubectl delete namespace limit-example
 * Add limits and requests for memory and cpu
 * Apply the udpated config
 
----  
+---
 
 [Next up advanced deployments...](./07_adv-deploys.md)

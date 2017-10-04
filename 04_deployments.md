@@ -7,7 +7,7 @@ In this section we will
 * Combine what we learned about Pods and Services
 * Create a deployment manifest
 * Scale our Deployment / ReplicaSet
-* Update our application (Rolling Update | Recreate)
+* Update our application (Rolling Update)
 
 ---
 
@@ -45,7 +45,7 @@ spec:
 ### Deploy to K8s
 
 ```
-kubectl create -f configs/deployment-v1.yaml
+$ kubectl create -f resources/deployment-v1.yaml
 ```
 
 ---
@@ -55,8 +55,9 @@ kubectl create -f configs/deployment-v1.yaml
 * Deployments manage ReplicaSets.
 * Each deployment is mapped to one active ReplicaSet.
 * Use `kubectl get replicasets` to view the current set of replicas.
+* `kubectl get deployments` will give us the same info (plus more)
 ```
-kubectl get rs
+$ kubectl get rs
 NAME                   DESIRED   CURRENT   READY     AGE
 hello-node-364036756   1         1         1         16s
 ```
@@ -66,7 +67,7 @@ hello-node-364036756   1         1         1         16s
 ### Scale up/down the Deployment
 
 ```
-kubectl scale deployments hello-node --replicas=2
+$ kubectl scale deployments hello-node --replicas=2
 deployment "hello-node" scaled
 ```
 
@@ -74,11 +75,15 @@ deployment "hello-node" scaled
 
 ### Check the status of the Deployment
 
+Notice the new pod(s)
 ```
-kubectl describe deployment hello-node
+$ kubectl get pods
 ```
+
+Look at the `Events` at the bottom
+
 ```
-kubectl get pods
+$ kubectl describe deployment hello-node
 ```
 
 ---
@@ -94,86 +99,55 @@ kubectl get pods
 
 ### Common workflow
 
-* Update the text of the application, creating a new version of the image.
-* Build a new image and tag it with v2.
-* Update the Deployment:
+* Update the application, and create a new version.
+* Build the new image and tag it with the new version, i.e. v2.
+* Update the Deployment with the new image
+
+---
+
+Let's try this
+
+First let's check the current version running (use the same IP and Node Port from before)
 
 ```
-kubectl set image deployment/hello-node hello-node=muellermich/hello-node:v2
+$ curl [EXTERNAL_IP]:[NodePort]
 ```
 
-* Check status via 
+Next, update the image:
+
+```
+$ kubectl set image \
+  deployment/hello-node hello-node=icrosby/hello-node:v2
+```
+
+---
+
+Check status via 
 
 ```
 kubectl rollout status deployment hello-node
 ```
 
+That was fast :)
+
+Now verify the new version
+
+```
+$ curl [EXTERNAL_IP]:[NodePort]
+```
+
 ---
 
 ### Cleanup
 
 ```
-kubectl delete -f configs/deployment-v1.yaml
+$ kubectl delete svc hello-node
+$ kubectl delete -f resources/deployment-v1.yaml
 ```
 * If the number of Pods is large, this may take a while to complete.
 * To leave the Pods running instead,  
 use `--cascade=false`.
 * If you try to delete the Pods before deleting the Deployment, the ReplicaSet will just replace them.
-
----
-
-### Updating Deployments (Recreate)
-
-* Recreate is the alternative update strategy.
-* All existing Pods are killed before new ones are created.
-
-```
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: hello-node
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: hello-node
-    spec:
-      containers:
-      - name: hello-node
-        image: nginx:1.13
-        ports:
-        - containerPort: 8080
-```
-
----
-
-### Deploy to K8s
-
-```
-kubectl create -f configs/deployment-v2.yaml
-```
-
----
-
-### Updating Deployments (Recreate)
-
-Update the Deployment
-```
-kubectl set image deployment/hello-node hello-node=muellermich/hello-node:v2
-
-kubectl get pods -w
-```
-
----
-
-### Cleanup
-
-```
-kubectl delete -f configs/deployment-v2.yaml
-```
 
 ---
 

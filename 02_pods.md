@@ -25,41 +25,6 @@ In this section you will:
 
 ---
 
-### Deploy application to Kubernetes
-```
-$ kubectl run hello-node --image=nginx:1.12 --port=80
-
-deployment "hello-node" created
-```
-
----
-
-### Check Deployment and Pod
-
-```
-$ kubectl get deployment
-NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-hello-node   1         1         1            1           49s
-
-$ kubectl get pod
-NAME                          READY     STATUS    RESTARTS   AGE
-hello-node-2399519400-02z6l   1/1       Running   0          54s
-```
-
----
-
-#### Check metadata about the cluster, events and kubectl configuration
-
-```
-kubectl cluster-info
-
-kubectl get events
-
-kubectl config view
-```
-
----
-
 ### Creating a Pod manifest
 
 Explore the `hello-node` pod configuration file:
@@ -83,12 +48,6 @@ spec:
 ---
 
 ### Create the Pod using kubectl:
-
-First clean up original
-
-```bash
-$ kubectl delete deployment hello-node
-```
 
 ```bash
 $ kubectl create -f resources/hello-node-pod.yaml

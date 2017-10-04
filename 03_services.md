@@ -140,8 +140,9 @@ kubectl describe services hello-node
 
 ```
 kubectl delete po --all
-kubectl delete svc --all
 ```
+
+We will leave the service for now
 
 ---
 

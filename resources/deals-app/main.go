@@ -26,7 +26,7 @@ func main() {
 	}
 
 	http.HandleFunc("/deals", dealsHandler)
-	http.HandleFunc("/healthz", healthHandler)
+	http.HandleFunc("/health", healthHandler)
 
 	http.ListenAndServe(":8080", nil)
 }

@@ -27,9 +27,6 @@ Open a browser to localhost:8000
 
 ---
 
-
----
-
 Retrieve permissions file: https://storage.googleapis.com/goto-k8s-workshop/ca.pem
 
 Configure kubectl (Replace *user-x* and *password*)
@@ -43,6 +40,28 @@ $ kubectl config set-context workshop --cluster=workshop \
 --user=workshop-user --namespace=user-X
 $ kubectl config use-context workshop
 ```
+
+---
+
+### Using the in-cluster Registry
+
+We will use `port-forward` to expose the registry locally
+
+```bash
+$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream \
+            -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' \
+            | grep Running | head -1 | cut -f1 -d' ')
+
+$ kubectl port-forward --namespace kube-system $POD 5000:5000 &
+```
+
+Tag images as `localhost:5000/[user]/image`
+
+---
+
+Docker for Mac fix/hack
+
+Add `docker.for.mac.localhost:5000` to Insecure Registries
 
 ---
 

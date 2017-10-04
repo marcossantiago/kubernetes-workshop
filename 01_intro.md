@@ -29,9 +29,10 @@ To view how to reach the cluster, run the `cluster-info` command:
 ```bash
 $ kubectl cluster-info
 Kubernetes master is running at https://35.189.206.159
-
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
+
+To further debug and diagnose cluster problems, use `kubectl cluster-info dump`
+
 
 ---
 
@@ -172,8 +173,8 @@ kubernetes-minion-group-c9bz   Ready                      17m       v1.7.5    35
 kubernetes-minion-group-cfzx   Ready                      17m       v1.7.5    35.195.36.237    Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
 kubernetes-minion-group-ftw1   Ready                      17m       v1.7.5    35.195.61.242    Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
 ```
----
 
+---
 
 Access the external IP with curl:
 

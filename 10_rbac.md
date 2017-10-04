@@ -1,5 +1,7 @@
 ## RBAC
 
+---
+
 ### A bit about roles
 
 Role Based Access Control (RBAC) is a common approach to managing users’ access to resources or operations.

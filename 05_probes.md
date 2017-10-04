@@ -84,7 +84,7 @@ http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
   }
   if err != nil {
     ok = false
-    errMsg += "Database not ok.¥n"
+    errMsg += "Database not ok.\n"
   } 
 
   if ok {
@@ -136,8 +136,8 @@ livenessProbe:
 
 Explore the healthy-monolith pod configuration:
 
-Relevant part
 ```
+...
       livenessProbe:
         httpGet:
           path: /healthz
