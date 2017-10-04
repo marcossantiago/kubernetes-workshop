@@ -51,11 +51,11 @@ ssh csuser@[IP]
 
 ---
 
-Ensure the required variables are set
+Some setup
 
 ```bash
-$ echo KOPS_STATE_STORE
-s3://goto-k8s
+$ sudo chown csuser /home/csuser
+$ export KOPS_STATE_STORE=s3://goto-k8s
 ```
 
 ---
@@ -63,8 +63,7 @@ s3://goto-k8s
 Generate an ssh keypair
 
 ```
-$ sudo mkdir .ssh
-$ sudo chown csuser .ssh
+$ mkdir .ssh
 $ ssh-keygen -t rsa
 Generating public/private rsa key pair.
 Enter file in which to save the key (/root/.ssh/id_rsa):
@@ -84,10 +83,16 @@ Create the cluster configuration
 $ kops create cluster --zones eu-west-1c goto.user<X>.k8s.local
 ```
 
+Or HA version
+
+```
+$ kops create cluster --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-zones eu-west-1a,eu-west-1b,eu-west-1c --node-size t2.medium --master-size t2.small goto.user12.k8s.local
+```
+
 View and verify the output. You can modify the configuration by running
 
 ```
-$ kops edit cluster --zones eu-west-1c goto.user<X>.k8s.local
+$ kops edit cluster goto.user<X>.k8s.local
 ```
 
 ---
@@ -98,10 +103,10 @@ Once you are happy with the config you can create the cluster by running
 $ kops update cluster goto.user<X>.k8s.local --yes
 ```
 
-This will take a few minutes to create... we can then verify the cluster is up and healthy
+This will take a few minutes to create... (coffee anyone?) we can then verify the cluster is up and healthy
 
 ```
-kops validate cluster
+$ kops validate cluster
 ```
 
 And kubectl should be configured to point to our new cluster
