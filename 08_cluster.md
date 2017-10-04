@@ -4,7 +4,7 @@
 
 ---
 
-In this section we will 
+### In this section we will 
 
 * Look at options for running Kubernetes
 * Set up our own HA Kubernetes cluster
@@ -25,9 +25,9 @@ There are **many** options for running Kubernetes
 * Openshift
 * ...
 
-----
+---
 
-Depends on your needs
+### Depends on your needs
 
 * Are you running in the cloud or onprem?
 * Do you have dedicated infra/ops team?
@@ -36,11 +36,12 @@ Depends on your needs
 
 ---
 
-### Exercise - setting up a fully HA cluster
+### Exercise - setting up a 
+### fully HA cluster
 
-We will use kops to setup a Kubernetes cluster
+We will use `kops` to setup a Kubernetes cluster.
 
-You can view the kops documentation on GitHub (link)
+You can view the kops documentation on [GitHub](https://github.com/kubernetes/kops/)
 
 ---
 

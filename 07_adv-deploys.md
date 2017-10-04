@@ -21,6 +21,11 @@ In this section we will try out each option and look at some possible use cases.
 - **canary**: Release a new version to a subset of users, then proceed to a full rollout
 - **a/b testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.).
 
+---
+
+You can find the code for the sample deploy application under ./resources/deploy-app
+
+Thanks to my colleague Etienne Tremel for the application.
 
 ---
 
