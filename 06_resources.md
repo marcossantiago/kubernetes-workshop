@@ -93,7 +93,7 @@ Kubernetes only supports memory at the moment.
 
 * Pods will get the amount of memory they request.
 * If they exceed their request, they may be killed.
-  * only if another pod needs the memory.
+  * E.g. if another pod needs the memory.
 * If pods consume less memory than requested, they will not be killed
   * Except where QoS comes in to play.
 
@@ -390,7 +390,7 @@ Containers with *Guaranteed* memory are given a lower value than *Burstable* con
 
 ### Example
 
-Don't run this. Try this one at home :)
+Don't run. Try this one at home :)
 
 ```
 $ kubectl run mem-guaranteed --image=derekwaynecarr/memhog --replicas=2 \
@@ -429,14 +429,9 @@ Pods which explicitly specify resource limits and requests will not pick up the 
 
 ---
 
-Create a namespace (replace with your user number)
-```
-$ kubectl create namespace limit-example-user-<X>
-```
-
 Apply the LimitRange (`resources/limits.yaml`) to the new namespace
 ```
-$ kubectl create -f resources/limits.yaml -n limit-example
+$ kubectl create -f resources/limits.yaml -n limit-example-user-<X>
 ```
 
 ```
@@ -482,10 +477,11 @@ deployment "nginx" created
 
 The default values of the namespace limit will be applied to this Pod
 (`kubectl describe pod <pod_name> --namespace=<namespace_name>`)
-```
+```bash
 $ kubectl get pods --namespace=limit-example-user-<X>
 NAME                     READY     STATUS    RESTARTS   AGE
 nginx-2371676037-tfncs   1/1       Running   0          4m
+
 $ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example-user-<X>  
 ...
 Containers:
@@ -509,7 +505,7 @@ Containers:
 
 ---
 
-If we deploy a Pod which exceeds the limit, using the following yaml:
+What if we deploy a Pod which exceeds the limit, using the following yaml:
 
 ```
 apiVersion: v1
@@ -525,12 +521,8 @@ spec:
         cpu: "3"
         memory: 100Mi
 ```
-The output of kubectl is
-```
-$ kubectl create -f configs/invalid-cpu-pod.yaml \
-  -n limit-example-user-<X>
-Error from server (Forbidden): error when creating "configs/invalid-cpu-pod.yaml": pods "invalid-pod" is forbidden: [maximum cpu usage per Pod is 2, but limit is 3., maximum cpu usage per Container is 2, but limit is 3.]
-```
+
+Try to deploy this and see what happens (`./resources/invalid-cpu-pod.yaml`)
 
 ---
 
@@ -538,7 +530,7 @@ Clean up the resources used during this module:
 ```
 $ kubectl delete --all pods
 $ kubectl delete --all deployments
-$ kubectl delete namespace limit-example-user-<X>
+$ kubectl delete --all po,deploy -n limit-example-user-<X>
 ```
 
 ---

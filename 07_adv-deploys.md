@@ -13,25 +13,31 @@ In this section we will try out each option and look at some possible use cases.
 
 ---
 
-These exercises created by my colleague Etienne Tremel. He also wrote a great blog post explaining advanced deployments with Kubernetes which you can [read here](https://container-solutions.com/kubernetes-deployment-strategies/)
-
----
-
 ## Deployment Strategies
 
 - **recreate**: Terminate the old version then release a new one
 - **ramped**: Release a new version via a rolling update
 - **blue/green**: Release a new version alongside the old version then switch traffic
 - **canary**: Release a new version to a subset of users, then proceed to a full rollout
-- **a/b testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.). We will cover this in a later lab.
+- **a/b testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.).
 
 
 ---
 
 ## Recreate deployment
-First terminate the old version and then release the new one.
+First terminate (all instances of) the old version and then release the new one.
 
-Deploy the first application
+Let's take a look at the config file and then deploy the first application
+
+```yaml
+...
+spec:
+  replicas: 3
+  strategy:
+    type: Recreate
+...
+
+```
 
 ```
 $ kubectl apply -f ./resources/recreate-app-v1.yaml
@@ -39,11 +45,30 @@ $ kubectl apply -f ./resources/recreate-app-v1.yaml
 
 ---
 
-The app will be exposed via NodePort service. Retrieve the IP of one of the nodes:
+Retrieve the IP of one of the nodes and store this as an envrionment variable:
 ```
 $ export EXTERNAL_IP=$(kubectl get nodes \
 -o jsonpath='{.items[1].status.addresses[?(@.type=="ExternalIP")].address}')
 ```
+
+Next we need the NodePort on which our service is exposed:
+```
+$ kubectl describe svc my-app                                                                                            ✓  10354  15:01:43
+Name:			my-app
+Namespace:		user-3
+Labels:			app=my-app
+Annotations:		kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"my-app"},"name":"my-app","namespace":"user-3"},"spec":{"ports":[{"nam...
+Selector:		app=my-app
+Type:			NodePort
+IP:			10.0.173.234
+Port:			http	8080/TCP
+NodePort:		http	31461/TCP
+Endpoints:
+Session Affinity:	None
+Events:			<none>
+```
+
+---
 
 Test if the deployment was successful:
 
@@ -53,12 +78,18 @@ $ curl $EXTERNAL_IP:[NodePort]
    - Host: my-app-177300127-sbd1d, Version: v1.0.0
 ```
 
+In the output we can see both the Pod ID as well as the version of the application.
+
 ---
 
-To see the deployment in action, open a new terminal and run the following command:
+To see the deployment in action, open a new terminal and run the following command in another terminal:
 
 ```
 $ watch -n1 kubectl get po
+```
+or
+```
+$ kubectl get po -w
 ```
 
 Then deploy the version 2 of the application:
@@ -69,7 +100,9 @@ $ kubectl apply -f ./resources/recreate-app-v2.yaml
 
 ---
 
-Now test the second deployment progress:
+Now test the second deployment progress. 
+
+(N.B. Since we are not removing the service, the NodePort will not change)
 
 ```
 $ export SERVICE_URL=$EXTERNAL_IP:[NodePort]
@@ -110,7 +143,7 @@ $ curl $EXTERNAL_IP:[NodePort]
 To see the deployment in action, open a new terminal and run the following command:
 
 ```
-$ watch -n1 kubectl get po
+$ kubectl get po -w
 ```
 
 Then deploy the version 2 of the application:
@@ -126,6 +159,22 @@ Next, test the second deployment progress:
 ```
 $ export SERVICE_URL=$EXTERNAL_IP:[NodePort]
 $ while sleep 0.1; do curl $SERVICE_URL; done;
+```
+
+We can also verify the version via the pods
+```
+$ kubectl get pods
+NAME                     READY     STATUS    RESTARTS   AGE
+my-app-873192836-0pvw3   1/1       Running   0          1m
+my-app-873192836-ddfp4   1/1       Running   0          55s
+my-app-873192836-wjwcc   1/1       Running   0          1m
+
+$ kubectl describe pod my-app-873192836-0pvw3 
+...
+Containers:
+  my-app:
+    Container ID:	docker://5d87a32691adaa933f1a6a956fb76a77ade3f9da669810c66f954b94786724a3
+...
 ```
 
 ---
@@ -185,7 +234,7 @@ $ curl $EXTERNAL_IP:[NodePort]
 To see the deployment in action, open a new terminal and run the following command:
 
 ```
-$ watch -n1 kubectl get po
+$ kubectl get po -w
 ```
 
 Then deploy the version 2 of the application:
@@ -198,7 +247,7 @@ $ kubectl apply -f ./resources/blue-green-app-v2.yaml
 
 Side by side, 3 pods are running with version 2 but the service still send traffic to the first deployment.
 
-If necessary, you can manually test one of the pods by port-forwarding it to your local environment.
+Try manually test one of the new pods by port-forwarding it to your local environment.
 
 ---
 
@@ -208,6 +257,12 @@ to all pods with label version=v2.0.0:
 ```
 $ kubectl patch service my-app -p \
 '{"spec":{"selector":{"version":"v2.0.0"}}}'
+```
+
+Alternatively you can use
+
+```
+$ kubectl edit service my-app
 ```
 
 ---
@@ -265,10 +320,10 @@ $ curl $EXTERNAL_IP:[NodePort]
 
 ---
 
-To see the deployment in action, open a new terminal and run a watch command to have a nice view on the progress:
+Again, let's watch the deploment from a new terminal:
 
 ```
-$ watch -n1 kubectl get po
+$ kubectl get po -w
 ```
 
 Then deploy the version 2 of the application:
@@ -293,13 +348,19 @@ $ while sleep 0.1; do curl $SERVICE_URL; done;
 If you are happy with it, scale up the version 2 to 3 replicas:
 
 ```
-kubectl scale --replicas=3 deploy my-app-v2
+$ kubectl scale --replicas=3 deploy my-app-v2
 ```
 
-Then, when all pods are running, you can safely delete the old deployment:
+Then, when all pods are running, let's verify that we are only hitting the new version:
 
 ```
-kubectl delete deploy my-app-v1
+$ while sleep 0.1; do curl $SERVICE_URL; done;
+```
+
+You can now safely delete the old deployment:
+
+```
+$ kubectl delete deploy my-app-v1
 ```
 
 ---
@@ -320,4 +381,4 @@ $ kubectl delete all -l app=my-app
 
 ---
 
-[Next up Autoscaling](../08_autoscaling.md)
+[Next up Setting up a cluster](../08_cluster.md)

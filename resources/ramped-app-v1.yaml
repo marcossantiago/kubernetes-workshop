@@ -32,8 +32,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: containersol/k8s-deployment-strategies-demo
-        imagePullPolicy: Never
+        image: icrosby/deploy-app:v1
         ports:
         - containerPort: 8080
         env:

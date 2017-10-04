@@ -120,14 +120,6 @@ kubectl describe services hello-node
 
 ---
 
-### Try it yourself
-
-* Create a service for the nginx pods (Created earlier).
-* Expose port 80 to a static nodePort 31000.
-* Access the service using `curl` or a browser.
-
----
-
 ### Exercise - Expose the Deals microservice
 
 * Create a service for the deals pod.

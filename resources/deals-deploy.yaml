@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deals
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deals
+    spec:
+      containers:
+      - name: deals
+        image: icrosby/deals:v1
+        ports:
+        - containerPort: 8080
