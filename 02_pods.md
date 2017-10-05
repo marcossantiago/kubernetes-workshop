@@ -40,9 +40,9 @@ metadata:
 spec:
   containers:
     - name: hello-node
-      image: nginx:1.12
+      image: icrosby/hello-node:v1
       ports:
-        - containerPort: 80
+        - containerPort: 8080
 ```
 
 ---
