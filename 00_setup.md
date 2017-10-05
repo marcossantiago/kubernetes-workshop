@@ -32,12 +32,16 @@ Retrieve permissions file: https://storage.googleapis.com/goto-k8s-workshop/ca.p
 Configure kubectl (Replace *user-x* and *password*)
 
 ```bash
-$ kubectl config set-cluster workshop --server=$endpoint \
---certificate-authority=/path/to/ca.pem
-$ kubectl config set-credentials workshop-user --username=user-X \
---password=<password>
-$ kubectl config set-context workshop --cluster=workshop \
---user=workshop-user --namespace=user-X
+$ kubectl config set-cluster workshop \
+  --server=https://35.195.195.187 \
+  --certificate-authority=/path/to/ca.pem
+$ kubectl config set-credentials workshop-user \
+  --username=user-X \
+  --password=<password>
+$ kubectl config set-context workshop \
+  --cluster=workshop \
+  --user=workshop-user \
+  --namespace=user-X
 $ kubectl config use-context workshop
 ```
 

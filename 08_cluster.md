@@ -150,4 +150,11 @@ Then update the front-end deployment to point to the image:  icrosby/front-end:v
 
 ---
 
+## Exercise #3
+## Chaos Monkey
+
+Start killing things, and see how the cluster and application reacts.
+
+---
+
 [Next up Monitoring...](../09_monitoring.md)
