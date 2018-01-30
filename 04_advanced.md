@@ -2,6 +2,21 @@
 ## With Kubernetes
 
 ---
+## Auto Scaling
+
+---
+
+Check for existing material?
+
+- Create application which can consume CPU (have example created for Max/Michael)
+- deploy HPA
+- Cause CPU usage -> scale up
+- Remove, scale down
+- Combine with monitoring??
+
+---
+
+---
 
 ## Advanced Deployments
 

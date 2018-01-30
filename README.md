@@ -1,4 +1,4 @@
-# Kubernetes IRL Workshop for GOTO Copenhagen 2017
+# Production Grade Kubernetes Workshop
 
 This repository contains the materials for the workshop. Clone this reposiotory locally.
 
@@ -6,14 +6,10 @@ This repository contains the materials for the workshop. Clone this reposiotory 
 
 ## Outline of the workshop
 
+* [Setup](./00_setup.md)
 * [Intro](./01_intro.md)
-* [Pods](./02_pods.md)
-* [Services](./03_services.md)
-* [Deployments](./04_deployments.md)
-* [Readiness/Liveness](./05_probes.md)
-* [Sock Shop](./06_sockshop.md)
-* [Advanced Deployments](./07_adv-deploys.md)
-* [Autoscaling](./08_autoscaling.md)
-* [Monitoring](./09_monitoring.md)
-* [RBAC](./10_rbac.md)
-* [Launching a Cluster](./11_cluster.md)
+* [Our Demo App](./02_real_app.md)
+* [Taking it to production](./03_productionize.md)
+* [Advanced features](./04_advanced.md)
+* [Kubernetes Cluster](./05_cluster.md)
+* [Monitoring](./06_monitoring.md)

@@ -4,11 +4,11 @@
 
 We will use `kubectl`, and `docker`.
 
-You can either use your own laptop, or a provided cloud VM.
+Login to the provided cloud VM which contains the necessary tools.
 
 ---
 
-### Installing Locally
+### Installing Locally (Optional)
 
 kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl
 
@@ -27,7 +27,7 @@ Open a browser to localhost:8000
 
 ---
 
-Retrieve permissions file: https://storage.googleapis.com/goto-k8s-workshop/ca.pem
+Retrieve permissions file: https://storage.googleapis.com/qcon-k8s-workshop/ca.pem
 
 Configure kubectl (Replace *user-x* and *password*)
 
