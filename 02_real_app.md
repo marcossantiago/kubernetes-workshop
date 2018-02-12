@@ -1,43 +1,30 @@
-## A more realistic application
+## Beyond The Basics
 
 ---
 
-In this section you will:
+### In this section you will:
 
-* 
-* Create a docker container image.
-* 
-* 
-* Interact with Pods remotely using kubectl.
-
----
-
-### What is a Pod?
-
-* Collection of
-  * Application container(s)
-  * Storage
-  * Network
-* Unit of deployment
-* Unit of scaling
+* Take a non trivial application to work with
+* Create a Deployment configuration
+* Deploy the application on your cluster
+* Scale the application
+* Create a Service configuration
+* Expose the application on your cluster
 
 ---
 
+**Architecture Diagram**
+
+gitrepo URL
 
 ---
 
-## Deployments
+## Recap of resource hierarchy
 
 ---
 
-### Creating and Managing Deployments
-In this section we will
-* Combine what we learned about Pods and Services
-* Create a deployment manifest
-* Scale our Deployment / ReplicaSet
-* Update our application (Rolling Update)
-
----
+### Pod
+A Pod is a group of one or more containers deployed and scheduled together.
 
 ### ReplicaSet
 A ReplicaSet ensures that a specified number of Pods are running at any given time.
@@ -47,23 +34,29 @@ A Deployment manages ReplicaSets and defines how updates to Pods should be rolle
 
 ---
 
+<!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="70%"-->
+
+---
+
 ### Creating a Deployment
+
+./resources/deployment.yaml
 
 ```
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hello-node
+  name: k8s-real-demo
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: hello-node
+        app: k8s-real-demo
     spec:
       containers:
-      - name: hello-node
-        image: nginx:1.12
+      - name: k8s-real-demo
+        image: icrosby/k8s-real-demo
         ports:
         - containerPort: 8080
 ```
@@ -73,7 +66,50 @@ spec:
 ### Deploy to K8s
 
 ```
-$ kubectl create -f resources/deployment-v1.yaml
+$ kubectl create -f resources/deployment.yaml
+```
+
+---
+
+### View Resource Details
+
+Use the `kubectl get` and `kubectl describe` to view details for the `k8s-real-demo` resources:
+
+```
+$ kubectl get deployments
+$ kubectl get replicasets
+$ kubectl get pods
+```
+
+```
+$ kubectl describe pods <pod-name>
+...
+```
+
+---
+
+### Interact with a Pod remotely
+
+* Pods get a private IP address by default.
+* Cannot be reached from outside the cluster.
+* Use `kubectl port-forward` to map a local port to a port inside the `k8s-real-demo` pod.
+
+
+---
+
+### Use two terminals
+
+* Terminal 1
+
+```
+$ kubectl port-forward k8s-real-demo 8080:8080
+```
+
+* Terminal 2
+
+```
+$ curl 0.0.0.0:8080
+Hello World!
 ```
 
 ---
@@ -87,7 +123,7 @@ $ kubectl create -f resources/deployment-v1.yaml
 ```
 $ kubectl get rs
 NAME                   DESIRED   CURRENT   READY     AGE
-hello-node-364036756   1         1         1         16s
+k8s-real-demo-364036756   1         1         1         16s
 ```
 
 ---
@@ -95,8 +131,8 @@ hello-node-364036756   1         1         1         16s
 ### Scale up/down the Deployment
 
 ```
-$ kubectl scale deployments hello-node --replicas=2
-deployment "hello-node" scaled
+$ kubectl scale deployments k8s-real-demo --replicas=2
+deployment "k8s-real-demo" scaled
 ```
 
 ---
@@ -111,7 +147,7 @@ $ kubectl get pods
 Look at the `Events` at the bottom
 
 ```
-$ kubectl describe deployment hello-node
+$ kubectl describe deployment k8s-real-demo
 ```
 
 ---
@@ -145,7 +181,7 @@ Next, update the image:
 
 ```
 $ kubectl set image \
-  deployment/hello-node hello-node=icrosby/hello-node:v2
+  deployment/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
 ```
 
 ---
@@ -153,7 +189,7 @@ $ kubectl set image \
 Check status via 
 
 ```
-kubectl rollout status deployment hello-node
+kubectl rollout status deployment k8s-real-demo
 ```
 
 That was fast :)
@@ -166,20 +202,7 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 ---
 
-### Cleanup
-
-```
-$ kubectl delete svc hello-node
-$ kubectl delete -f resources/deployment-v1.yaml
-```
-* If the number of Pods is large, this may take a while to complete.
-* To leave the Pods running instead,  
-use `--cascade=false`.
-* If you try to delete the Pods before deleting the Deployment, the ReplicaSet will just replace them.
-
----
-
-### Exercise - Deploy Deals microservice
+### Exercise - ???
 
 * Remove existing deals pod
 * Tag the image as `v1`
@@ -190,47 +213,6 @@ use `--cascade=false`.
 * Modify the `./resources/deals-app/deals.json` file to return different deals
 * Build the image and tag as `v2`
 * Update the deployment to use the new tag
-
-
----
-
-### View Pod details
-
-Use the `kubectl get` and `kubectl describe` to view details for the `hello-node` Pod:
-
-```
-$ kubectl get pods
-```
-
-```
-$ kubectl describe pods <pod-name>
-```
-
----
-
-### Interact with a Pod remotely
-
-* Pods get a private IP address by default.
-* Cannot be reached from outside the cluster.
-* Use `kubectl port-forward` to map a local port to a port inside the `hello-node` pod.
-
-
----
-
-### Use two terminals
-
-* Terminal 1
-
-```
-$ kubectl port-forward hello-node 8080:8080
-```
-
-* Terminal 2
-
-```
-$ curl 0.0.0.0:8080
-Hello World!
-```
 
 ---
 
@@ -270,7 +252,7 @@ $ kubectl exec -ti <PODNAME> /bin/sh
 
 ---
 
-### Exercise - Deploy the Deals microservice
+### Exercise - ??? Update application to version 3 (tag v3)
 
 Modify the `./resources/deals-app/deals.json` file to return custom deals
 
@@ -282,13 +264,31 @@ Modify the `./resources/deals-app/deals.json` file to return custom deals
 
 ---
 
+## How to access our application?
+
+* Port-forwarding strictly a debugging tool
+* Pods are ephemal (no fixed IP)
+* Need to be able to scale 
+
+---
+
 ## Services
 
 ---
 
-### Introduction to services
+### Recap of services
 * Stable endpoints for Pods.
 * Based on labels and selectors.
+
+---
+
+### Labels & Selectors
+* Label: key/value pair attached to objects (e.g. Pods)
+* Selector: Identify and group a set of objects. 
+
+---
+
+LABEL AND SELECTOR DIAGRAM(S)
 
 ---
 
@@ -332,16 +332,16 @@ $ curl -i [cluster-node-ip]:30080
 
 ---
 
-### Explore the hello-node Service
+### Explore the k8s-real-demo Service
 
 ```bash
-$ kubectl get services hello-node
+$ kubectl get services k8s-real-demo
 NAME         CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
-hello-node   10.0.0.142   <nodes>       8080:30080/TCP   1m
+k8s-real-demo   10.0.0.142   <nodes>       8080:30080/TCP   1m
 ```
 
 ```bash
-$ kubectl describe services hello-node
+$ kubectl describe services k8s-real-demo
 ```
 
 ---
@@ -351,50 +351,111 @@ $ kubectl describe services hello-node
 Use `kubectl get pods` with a label query, e.g. for troubleshooting.
 
 ```
-kubectl get pods -l "app=hello-node"
+kubectl get pods -l "app=k8s-real-demo"
 ```
 
 Use `kubectl label` to add labels.
 
 ```
-kubectl label pods hello-node 'secure=disabled'
+kubectl label pods k8s-real-demo 'secure=disabled'
 ```
 ... and to modify
 ```
-kubectl label pods hello-node "app=goodbye-node" --overwrite
-kubectl describe pod hello-node
+kubectl label pods k8s-real-demo "app=new-label" --overwrite
+kubectl describe pod k8s-real-demo
 ```
 
 ---
 
-View the endpoints of the `hello-node` service:
+### Endpoints
+
+View the endpoints of the `k8s-real-demo` service:
 
 (Note the difference from the last call to `describe`)
 
 ```
-kubectl describe services hello-node
+kubectl describe services k8s-real-demo
 ```
 
 ---
 
-### Exercise - Expose the Deals microservice
+### Exercise - Labels
 
-* Create a service for the deals pod.
-* Expose the service via nodePort
-* Access the service using `curl` or a browser.
-
----
-
-### Cleanup
-
-```
-kubectl delete po --all
-```
-
-We will leave the service for now
+* Add the `k8s-real-demo` label to our previously deployed pod (`hello-794f7449f5-bm5k4`).
+* Call the service several times and see what happens.
+* Remove the label.
 
 ---
 
-[Next up Deployments...](../04_deployments.md)
+### Exercise - Deploy the Front End
 
+In the /resources folder you will find configuration files for the Front End (Deployment and Service). Using these configuration files deploy the service on to your cluster, and access the application through the browser.
+
+---
+
+### Bonus (if time permits)
+
+Storage!
+
+While we would like to ideally run stateless applications on Kubernetes, we will eventually run into the challenge of requiring state within our cluster.
+
+We will deploy CockroachDB to maintain the state for our demo application.
+
+CockroachDB (link) is an open source 'cloud native' SQL database.
+
+---
+
+### Deploying CockRoachDB
+
+```
+$ kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cockroachdb-statefulset.yaml
+```
+
+---
+
+### What did this do?
+
+* Pull the Kubernetes configuration file from the web (github)
+* Created two services (`kubectl get services`)
+* Created a `poddisruptionbudget`
+* Created a `StatefulSet`
+  * Creates 3 Pods
+  * Creates 3 PersistentVolumes
+  * Creates 3 PersistentVolumeClaims
+
+---
+
+...
+
+
+---
+
+
+(REMOVE)
+
+### Cleanup 
+
+```
+$ kubectl delete svc k8s-real-demo
+$ kubectl delete -f resources/deployment-v1.yaml
+```
+* If the number of Pods is large, this may take a while to complete.
+* To leave the Pods running instead,  
+use `--cascade=false`.
+* If you try to delete the Pods before deleting the Deployment, the ReplicaSet will just replace them.
+
+---
+
+### Summary
+
+What have we learned?
+* How to deploy a 'real world' application on Kubernetes
+* Deal with Deployment and Services
+* Connecting Services with labels and selectors
+* Scale up/down
+* Update a Deployment (rolling update)
+
+---
+
+[Next up, heading to Production...](../03_productionize.md)
 

@@ -1,8 +1,12 @@
-## Advanced Deployments
-## With Kubernetes
+## Advanced
+
+- Autoscaling
+- Advanced Deployments
+- Storage
 
 ---
-## Auto Scaling
+
+### Auto Scaling
 
 ---
 
@@ -18,7 +22,7 @@ Check for existing material?
 
 ---
 
-## Advanced Deployments
+### Advanced Deployments
 
 Kubernetes offers a variety of ways to release an application. 
 

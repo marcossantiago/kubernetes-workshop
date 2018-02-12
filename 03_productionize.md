@@ -1,4 +1,18 @@
-## Liveness & Readiness
+## Productionize
+
+We have a 'real world' application now running on our cluster.
+It is fault tolerant and multi-tiered.
+
+But we are not yet ready for Production.
+
+---
+
+In this section we will look to add some important pieces to make our application production ready. 
+
+- Readiness and Liveness Probes
+- Resource Requests & Limits
+- Logging / Local Storage?
+- ConfigMap / Secrets
 
 ---
 
@@ -258,12 +272,12 @@ kubectl delete -f ./resources/healthy-monolith.yaml
 
 ---
 
-### Exercise - Add Probes for Deals microservice
+### Exercise - Add Probes for our k8s-real-demo service
 
-* Add Readiness probe to the Deals deployment
+* Add Readiness probe to the Deployment
  (hint: endpoint already exists)
 * Deploy the updated config
-* Add Liveness probe to the Deals deployment
+* Add Liveness probe to the Deployment
 * Deploy the updated config
 
 ---
@@ -805,14 +819,20 @@ $ kubectl delete --all po,deploy -n limit-example-user-<X>
 
 ---
 
-### Exercise - Add Resources to the Deals microservice
+### Exercise - Add Resources to the k8s-real-demo service
 
-* Add resources section to the Deals Deployment
+* Add resources section to the Deployment
 * Add limits and requests for memory and cpu
 * Apply the udpated config
 
 ---
 
-[Next up advanced deployments...](./07_adv-deploys.md)
+### ConfigMaps and Secrets
+
+(Move configuration items to ConfigMap or Secret)...
+
+---
+
+[Next up advanced...](./07_advanced.md)
 
 
