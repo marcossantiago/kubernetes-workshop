@@ -1,5 +1,7 @@
 ## Advanced
 
+We know have a 'real life' application deployed and running. We have added the necessary pieces to consider this 'production ready'. Next we will look at some of the more useful advanced features/tools of Kubernetes: 
+
 - Autoscaling
 - Advanced Deployments
 - Storage
@@ -8,7 +10,67 @@
 
 ### Auto Scaling
 
+As we have seen in the previous section scaling our applications is very simple. `kubectl scale deployment/k8s-real-demo replicas=5`.  However, ideally this would not be a manual action. 
+
+Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
+
 ---
+
+### HorizontalPodAutoscaler (HPA)
+
+* Periodically fetches metrics (default 30 seconds)
+* Compares to user specified target value.
+* Adjusts the number of replicas (pods) of a Deployment if needed.
+* CPU usage is built in.
+* Fetched from Heapster.
+* Can also read Prometheus (for custom metrics)
+
+---
+
+<DIAGRAM>
+
+---
+
+### Adding an HPA
+
+We can add an HPA to our existing Deployment
+
+./resources/hpa.yaml
+
+```
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: k8s-real-demo-hpa
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: k8s-real-demo
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+```
+
+
+---
+
+### Adding an HPA
+
+We can create this resource on the cluster just as we have done with the others:
+
+`$ kubectl apply -f ./resources/hpa.yaml`
+
+And view the resource with `kubectl get` and `kubectl describe`
+
+---
+
+### Testing the HPA
+
+In order to test that the HPA works as expected we will need our application to consume > 80% CPU. Luckily our application has a very CPU intensive endpoint (`/mineBitcoin`).
+
+---
+
+
 
 Check for existing material?
 
@@ -18,7 +80,6 @@ Check for existing material?
 - Remove, scale down
 - Combine with monitoring??
 
----
 
 ---
 

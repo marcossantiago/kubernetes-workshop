@@ -1,6 +1,93 @@
+## Kubernetes Ops
+
+---
+
+### In this section we will look at the custer itself:
+
+* Architecture
+* High Availability
+* Multi cluster/region
+
+---
+
+### Architecture Diagram
+
+
+<img src="img/kubernetes-architecture.png">
+
+---
+
+<img src="img/arch.png" width="800">
+
+---
+
+<img src="img/control_plane.png" width="800">
+
+---
+
+<img src="img/node.png">
+
+---
+
+### Master
+
+* api-server
+ * Provides outbound Kubernetes REST API
+ * Validates requests
+ * Saves cluster state to etcd
+
+---
+
+
+### Master
+
+* controller-manager
+  * Runs "control loops"
+  * Regulates the state of the system
+  * Watches cluster state through the apiserver
+  * Changes current state towards the desired state
+     - e.g. checks correct number of pods running
+
+---
+
+
+### Master
+
+* Scheduler
+  - Selects node on which to run a pod
+
+---
+
+### Master
+
+* etcd
+
+ - Distributed, consistent key-value store for shared configuration and service discovery
+
+---
+
+
+### Node
+
+* kubelet
+  * Agent that runs on each node
+  * Takes a set of `PodSpecs` from API server 
+  * Starts containers to fulfill specs
+  * Exposes monitoring data
+
+---
+
+
+### Node
+
+* kube-proxy
+  * Implements service endpoints (virtual IPs)
+  * iptables
+
+---
+
 ## High Availability
 ## And Multi Region
-##  Kubernetes
 
 ---
 
@@ -146,7 +233,7 @@ There are **many** options for running Kubernetes
 * kops
 * kube-adm
 * Tectonic
-* Hosted (GKE, ACS, and soon EKS!)
+* Hosted (GKE, ACS, and soon EKS)
 * Openshift
 * ...
 
@@ -158,95 +245,6 @@ There are **many** options for running Kubernetes
 * Do you have dedicated infra/ops team?
 * What are your security requirements?
 * Do you like to do things the hard way :)?
-
----
-
-### AWS Specific Considerations
-
-Kubernetes is mostly agnostic of the underlying infra.
-
- * Permissions
- * Networking
- * Storage
- * Scaling
- * AWS Services
-
----
-
-### Permissions
-
-**IAM Roles**
-
-Needed by tools setting up the infrastructure (e.g. kops)
-
-Also for any pods which will want to call the AWS API directly. For example to access an s3 bucket.
-
-This can be used with the AWS IAM integration by putting annotations on Kubernetes resources:
-
-```
-  annotations:
-        iam.amazonaws.com/role: myapp-iam-role
-```
-
-This is not native to Kubernetes, but part of an add-on
-
----
-
-### Networking
-
-**Route53** - Can be used as External DNS for exposing Kubernetes Services and Ingresses
-
-**Virtual Private Clouds (VPCs)** - Kubernetes cluster will run within a single VPC. Can create one specifically for our cluster or use an existing one.
-
----
-
-### Storage
-
-**ElasticBlockStorage**
-
-Kubernetes natively supports Volumes backed by EBS.
-
-```
-  volumes:
-  - name: sample-volume
-    awsElasticBlockStore:
-      volumeID: <volume-id>
-      fsType: ext4
-```
-
-
-_This EBS Volume must exist beforehand._
-
----
-
-### Storage
-
-**Dynamic Provisining**
-
-We can also use the built-in StorageClass for EBS to provide dynamic provisioning of Persistent Volumes.
-
-```
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: standard
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: gp2
-reclaimPolicy: Retain
-mountOptions:
-  - debug
-```
-
----
-
-### Scaling
-
-**Cluster Autoscaler**
-
-Requires an AWS autoscaling group and necessary IAM roles.
-
-An AWS autoscaler is provided in the Kubernetes repo [here](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
 
 ---
 
@@ -262,35 +260,7 @@ An opinionated provisioning system. Kops has been incorporated within the Kubern
 
 ---
 
-### This just in: EKS!
-
-Amazon has just announced (a managed Kubernetes service)[https://aws.amazon.com/eks/]. 
-
-Joining the other major cloud providers (Google and Microsoft) we now have:
-
-* Google Container Engine (GKE)
-* Azure Container Service (ACS)
-* AWS Elastic Container Service for Kubernetes (EKS)
-
----
-
-![Architecture](./img/eks.png)
-
----
-
-![Internals](./img/eks_internals.png)
-
----
-
-### EKS
-
-* Still in very early days (beta)
-* Will be the way forward on AWS
-* Kops still provides more flexibility
-
----
-
-### Exercise - setting up a 
+### Setting up a 
 ### fully HA cluster on AWS
 ###    with Kops
 
@@ -300,54 +270,16 @@ You can view the kops documentation on [GitHub](https://github.com/kubernetes/ko
 
 ---
 
-Log-in to the Cloud VM
-
-ssh csuser@[IP]
-
----
-
-Some setup
-
-```bash
-$ sudo chown csuser /home/csuser
-$ export KOPS_STATE_STORE=s3://enexis-k8s
-```
-
----
-
-Generate an ssh keypair
-
-```
-$ mkdir .ssh
-$ ssh-keygen -t rsa
-Generating public/private rsa key pair.
-Enter file in which to save the key (/root/.ssh/id_rsa):
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in /root/.ssh/id_rsa.
-Your public key has been saved in /root/.ssh/id_rsa.pub.
-The key fingerprint is:
-...
-```
-
----
-
 Create the cluster configuration
 
 ```
-$ kops create cluster --zones eu-west-1c enexis.user<X>.k8s.local
-```
-
-Or HA version
-
-```
-$ kops create cluster --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-zones eu-west-1a,eu-west-1b,eu-west-1c --node-size t2.medium --master-size t2.small enexis.user12.k8s.local
+$ kops create cluster --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-zones eu-west-1a,eu-west-1b,eu-west-1c --node-size t2.medium --master-size t2.small qcon.k8s.local
 ```
 
 View and verify the output. You can modify the configuration by running
 
 ```
-$ kops edit cluster enexis.user<X>.k8s.local
+$ kops edit cluster qcon.k8s.local
 ```
 
 ---
@@ -355,7 +287,7 @@ $ kops edit cluster enexis.user<X>.k8s.local
 Once you are happy with the config you can create the cluster by running
 
 ```
-$ kops update cluster goto.user<X>.k8s.local --yes
+$ kops update cluster qcon.k8s.local --yes
 ```
 
 This will take a few minutes to create... (coffee anyone?) we can then verify the cluster is up and healthy
@@ -395,32 +327,6 @@ $ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
 
 * Buy some socks!
 
----
-
-## Exercise #2
-
- * Modify one of the stateful services to use AWS EBS
-
- * Setup one with a static Persistent Volume
-
- * Setup another using the Dynamic Storage class
-
----
-
-## Exercise #3
-
-Deploy the Deals service alongside the Sock Shop (hint: namespace)
-* Add a deployment
-* Add a service to expose it (on port 80)
-
-Then update the front-end deployment to point to the image:  icrosby/front-end:v1
-
----
-
-## Exercise #4
-## Chaos Monkey
-
-Start killing things, and see how the cluster and application reacts.
 
 ---
 
@@ -602,4 +508,4 @@ roleRef:
 ---
 
 
-[Next up Monitoring...](../09_monitoring.md)
+[Next up Monitoring...](../06_monitoring.md)

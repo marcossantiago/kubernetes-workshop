@@ -13,9 +13,13 @@
 
 ---
 
-**Architecture Diagram**
+## 'Real' demo application
 
-gitrepo URL
+We will work the following demo application: `https://github.com/idcrosby/k8s-example` feel free to clone this repo locally, or fork it to your own account.
+
+This application is composed of multiple pieces. One main backend service, a front end (UI) service, and a data layer. We will deploy these pieces one at a time on our cluster.
+
+**Architecture Diagram**
 
 ---
 
@@ -148,6 +152,16 @@ Look at the `Events` at the bottom
 
 ```
 $ kubectl describe deployment k8s-real-demo
+```
+
+---
+
+### Fault tolerance
+
+What happens if we kill one of the pods?
+
+```
+$ kubectl delete po <POD_NAME>
 ```
 
 ---
@@ -426,23 +440,6 @@ $ kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/maste
 ---
 
 ...
-
-
----
-
-
-(REMOVE)
-
-### Cleanup 
-
-```
-$ kubectl delete svc k8s-real-demo
-$ kubectl delete -f resources/deployment-v1.yaml
-```
-* If the number of Pods is large, this may take a while to complete.
-* To leave the Pods running instead,  
-use `--cascade=false`.
-* If you try to delete the Pods before deleting the Deployment, the ReplicaSet will just replace them.
 
 ---
 

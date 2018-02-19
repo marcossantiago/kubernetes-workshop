@@ -1,5 +1,5 @@
 
-# How Did We Get Here?
+## A Brief History of Container Orchestration
 
 ---
 
@@ -241,74 +241,6 @@ Oxford English Dictionary
 
 <img src="img/kubernetes-architecture.png">
 
----
-
-<img src="img/arch.png" width="800">
-
----
-
-<img src="img/control_plane.png" width="800">
-
----
-
-<img src="img/node.png">
-
----
-
-### Master
-
-* api-server
- * Provides outbound Kubernetes REST API
- * Validates requests
- * Saves cluster state to etcd
-
----
-
-
-### Master
-
-* controller-manager
-  * Runs "control loops"
-  * Regulates the state of the system
-  * Watches cluster state through the apiserver
-  * Changes current state towards the desired state
-     - e.g. checks correct number of pods running
-
----
-
-
-### Master
-
-* Scheduler
-  - Selects node on which to run a pod
-
----
-
-### Master
-
-* etcd
-
- - Distributed, consistent key-value store for shared configuration and service discovery
-
----
-
-
-### Node
-
-* kubelet
-  * Agent that runs on each node
-  * Takes a set of `PodSpecs` from API server 
-  * Starts containers to fulfill specs
-  * Exposes monitoring data
-
----
-
-
-### Node
-
-* kube-proxy
-  * Implements service endpoints (virtual IPs)
-  * iptables
 
 ---
 
@@ -722,18 +654,15 @@ BODY:
 -no body in request-
 ```
 
+
 ---
 
+## Summary
 
-!! Remove this (leave for next section)
-
-### Cleanup
-
-```
-$ kubectl delete deployment,service hello
-deployment "hello" deleted
-service "hello" deleted
-```
+In this section we have:
+* Looked at the the history of Container Orchestration.
+* Learned the basics of Kubernetes. 
+* Deployed a simple application on to our own cluster.
 
 ---
 

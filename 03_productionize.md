@@ -831,6 +831,16 @@ $ kubectl delete --all po,deploy -n limit-example-user-<X>
 
 (Move configuration items to ConfigMap or Secret)...
 
+Modify item in configmap and watch 'live' change
+
+---
+
+### Summary
+
+What have we learned?
+...
+
+
 ---
 
 [Next up advanced...](./07_advanced.md)
