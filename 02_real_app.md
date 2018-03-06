@@ -2,9 +2,9 @@
 
 ---
 
-### In this section you will:
+### In this section we will:
 
-* Take a non trivial application to work with
+* Work with a non trivial application
 * Create a Deployment configuration
 * Deploy the application on your cluster
 * Scale the application
@@ -19,11 +19,13 @@ We will work the following demo application: `https://github.com/idcrosby/k8s-ex
 
 This application is composed of multiple pieces. One main backend service, a front end (UI) service, and a data layer. We will deploy these pieces one at a time on our cluster.
 
+---
+
 **Architecture Diagram**
 
 ---
 
-## Recap of resource hierarchy
+## Recap of Resource Hierarchy
 
 ---
 
@@ -113,7 +115,8 @@ $ kubectl port-forward k8s-real-demo 8080:8080
 
 ```
 $ curl 0.0.0.0:8080
-Hello World!
+Hello from Container Solutions.
+I'm running version 1.0 on 648d67845
 ```
 
 ---
@@ -166,83 +169,7 @@ $ kubectl delete po <POD_NAME>
 
 ---
 
-### Updating Deployments 
-
-(`RollingUpdate`)
-
-* RollingUpdate is the default strategy.
-* Updates Pods one (or a few) at a time.
-
----
-
-### Common workflow
-
-* Update the application, and create a new version.
-* Build the new image and tag it with the new version, i.e. v2.
-* Update the Deployment with the new image
-
----
-
-Let's try this
-
-First let's check the current version running (use the same IP and Node Port from before)
-
-```
-$ curl [EXTERNAL_IP]:[NodePort]
-```
-
-Next, update the image:
-
-```
-$ kubectl set image \
-  deployment/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
-```
-
----
-
-Check status via 
-
-```
-kubectl rollout status deployment k8s-real-demo
-```
-
-That was fast :)
-
-Now verify the new version
-
-```
-$ curl [EXTERNAL_IP]:[NodePort]
-```
-
----
-
-### Exercise - ???
-
-* Remove existing deals pod
-* Tag the image as `v1`
-* Create a deployment config for the `v1` Deals image 
-* Deploy on the cluster
-* Scale the deployment to 3 instances
-* Verify the scaling was successful
-* Modify the `./resources/deals-app/deals.json` file to return different deals
-* Build the image and tag as `v2`
-* Update the deployment to use the new tag
-
----
-
-### Try it yourself
-* Modify the `./resources/nginx.conf` to return a custom message.
-
-* Create a custom Nginx docker image (see ./resources/Dockerfile-nginx)
-* Build and push the container.
-* Create a Pod manifest using the image.
-* Query the application using `curl` or a browser.
-* Access the pod on port 80 using port-forward.
-* View the logs of the nginx container.
-
----
-
-### Debugging
+## Debugging
 
 ### View the logs of a Pod
 
@@ -263,18 +190,6 @@ Execute a shell in a Pod, like in Docker:
 ```
 $ kubectl exec -ti <PODNAME> /bin/sh
 ```
-
----
-
-### Exercise - ??? Update application to version 3 (tag v3)
-
-Modify the `./resources/deals-app/deals.json` file to return custom deals
-
-* Build and push the docker image
-* Create a pod configuration file for the new image
-* Create the pod on your cluster
-* Access the application via `curl` or a browser
-* Check the logs of the application
 
 ---
 
@@ -320,18 +235,32 @@ LABEL AND SELECTOR DIAGRAM(S)
 
 ### Create a Service
 
-Explore the XXXX service configuration file:
+Explore the ./resources/service.yaml service configuration file:
 
 ```
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-real-demo
+  labels:
+    app: k8s-real-demo
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    app: k8s-real-demo
 ```
 
 ---
 
-Create the XXXX service using kubectl:
+Create the ./resources/service.yaml service using kubectl:
 
 ```
-$ kubectl create -f XXXX.yaml
-service "XXXX" created
+$ kubectl create -f ./resources/service.yaml
+service k8s-real-demo created
 ```
 
 ---
@@ -360,7 +289,77 @@ $ kubectl describe services k8s-real-demo
 
 ---
 
-### Using labels
+### Updating Deployments 
+
+(`RollingUpdate`)
+
+* RollingUpdate is the default strategy.
+* Updates Pods one (or a few) at a time.
+
+---
+
+### Common Workflow
+
+* Update the application, and create a new version.
+* Build the new image and tag it with the new version, i.e. v2.
+* Update the Deployment with the new image
+
+---
+
+### Try It Out
+
+First check the current version running (use the same IP and Node Port from before)
+
+```
+$ curl [EXTERNAL_IP]:[NodePort]
+```
+
+Next, update the image:
+
+```
+$ kubectl set image \
+  deployment/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
+```
+
+---
+
+Check status via 
+
+```
+kubectl rollout status deployment k8s-real-demo
+```
+
+That was fast :)
+
+Now verify the new version
+
+```
+$ curl [EXTERNAL_IP]:[NodePort]
+```
+
+---
+
+### Exercise - Putting It Together
+
+* Delete your deployment
+* Tag the image as `v1`
+* Create a deployment config for the `v1` image 
+* Deploy on the cluster
+* Scale the deployment to 3 instances
+* Verify the scaling was successful
+* Modify the `CONFIG/DOCKERFILE` to return different Version
+* Build the image and tag as `v2`
+* Update the deployment to use the new tag
+* Verify the new version by making an HTTP request
+* View the logs of the application
+
+---
+
+## Labels
+
+---
+
+### Using Labels
 
 Use `kubectl get pods` with a label query, e.g. for troubleshooting.
 
@@ -391,13 +390,7 @@ View the endpoints of the `k8s-real-demo` service:
 kubectl describe services k8s-real-demo
 ```
 
----
-
-### Exercise - Labels
-
-* Add the `k8s-real-demo` label to our previously deployed pod (`hello-794f7449f5-bm5k4`).
-* Call the service several times and see what happens.
-* Remove the label.
+Revert the label to the orginal setting.
 
 ---
 
@@ -419,10 +412,21 @@ CockroachDB (link) is an open source 'cloud native' SQL database.
 
 ---
 
-### Deploying CockRoachDB
+## CockroachDB
+
+A Cloud Native SQL Database.
+
+---
+
+### Deploying CockroachDB
 
 ```
 $ kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cockroachdb-statefulset.yaml
+
+service "cockroachdb-public" created
+service "cockroachdb" created
+poddisruptionbudget "cockroachdb-budget" unchanged
+statefulset "cockroachdb" created
 ```
 
 ---
@@ -437,9 +441,11 @@ $ kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/maste
   * Creates 3 PersistentVolumes
   * Creates 3 PersistentVolumeClaims
 
+`We will cover StatefulSets and PersistentVolumes later on`
+
 ---
 
-...
+<Verify storage?>
 
 ---
 

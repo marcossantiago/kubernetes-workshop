@@ -1,5 +1,6 @@
 
-## A Brief History of Container Orchestration
+## A Brief History of 
+## Container Orchestration
 
 ---
 
@@ -457,7 +458,7 @@ We will use this tool to deploy, view, and access an application on our cluster.
 
 ---
 
-### Step 1 kubectl basics
+### Step 1: kubectl basics
 
 * The format of a kubectl command is: 
 ```
@@ -491,7 +492,7 @@ To further debug and diagnose cluster problems, use `kubectl cluster-info dump`
 
 ---
 
-### Step 2 deploy a simple application 
+### Step 2: Deploy a Simple Application 
 
 Let’s run our first app on Kubernetes with the kubectl run command. The `run` command creates a new deployment for the specified container. This is the simpliest way of deploying a container.
 
@@ -537,7 +538,7 @@ you can gather information about the status of your objects like pods, deploymen
 
 ---
 
-### Step 3 View our app
+### Step 3: View our app
 
 By default applications are only visible inside the cluster. We can create a proxy to connect to our application.  
 Find out the pod name:

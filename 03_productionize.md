@@ -1,5 +1,7 @@
 ## Productionize
 
+---
+
 We have a 'real world' application now running on our cluster.
 It is fault tolerant and multi-tiered.
 
@@ -7,7 +9,7 @@ But we are not yet ready for Production.
 
 ---
 
-In this section we will look to add some important pieces to make our application production ready. 
+In this section we will look to add some important pieces to make our application production ready:
 
 - Readiness and Liveness Probes
 - Resource Requests & Limits
@@ -16,11 +18,11 @@ In this section we will look to add some important pieces to make our applicatio
 
 ---
 
-### What is Liveness and Readiness?
+### Liveness and Readiness Probes
 
 Kubernetes health checks are divided into liveness and readiness probes. 
 
-Kubernetes is focusing on running containers in production. Production means that we need a way to ensure pods are actually running and healthy.
+For running in production, Kubernetes needs a way to ensure pods are actually running and healthy.
 
 ---
 
@@ -71,7 +73,7 @@ http.ListenAndServe(":8080", nil)
 
 ---
 
-And this needs to be added into the Pod manifest
+And this needs to be added into the Kubernetes configuration:
 ```
 livenessProbe:
   httpGet:
@@ -85,7 +87,7 @@ livenessProbe:
 
 ### Readiness Probes
 
-Can check other pieces, such as a database connection
+Might check other pieces, such as a database connection
 
 ```
 http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +115,7 @@ http.ListenAndServe(":8080", nil)
 
 ---
 
-And this needs to be added into the Pod manifest
+We add this to the configuration in the same way:
 
 ```
 readinessProbe:
@@ -124,7 +126,7 @@ readinessProbe:
   timeoutSeconds: 5
 ```
 
-Combining the readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you can monitor also downstream dependencies.
+Combining the readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you may also monitor downstream dependencies.
 
 ---
 
@@ -275,14 +277,14 @@ kubectl delete -f ./resources/healthy-monolith.yaml
 ### Exercise - Add Probes for our k8s-real-demo service
 
 * Add Readiness probe to the Deployment
- (hint: endpoint already exists)
+ (hint: endpoints are already implemented in the code `server.go`)
 * Deploy the updated config
 * Add Liveness probe to the Deployment
 * Deploy the updated config
 
 ---
 
-### Resource Management
+## Resource Management
 
 ---
 
@@ -669,32 +671,6 @@ If this happens:
 ---
 
 Containers with *Guaranteed* memory are given a lower value than *Burstable* containers which have a lower value than *BestEffort* containers. As a consequence, containers with *BestEffort* should be killed before the other tier.
-
----
-
-### Example
-
-Don't run. Try this one at home :)
-
-```
-$ kubectl run mem-guaranteed --image=derekwaynecarr/memhog --replicas=2 \
-    --requests=cpu=10m --limits=memory=600Mi --command \
-    -- memhog -r100000 500m
-$ kubectl run mem-burstable --image=derekwaynecarr/memhog --replicas=2 \
-    --requests=cpu=10m,memory=600Mi --command -- memhog -r100000 100m
-$ kubectl run mem-besteffort --replicas=10 --image=derekwaynecarr/memhog \
-    --requests=cpu=10m --command -- memhog -r10000 500m
-```
-
----
-
-This will force a SystemOOM.
-```
-$ kubectl get events | grep OOM
-{kubelet gke-cluster-1-default-pool-312d7520-c4db}      System OOM encountered
-```
-
-The process relies on the Kernel to react to system OOM events. Depending on how the host operating system is configured, and which process the Kernel ultimately decides to kill on your Node, you may experience unstable results.
 
 ---
 
