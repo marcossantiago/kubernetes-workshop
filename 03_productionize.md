@@ -355,44 +355,6 @@ Repercussions:
 
 ---
 
-### Types of Resource
-
-There are two kinds of Resources
-
-* Compressible
-* Incompressible
-
----
-
-### Compressible Resource Guarantees
-
-Kubernetes only supports CPU at the moment.
-
-* Pods are guaranteed to get the amount of CPU they request.
-* Excess CPU resources will be distributed based on the amount of CPU requested.
-
----
-
-### Incompressible Resource Guarantees
-
-Kubernetes only supports memory at the moment.
-
-* Pods will get the amount of memory they request.
-* If they exceed their request, they may be killed.
-  * E.g. if another pod needs the memory.
-* If pods consume less memory than requested, they will not be killed
-  * Except where QoS comes in to play.
-
----
-
-### There are still some issues
-
-* CPU isolation is at the container level.
-* Cannot limit on Pod scale.
-https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#planned-improvements
-
----
-
 ### Quality of Service
 
 * In an overcommitted system, need to prioritise killing Containers.
@@ -808,6 +770,520 @@ $ kubectl delete --all po,deploy -n limit-example-user-<X>
 (Move configuration items to ConfigMap or Secret)...
 
 Modify item in configmap and watch 'live' change
+
+### ConfigMaps
+
+---
+
+ConfigMaps are similar to Secrets, only that they are designed to more conveniently support working with strings that do not contain sensitive information. They can be used to store individual properties in form of key-value pairs. However, the values can also be entire config files or JSON blobs to store more information.
+
+---
+
+### ConfigMaps
+
+ConfigMaps hold both fine- and/or coarse-grained data. Applications read configuration settings from both environment variables and files containing configuration data, ConfigMaps support both methods.
+
+---
+
+Example ConfigMap that contains both types of configuration:
+
+```
+apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   Name: example-configmap
+ data:
+   # property-like keys
+   game-properties-file-name: game.properties
+   ui-properties-file-name: ui.properties
+   # file-like keys
+   game.properties: |
+     enemies=aliens
+     lives=3
+     enemies.cheat=true
+     enemies.cheat.level=noGoodRotten
+    secret.code.passphrase=UUDDLRLRBABAS
+    secret.code.allowed=true
+    secret.code.lives=30
+  ui.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice
+```
+
+---
+
+The property-like keys of the ConfigMap are used as environment variables to the single container in the Deployment template, and the file-like keys populate a volume.
+
+---
+
+### Consuming in Environment Variables
+
+A ConfigMap can be used to populate the value of command line arguments. For example, consider the following ConfigMap:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: special-config
+  namespace: default
+data:
+  special.how: very
+  special.type: charm
+```
+
+---
+
+You can consume the keys of this ConfigMap in a pod using configMapKeyRef sections:
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      env:
+        - name: SPECIAL_LEVEL_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: special-config
+              key: special.how
+        - name: SPECIAL_TYPE_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: special-config
+              key: special.type
+  restartPolicy: Never
+```
+
+---
+
+When this pod is run, its output will include the following lines:
+```
+SPECIAL_LEVEL_KEY=very
+SPECIAL_TYPE_KEY=charm
+```
+
+---
+
+### Setting Command-line Arguments
+A ConfigMap can also be used to set the value of the command or arguments in a container. This is accomplished using the Kubernetes substitution syntax $(VAR_NAME). Consider the same ConfigMap as above.
+
+---
+
+### Consuming in Volumes
+
+A ConfigMap can also be consumed in volumes. Returning again to the above ConfigMap.
+
+You have a couple different options for consuming this ConfigMap in a volume. The most basic way is to populate the volume with files where the key is the file name and the content of the file is the value of the key.
+
+---
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "cat", "/etc/config/special.how" ]
+      volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: special-config
+  restartPolicy: Never
+```
+When the pod is running, the output will be:
+```
+very
+```
+
+---
+
+You can also define the paths within the volume where ConfigMap keys are stored:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "cat", "/etc/config/path/to/special-key" ]
+      volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: special-config
+        items:
+        - key: special.how
+          path: path/to/special-key
+  restartPolicy: Never
+```
+When the pod is running, the output will be:
+```
+very
+```
+
+---
+
+### Try It Yourself
+
+For a real-world example, you can configure Redis using a ConfigMap. To inject Redis with the recommended configuration for using Redis as a cache, the Redis configuration file (called redis-config) should contain the following:
+```
+maxmemory 2mb
+maxmemory-policy allkeys-lru
+```
+
+---
+
+* Create a configfile containing the values.
+* Create a ConfigMap called `example-redis-config` from that file.
+* Validate the results.
+* Create a Pod with:
+```
+      configMap:
+        name: example-redis-config
+        items:
+        - key: redis-config
+          path: redis.config
+```
+
+---
+
+### Validate
+
+```
+kubectl exec -it redis redis-cli
+127.0.0.1:6379> CONFIG GET maxmemory
+1) "maxmemory"
+2) "2097152"
+127.0.0.1:6379> CONFIG GET maxmemory-policy
+1) "maxmemory-policy"
+2) "allkeys-lru"
+```
+
+---
+
+### cheat
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: kubernetes/redis:v1
+    env:
+    - name: MASTER
+      value: "true"
+    ports:
+    - containerPort: 6379
+    volumeMounts:
+    - mountPath: /redis-master
+      name: config
+  volumes:
+    - name: config
+      configMap:
+        name: example-redis-config
+        items:
+        - key: redis-config
+          path: redis.conf
+```
+
+---
+
+## Secrets
+
+---
+
+In this section you will learn:
+* Why we need secrets
+* How to create secrets
+* use secrets
+
+---
+
+## How do we handle sensitive information?
+
+* Database passwords
+* API Keys
+* TLS Certificates
+
+---
+
+### This has become more complicated with microservices
+
+Ephemeral nature of services/containers means we need automation
+
+---
+
+### How to handle this?
+
+* Bake into the Docker image
+* Use environment variables
+* Use volumes
+* Use a specialist solution
+  * Orchestrator built-in solution
+  * Dedicated K/V store
+
+---
+
+### Inside Docker Image
+
+Inside the Dockerfile:
+
+```
+FROM mongo:3.0
+
+ENV MONGODB_PASSWORD=DO_NOT_TELL_ANYONE
+...
+```
+
+This is **not** a good idea.
+
+---
+
+### Environment Variables
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongo-secret
+spec:
+  containers:
+  - name: mongo
+    image: mongo
+    ports:
+    - containerPort: 27017
+    env:
+    - name: MONGODB_PASSWORD
+      value: "GUEST"
+```
+
+---
+
+### Environment Variables
+
+PROS
+
+* Popular solution
+* Simple / easy to use
+
+CONS
+
+* Secret is still visible
+* In config file
+* Via kubectl or output of `env`
+
+---
+
+### Hashicorp Vault
+
+Advanced tool for securing, storing and controlling access to secrets. 
+
+* Leasing
+* Key revocation
+* Key rolling
+* Auditing
+* Unified API
+* Encrypted Key Value Store
+
+---
+
+### Kubernetes Secrets
+
+* Can be encrypted since version 1.7
+* Stored inside etcd
+* Safer and more flexible than directly in image or yaml
+
+---
+
+### Secrets in action
+
+We want to share the value *some-base64-encoded-payload* under the key *my-super-secret-key* as a Kubernetes Secret for a pod.
+First you need to base64-encode it like so:
+```
+echo -n some-base64-encoded-payload | base64
+c29tZS1iYXNlNjQtZW5jb2RlZC1wYXlsb2Fk
+```
+
+Note the -n parameter with echo; this is necessary to suppress the trailing newline character.
+
+---
+
+### Creating the secret
+
+We put the result of the base64 encoding into the secret manifest:
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+data:
+  my-super-secret-key: c29tZS1iYXNlNjQtZW5jb2RlZC1wYXlsb2Fk
+```
+Currently there is no other type available, also no other "encryption" method despite base64 encoding.
+
+---
+
+### Using Secret
+
+Create a pod with that secret
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    name: secret
+  name: secret
+spec:
+  volumes:
+    - name: "secret"
+      secret:
+        secretName: mysecret
+  containers:
+    - image: nginx
+      name: webserver
+      volumeMounts:
+        - mountPath: "/tmp/mysec"
+          name: "secret"
+```
+```
+kubectl create -f secret.yaml -f pod_secret.yaml
+```
+
+---
+
+### Validate Secret
+
+```
+kubectl exec -ti secret /bin/bash
+cat /tmp/mysec/my-super-secret-key
+```
+
+---
+
+One word of warning here, in case it’s not obvious: `secret.yaml` should never ever be committed to a source control system such as Git. If you do that, you’re exposing the secret and the whole exercise would have been for nothing.
+
+---
+
+### Working with secrets
+
+A secret volume is used to pass sensitive information, such as passwords, to pods. You can store secrets in the Kubernetes API and mount them as files for use by pods without coupling to Kubernetes directly. 
+
+Secret volumes are backed by tmpfs (a RAM-backed filesystem) so they are never written to non-volatile storage.
+Important: You must create a secret in the Kubernetes API before you can use it
+
+---
+
+We'll serve a webpage via a Volume using secrets. This is definitely the wrong way to do things, but serves as an example of how secrets are dynamically updated.
+
+---
+
+### Creating a Secret Using kubectl create secret
+
+```
+kubectl create secret generic index --from-file=configs/secrets/index.html
+```
+
+Validate that it's been created:
+```
+kubectl get secrets
+
+kubectl describe secret index
+```
+Note that neither get nor describe shows the contents of the file by default
+
+---
+
+### Using secret in a container
+
+```
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: config
+          readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: index
+```
+
+---
+
+### Create a nginx pod
+
+```
+kubectl create -f configs/secrets/nginx-controller.yaml
+```
+
+---
+
+### Validate that the nginx is working
+```
+kubectl port-forward <PODNAME> 8080:80 > /dev/null &
+```
+```bash
+curl localhost:8080
+Hello World
+```
+
+---
+
+### Update the message
+```
+echo "Hello again" > configs/secrets/index.html
+```
+or just with your editor
+
+---
+
+### Update your secret
+
+```
+kubectl delete secret index
+kubectl create secret generic index --from-file=configs/secrets/index.html
+```
+
+Mounted Secrets are updated automatically but it's using its local ttl-based cache for getting the current value of the secret. The total time is kubelet sync period + ttl of secrets cache in kubelet (~1min). But as we can't do at the moment `kubectl apply --from-file` this isn' working. 
+
+---
+
+### Validate that the index.html has updated
+
+
+```
+curl localhost:8080
+Hello again
+```
+
+---
+
+### Try It Yourself
+
+* Create a mysql pod
+* Set via an environment variable a password
+* Create a service for that mysql
+* Connect from another pod to the mysql database using the password (mysql container comes with mysql-client)
+
 
 ---
 

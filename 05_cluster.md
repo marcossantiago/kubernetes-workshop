@@ -319,14 +319,11 @@ $ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
 
 ---
 
-## Exercise #1
+## Expose the Front End
 
 * Modify the front-end service of the Sock Shop to be of type LoadBalancer.
 
 * Then access the application via the public dns name.
-
-* Buy some socks!
-
 
 ---
 
@@ -506,6 +503,5 @@ roleRef:
 ```
 
 ---
-
 
 [Next up Monitoring...](../06_monitoring.md)
