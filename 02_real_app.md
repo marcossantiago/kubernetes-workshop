@@ -164,7 +164,7 @@ $ kubectl describe deployment k8s-real-demo
 What happens if we kill one of the pods?
 
 ```
-$ kubectl delete po <POD_NAME>
+$ kubectl delete po <pod-name>
 ```
 
 ---
@@ -173,10 +173,10 @@ $ kubectl delete po <POD_NAME>
 
 ### View the logs of a Pod
 
-Use `kubectl logs` to view the logs for the `<PODNAME>` Pod:
+Use `kubectl logs` to view the logs for the `<pod-name>` Pod:
 
 ```
-$ kubectl logs <PODNAME>
+$ kubectl logs <pod-name>
 ```
 
 > Use the -f flag and observe what happens.
@@ -188,7 +188,7 @@ $ kubectl logs <PODNAME>
 Execute a shell in a Pod, like in Docker:
 
 ```
-$ kubectl exec -ti <PODNAME> /bin/sh
+$ kubectl exec -ti <pod-name> /bin/sh
 ```
 
 ---
