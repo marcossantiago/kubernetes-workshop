@@ -108,7 +108,7 @@ $ kubectl describe pods <pod-name>
 * Terminal 1
 
 ```
-$ kubectl port-forward k8s-real-demo 8080:8080
+$ kubectl port-forward <pod-name> 8080:8080
 ```
 
 * Terminal 2
