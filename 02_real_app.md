@@ -265,16 +265,6 @@ service k8s-real-demo created
 
 ---
 
-### Query the Service
-
-Use the IP of any of your nodes.
-
-```
-$ curl -i [cluster-node-ip]:30080
-```
-
----
-
 ### Explore the k8s-real-demo Service
 
 ```bash
@@ -285,6 +275,18 @@ k8s-real-demo   10.0.0.142   <nodes>       8080:30080/TCP   1m
 
 ```bash
 $ kubectl describe services k8s-real-demo
+```
+
+Note the port, which has been reserved on the Node. 30080 in the example.
+
+---
+
+### Query the Service
+
+Use the IP of any of your nodes.
+
+```
+$ curl -i [cluster-node-ip]:[node-port]
 ```
 
 ---
