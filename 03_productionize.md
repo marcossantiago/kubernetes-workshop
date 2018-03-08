@@ -13,7 +13,7 @@ In this section we will look to add some important pieces to make our applicatio
 
 - Readiness and Liveness Probes
 - Resource Requests & Limits
-- Logging / Local Storage?
+- Logging / Local Storage
 - ConfigMap / Secrets
 
 ---
@@ -115,7 +115,7 @@ http.ListenAndServe(":8080", nil)
 
 ---
 
-We add this to the configuration in the same way:
+This can be added to the configuration in the same way:
 
 ```
 readinessProbe:
@@ -175,7 +175,7 @@ Explore the healthy-monolith pod configuration:
 
 Create the healthy-monolith pod using 
 ```
-kubectl create -f ./resources/healthy-monolith.yaml
+$ kubectl create -f ./resources/healthy-monolith.yaml
 ```
 
 Thanks to Kelsey Hightower for this application
@@ -201,7 +201,7 @@ The monolith container supports the ability to force failures of it's readiness 
 Use the `kubectl port-forward` command to forward a local port to the health port of the healthy-monolith Pod.
 
 ```
-kubectl port-forward healthy-monolith 10081:81
+$ kubectl port-forward healthy-monolith 10081:81
 ```
 You now have access to the /healthz and /readiness HTTP endpoints
 
@@ -210,12 +210,12 @@ You now have access to the /healthz and /readiness HTTP endpoints
 Force the monolith container readiness probe to fail. Use the curl command to toggle the readiness probe status:
 
 ```
-curl http://127.0.0.1:10081/readiness/status
+$ curl http://127.0.0.1:10081/readiness/status
 ```
 Wait about 45 seconds and get the status of the healthy-monolith Pod using the kubectl get pods command:
 
 ```
-kubectl get pods healthy-monolith
+$ kubectl get pods healthy-monolith
 ```
 
 ---
@@ -223,7 +223,7 @@ kubectl get pods healthy-monolith
 Use the kubectl describe command to get more details about the failing readiness probe:
 
 ```
-kubectl describe pods healthy-monolith
+$ kubectl describe pods healthy-monolith
 ```
 
 Notice the details about failing probes.
@@ -238,12 +238,12 @@ Readiness:    http-get http://:81/readiness delay=5s timeout=1s period=10s #succ
 Force the monolith container readiness probe to pass. Use the curl command to toggle the readiness probe status:
 
 ```
-curl http://127.0.0.1:10081/readiness/status
+$ curl http://127.0.0.1:10081/readiness/status
 ```
 If we use the `--watch` (`-w`) flag we can see when the status of the pod changes:
 
 ```
-kubectl get pods healthy-monolith -w
+$ kubectl get pods healthy-monolith -w
 ```
 
 ---
@@ -253,7 +253,7 @@ kubectl get pods healthy-monolith -w
 Building on what you learned in the previous tutorial use the kubectl port-forward and curl commands to force the monolith container liveness probe to fail. Observe how Kubernetes responds to failing liveness probes.
 
 ```
-curl http://127.0.0.1:10081/healthz/status
+$ curl http://127.0.0.1:10081/healthz/status
 ```
 
 ---
@@ -269,7 +269,7 @@ curl http://127.0.0.1:10081/healthz/status
 ### Cleanup
 
 ```
-kubectl delete -f ./resources/healthy-monolith.yaml
+$ kubectl delete -f ./resources/healthy-monolith.yaml
 ```
 
 ---
@@ -281,6 +281,8 @@ kubectl delete -f ./resources/healthy-monolith.yaml
 * Deploy the updated config
 * Add Liveness probe to the Deployment
 * Deploy the updated config
+* Verify the probes are working:
+  `kubectl describe pod [POD_NAME]`
 
 ---
 
@@ -761,7 +763,8 @@ $ kubectl delete --all po,deploy -n limit-example-user-<X>
 
 * Add resources section to the Deployment
 * Add limits and requests for memory and cpu
-* Apply the udpated config
+* Apply the updated config
+* Trigger high CPU on our app via the `/mineBitcoin` endpoint and verify the CPU limit is respected
 
 ---
 

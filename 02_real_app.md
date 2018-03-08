@@ -409,7 +409,8 @@ $ curl [EXTERNAL_IP]:[NodePort]
   * In the cloned repo (`cd k8s-example/`)
   * `docker build -t localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0 .`
   * `docker push localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0`
-* Create a deployment config for your image 
+* Create a deployment config for your image
+  * Use the same image name as above
 * Deploy on the cluster
 
 ---
@@ -418,7 +419,7 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 * Scale the deployment to 3 instances
 * Verify the scaling was successful and all instances are getting requests.
-* Modify the `CONFIG/DOCKERFILE` to return different Version
+* Modify the `Dockerfile` to return different Version
 * Build the image and tag as `v2`
 * Update the deployment to use the new tag
 * Verify the new version by making an HTTP request
