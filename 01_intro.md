@@ -160,27 +160,24 @@ effect, **especially surreptitiously**"
 
 ## Surreptitiously
 
-<blockquote>
-"In a way that attempts to avoid notice or attention; secretively"
-</blockquote>
-
-Oxford English Dictionary
-
----
-
-## Surreptitiously
-
  - Should happen in the background
  - User doesn't need to details
  - Complexity is hidden
 
 ---
 
-## How important is orchestration?
+## Container Orchestrators
 
- - Might not need it for small apps
- - No orchestration == manual orchestration
- - Manually place containers, network, scale, check, update
+ - Kubernetes
+
+ - Mesos, DC/OS
+
+ - Docker Swarm
+
+ - Plus others
+   - Nomad
+   - Fleet from CoreOS (no more)
+   - PaaSs...
 
 ---
 
@@ -194,24 +191,13 @@ Oxford English Dictionary
 
 ---
 
-## Container Orchestrators
-
- - Kubernetes
-
- - Mesos
-
- - Docker Swarm
-
- - Plus others
-   - Nomad, PaaSs...
-
----
-
 ## Kubernetes
 
-* Open Source container orchestrator created by Google
-* Now part of Cloud Native Computing Foundation (CNCF) 
-* Popular: >32K stars on Github
+* Open Source container orchestrator from Google
+
+* Now part of Cloud Native Computing Foundation 
+
+* Popular and Active: >32K stars on Github
 
 ---
 
@@ -225,23 +211,21 @@ Oxford English Dictionary
 
 ---
 
-## Core Concepts
-
- - Pods
- - Flat networking space
- - Labels & Selectors
- - Services
- - Deployments
- - ReplicaSets
- - Namespaces
-
----
-
 ### Architecture Diagram
 
 
 <img src="img/kubernetes-architecture.png">
 
+---
+
+## Core Concepts
+
+ - Pods
+ - Labels & Selectors
+ - Services
+ - Deployments
+ - ReplicaSets
+ - Namespaces
 
 ---
 
@@ -265,7 +249,7 @@ Oxford English Dictionary
 
 ## Labels
 
- - K/V pairs attached to objects 
+ - Key/Value pairs attached to objects 
     - e.g: "version: dev", "tier: frontend"
  - Objects include Pods, ReplicaSets, Services
  - Label selectors then used to identify groups
@@ -366,6 +350,12 @@ spec:
 ---
 
 <!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="70%"-->
+
+---
+
+## Dashboard
+
+<img src="img/dashboard.png">
 
 ---
 
@@ -482,9 +472,18 @@ You can see both the client and the server versions.
 ---
 
 To view how to reach the cluster, run the `cluster-info` command:
-```bash
+
+```
 $ kubectl cluster-info
-Kubernetes master is running at https://35.189.206.159
+Kubernetes master is running at https://35.205.211.112
+GLBCDefaultBackend is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
+Heapster is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/heapster/proxy
+KubeDNS is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+KubeRegistry is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/kube-registry:registry/proxy
+kubernetes-dashboard is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
+Metrics-server is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+Grafana is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/monitoring-grafana/proxy
+InfluxDB is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/monitoring-influxdb:http/proxy
 ```
 
 To further debug and diagnose cluster problems, use `kubectl cluster-info dump`
@@ -549,7 +548,7 @@ hello-kubernetes-624527933-nth9d   1/1       Running   0          2m
 ```
 Create the proxy:
 ```bash
-$ kubectl port-forward hello-kubernetes-624527933-nth9d 8080 
+$ kubectl port-forward hello-kubernetes-624527933-nth9d 8080 &
 ```
 We now have a connection between our host and the Kubernetes cluster.
 
@@ -557,7 +556,7 @@ We now have a connection between our host and the Kubernetes cluster.
 
 ### Accessing the application
 
-To see the output of our application, run a curl request in a new terminal window:
+To see the output of our application, run a curl request to the local port:
 ```bash
 $ curl http://localhost:8080
 CLIENT VALUES:
@@ -584,6 +583,11 @@ BODY:
 ### Expose service while creating the deployment
 
 `kubectl port-forward` is meant for testing services that are not exposed. To expose the application, use a service (covered later).
+
+Kill Port Forward
+```
+$ kill %2
+```
 
 Delete old deployment
 ```
@@ -619,7 +623,7 @@ We can see the port on which it is exposed, but what is the external IP?
 
 ---
 
-To find the IP on which to call we need information on the nodes:
+To find the IP on which to call we need information on the nodes (use the EXTERNAL-IPs from any node):
 
 ```
 $ kubectl get nodes -o wide
@@ -655,6 +659,13 @@ BODY:
 -no body in request-
 ```
 
+---
+
+## Clean up
+
+```
+$ kubectl delete deploy hello
+$ kubectl delete svc hello
 
 ---
 

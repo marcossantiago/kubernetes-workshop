@@ -5,17 +5,22 @@
 ### In this section we will:
 
 * Work with a non trivial application
-* Create a Deployment configuration
+* Create a Deployment
 * Deploy the application on your cluster
 * Scale the application
-* Create a Service configuration
+* Create a Service
 * Expose the application on your cluster
 
 ---
 
 ## 'Real' demo application
 
-We will work the following demo application: `https://github.com/idcrosby/k8s-example` feel free to clone this repo locally, or fork it to your own account.
+We will work the following demo application: `https://github.com/idcrosby/k8s-example`
+Clone the repo to your VM:
+
+```
+$ git clone https://github.com/idcrosby/k8s-example.git
+```
 
 This application is composed of multiple pieces. One main backend service, a front end (UI) service, and a data layer. We will deploy these pieces one at a time on our cluster.
 
@@ -46,7 +51,7 @@ A Deployment manages ReplicaSets and defines how updates to Pods should be rolle
 
 ### Creating a Deployment
 
-./resources/deployment.yaml
+./resources/deployment.yaml (in the resources folder)
 
 ```
 apiVersion: extensions/v1beta1
@@ -72,7 +77,7 @@ spec:
 ### Deploy to K8s
 
 ```
-$ kubectl create -f resources/deployment.yaml
+$ kubectl apply -f resources/deployment.yaml
 ```
 
 ---
@@ -116,7 +121,7 @@ $ kubectl port-forward <pod-name> 8080:8080
 ```
 $ curl 0.0.0.0:8080
 Hello from Container Solutions.
-I'm running version 1.0 on 648d67845
+I'm running version 1.0 on k8s-real-demo-648d67845-hh8bn
 ```
 
 ---
@@ -217,7 +222,7 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ---
 
-LABEL AND SELECTOR DIAGRAM(S)
+<img src="img/labels2.svg" height="600">
 
 ---
 
@@ -259,9 +264,25 @@ spec:
 Create the ./resources/service.yaml service using kubectl:
 
 ```
-$ kubectl create -f ./resources/service.yaml
-service k8s-real-demo created
+$ kubectl apply -f ./resources/service.yaml
+service "k8s-real-demo" created
 ```
+
+---
+
+### Query the Service
+
+Find the NodePort (via Service) and IP (via Node)
+
+```
+$ curl [IP]:[NODE_PORT]
+```
+
+---
+
+### Load Balancing
+
+Make several calls to the service and notice the different responses.
 
 ---
 
@@ -277,17 +298,58 @@ k8s-real-demo   10.0.0.142   <nodes>       8080:30080/TCP   1m
 $ kubectl describe services k8s-real-demo
 ```
 
-Note the port, which has been reserved on the Node. 30080 in the example.
+Notice the `Endpoints:` entry
 
 ---
 
-### Query the Service
+## Labels
 
-Use the IP of any of your nodes.
+---
+
+### Using Labels
+
+Use `kubectl get pods` with a label query, e.g. for troubleshooting.
 
 ```
-$ curl -i [cluster-node-ip]:[node-port]
+$ kubectl get pods -l "app=k8s-real-demo"
 ```
+
+Use `kubectl label` to add labels to a pod.
+
+```
+$ kubectl label pod [POD_NAME] 'secure=disabled'
+```
+
+```
+$ kubectl get pods -l "app=k8s-real-demo"
+$ kubectl get pods -l "secure=disabled"
+```
+
+---
+
+### Using Labels
+
+We can also modify existing labels
+
+```
+$ kubectl label pod [POD_NAME] "app=new-label" --overwrite
+$ kubectl describe pod [POD_NAME]
+```
+
+---
+
+### Endpoints
+
+View the endpoints of the `k8s-real-demo` service:
+
+(Note the difference from the last call to `describe`. What has happened?)
+
+```
+kubectl describe services k8s-real-demo
+```
+
+
+Revert the label to the orginal setting.
 
 ---
 
@@ -310,10 +372,12 @@ $ curl -i [cluster-node-ip]:[node-port]
 
 ### Try It Out
 
-First check the current version running (use the same IP and Node Port from before)
+First check the current version running
 
 ```
 $ curl [EXTERNAL_IP]:[NodePort]
+Hello from Container Solutions.
+I'm running version 1.0 on k8s-real-demo-648d67845-jml8j
 ```
 
 Next, update the image:
@@ -331,8 +395,6 @@ Check status via
 kubectl rollout status deployment k8s-real-demo
 ```
 
-That was fast :)
-
 Now verify the new version
 
 ```
@@ -343,12 +405,19 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 ### Exercise - Putting It Together
 
-* Delete your deployment
-* Tag the image as `v1`
-* Create a deployment config for the `v1` image 
+* Build your own Image.
+  * In the cloned repo (`cd k8s-example/`)
+  * `docker build -t localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0 .`
+  * `docker push localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0`
+* Create a deployment config for your image 
 * Deploy on the cluster
+
+---
+
+### Exercise (cont.)
+
 * Scale the deployment to 3 instances
-* Verify the scaling was successful
+* Verify the scaling was successful and all instances are getting requests.
 * Modify the `CONFIG/DOCKERFILE` to return different Version
 * Build the image and tag as `v2`
 * Update the deployment to use the new tag
@@ -357,48 +426,32 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 ---
 
-## Labels
+### Deploy the Front End
 
----
+In the /resources folder you will find configuration files for the Front End (Deployment and Service). 
 
-### Using Labels
+* ./resources/front-end-deploy.yaml
+* ./resources/front-end-svc.yaml
 
-Use `kubectl get pods` with a label query, e.g. for troubleshooting.
-
-```
-kubectl get pods -l "app=k8s-real-demo"
-```
-
-Use `kubectl label` to add labels.
+Using these configuration files deploy and expose the application on to the cluster.
 
 ```
-kubectl label pods k8s-real-demo 'secure=disabled'
-```
-... and to modify
-```
-kubectl label pods k8s-real-demo "app=new-label" --overwrite
-kubectl describe pod k8s-real-demo
+$ kubectl apply -f ./resources/front-end-deploy.yaml
+
+$ kubectl apply -f ./resources/front-end-svc.yaml
+
 ```
 
 ---
 
-### Endpoints
+### Accessing the Front End
 
-View the endpoints of the `k8s-real-demo` service:
-
-(Note the difference from the last call to `describe`)
+Find the port on which the front end is exposed (via the service)
+And access this via the browser
 
 ```
-kubectl describe services k8s-real-demo
+$ kubectl get svc front-end
 ```
-
-Revert the label to the orginal setting.
-
----
-
-### Exercise - Deploy the Front End
-
-In the /resources folder you will find configuration files for the Front End (Deployment and Service). Using these configuration files deploy the service on to your cluster, and access the application through the browser.
 
 ---
 
