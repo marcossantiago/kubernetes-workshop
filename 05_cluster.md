@@ -184,146 +184,49 @@ Spread across 3 regions
 Easy :)
 
 ```
-$ gcloud container clusters create enexis-test
+$ gcloud container clusters create my-first-cluster
 ```
 
 ---
 
+Depends on your infra:
 
-Failover scenarios
+- Google Kubernetes Engine
+- Amazon EKS
+- Azure Container Service
+- OpenShift Origin
+- Giant Swarm
+- Kubermatic
+- Tectonic by CoreOS
+- IBM Cloud Container Service
+- Kubespray
+- Kops
+- Kube-Up
+- Kubeadm
+- Kubicorn
 
 ---
-
-## Multi Region
-## Kubernetes
-
-Option #1 - Create a cluster which spans multiple 
-Option #2 - Multiple clusters
-
----
-
-### Kubernetes
-### Federation
 
 ...
-
----
-
-## Setting up a 
-## Kubernetes 
-## Cluster
-
----
-
-### In this section we will 
-
-* Look at options for running Kubernetes
-* Set up our own HA Kubernetes cluster
-* Deploy Sock Shop
-* Integrate AWS Services
-* Integrate our Deals service
-* Visualize and monitor our application
-
----
-
-There are **many** options for running Kubernetes
-
-* Manual
-* Terraform / Ansible
-* kops
-* kube-adm
-* Tectonic
-* Hosted (GKE, ACS, and soon EKS)
-* Openshift
-* ...
+- KTHW
+- Terraform/Ansible
+- Bare Metal
+- OpenShift Online
+- Apprenda
+- Deis
+- Stackpoint
+- Platform9
+- and more...
 
 ---
 
 ### Depends on your needs
 
+* Budget (time and money)
 * Are you running in the cloud or onprem?
 * Do you have dedicated infra/ops team?
 * What are your security requirements?
 * Do you like to do things the hard way :)?
-
----
-
-### Kops
-
-An opinionated provisioning system. Kops has been incorporated within the Kubernetes project and provides:
-
-* Fully automated installation
-* Highly Available Cluster setup
-* Terraform manifest generation (optional)
-* Self-healing clusters
-* Support for AWS and GCE
-
----
-
-### Setting up a 
-### fully HA cluster on AWS
-###    with Kops
-
-We will use `kops` to setup a Kubernetes cluster.
-
-You can view the kops documentation on [GitHub](https://github.com/kubernetes/kops/)
-
----
-
-Create the cluster configuration
-
-```
-$ kops create cluster --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-zones eu-west-1a,eu-west-1b,eu-west-1c --node-size t2.medium --master-size t2.small qcon.k8s.local
-```
-
-View and verify the output. You can modify the configuration by running
-
-```
-$ kops edit cluster qcon.k8s.local
-```
-
----
-
-Once you are happy with the config you can create the cluster by running
-
-```
-$ kops update cluster qcon.k8s.local --yes
-```
-
-This will take a few minutes to create... (coffee anyone?) we can then verify the cluster is up and healthy
-
-```
-$ kops validate cluster
-```
-
----
-
-And kubectl should be configured to point to our new cluster
-
-```
-$ kubectl cluster-info
-```
-
----
-
-### Run the Sock Shop
-
-Read the documentation located at: https://microservices-demo.github.io/microservices-demo
-
-```bash
-$ git clone https://github.com/microservices-demo/microservices-demo.git
-
-$ kubectl create ns sock-shop
-$ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
-```
-
----
-
-## Expose the Front End
-
-* Modify the front-end service of the Sock Shop to be of type LoadBalancer.
-
-* Then access the application via the public dns name.
 
 ---
 

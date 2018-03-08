@@ -3,6 +3,28 @@
 
 ---
 
+### Run the Sock Shop
+
+Read the documentation located at: https://microservices-demo.github.io/microservices-demo
+
+```bash
+$ git clone https://github.com/microservices-demo/microservices-demo.git
+
+$ kubectl create ns sock-shop
+$ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
+```
+
+---
+
+## Expose the Front End
+
+* Modify the front-end service of the Sock Shop to be of type LoadBalancer.
+
+* Then access the application via the public dns name.
+
+---
+
+
 ### Installing Prometheus
 
 * `cd` to the `/deploy/kubernetes/manifests-monitoring` directory.
