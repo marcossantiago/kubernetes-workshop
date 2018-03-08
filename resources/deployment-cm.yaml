@@ -14,3 +14,9 @@ spec:
         image: icrosby/k8s-real-demo
         ports:
         - containerPort: 8080
+        env:
+          - name: VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: k8s-real-demo-config
+                key: VERSION

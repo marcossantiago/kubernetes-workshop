@@ -1,6 +1,11 @@
-## Advanced
+## Advanced.
+### Beyond the Basics
 
-We know have a 'real life' application deployed and running. We have added the necessary pieces to consider this 'production ready'. Next we will look at some of the more useful advanced features/tools of Kubernetes: 
+---
+
+We now have a 'real life' application deployed and running. We have added the necessary pieces to consider this 'production ready'. 
+
+Next we will look at some of the more useful advanced features of Kubernetes: 
 
 - Autoscaling
 - Advanced Deployments
@@ -27,7 +32,7 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 ---
 
-<DIAGRAM>
+<img src="img/hpa.svg">
 
 ---
 
@@ -70,16 +75,9 @@ In order to test that the HPA works as expected we will need our application to 
 
 ---
 
+Make a request (or several) to the endpoint `/mineBitcoin` (note this endpoint can take a query parameter `seconds`).
 
-
-Check for existing material?
-
-- Create application which can consume CPU (have example created for Max/Michael)
-- deploy HPA
-- Cause CPU usage -> scale up
-- Remove, scale down
-- Combine with monitoring??
-
+See if your Deployment scales succesfully. 
 
 ---
 
@@ -89,7 +87,7 @@ Kubernetes offers a variety of ways to release an application.
 
 The correct option depends on your specific requirements and use case.
 
-In this section we will try out each option and look at some possible use cases.
+In this section we will try out several options and look at some possible use cases.
 
 ---
 
@@ -103,16 +101,11 @@ In this section we will try out each option and look at some possible use cases.
 
 ---
 
-You can find the code for the sample deploy application under ./resources/deploy-app
-
-Thanks to my colleague Etienne Tremel for the application.
-
----
 
 ## Recreate deployment
 First terminate (all instances of) the old version and then release the new one.
 
-Let's take a look at the config file and then deploy the first application
+Add the below `strategy` section to your existing deployment.yaml and remove the `env` section
 
 ```yaml
 ...
@@ -125,42 +118,17 @@ spec:
 ```
 
 ```
-$ kubectl apply -f ./resources/recreate-app-v1.yaml
+$ kubectl apply -f ./resources/deployment.yaml
 ```
 
 ---
 
-Retrieve the IP of one of the nodes and store this as an envrionment variable:
-```
-$ export EXTERNAL_IP=$(kubectl get nodes \
--o jsonpath='{.items[1].status.addresses[?(@.type=="ExternalIP")].address}')
-```
-
-Next we need the NodePort on which our service is exposed:
-```
-$ kubectl describe svc my-app                                                                                            ✓  10354  15:01:43
-Name:			my-app
-Namespace:		user-3
-Labels:			app=my-app
-Annotations:		kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"my-app"},"name":"my-app","namespace":"user-3"},"spec":{"ports":[{"nam...
-Selector:		app=my-app
-Type:			NodePort
-IP:			10.0.173.234
-Port:			http	8080/TCP
-NodePort:		http	31461/TCP
-Endpoints:
-Session Affinity:	None
-Events:			<none>
-```
-
----
-
-Test if the deployment was successful:
+Verify the deployment:
 
 ```
 $ curl $EXTERNAL_IP:[NodePort]
-> 2017-09-20 12:42:33.416123892 +0000 UTC m=+55.563375310 \
-   - Host: my-app-177300127-sbd1d, Version: v1.0.0
+Hello from Container Solutions.
+I'm running version 2.1 on k8s-real-demo-5449767b94-hnk78
 ```
 
 In the output we can see both the Pod ID as well as the version of the application.
@@ -180,7 +148,7 @@ $ kubectl get po -w
 Then deploy the version 2 of the application:
 
 ```
-$ kubectl apply -f ./resources/recreate-app-v2.yaml
+$ kubectl set image deploy/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
 ```
 
 ---
@@ -192,14 +160,6 @@ Now test the second deployment progress.
 ```
 $ export SERVICE_URL=$EXTERNAL_IP:[NodePort]
 $ while sleep 0.1; do curl $SERVICE_URL; done;
-```
-
----
-
-Cleanup:
-
-```
-$ kubectl delete all -l app=my-app
 ```
 
 ---
@@ -458,12 +418,4 @@ $ kubectl delete all -l app=my-app
 
 ---
 
-### Exercise - Advanced deploys of the Deals microservice
-
-* Perform a canary deployment for the Deals service
-* Observe both versions of the application running
-* Revert to a single version running
-
----
-
-[Next up Setting up a cluster](../08_cluster.md)
+[Next up Setting up an HA cluster](../05_cluster.md)

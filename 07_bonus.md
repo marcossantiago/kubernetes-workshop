@@ -1,4 +1,0 @@
-## Bonus!
-
-- Ingress
-- kubectl advanced
