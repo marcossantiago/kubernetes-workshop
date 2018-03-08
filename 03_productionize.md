@@ -320,7 +320,7 @@ There are two main kinds of resource management for contianers/pods.
 
 ### Requests
 
-A Request must be fullfilled for a Pod to be scheduled.  
+A Request must be fulfilled for a Pod to be scheduled.  
 Assume I have a pod I want to schedule.
 
 * Request 512Mb RAM & 300m CPU
@@ -366,7 +366,7 @@ Repercussions:
 
 ### Quality of Service
 
-There are three teirs, in decreasing order of priority.
+There are three tiers, in decreasing order of priority.
 
 * Guaranteed
 * Burstable
