@@ -14,8 +14,22 @@ csuser@111.111.111.111's password:
 ```
 
 ---
+
 Retrieve config files: https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
-Retrieve permissions file: https://storage.googleapis.com/qcon-k8s/ca.pem
+
+```
+$ wget https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
+$ tar -xvf k8s-configs.tar.gz
+```
+
+
+Retrieve permissions file: 
+
+```
+$ wget https://storage.googleapis.com/qcon-k8s/ca.pem
+```
+
+---
 
 Configure kubectl (Replace *user-x* and *password*)
 
