@@ -26,10 +26,6 @@ This application is composed of multiple pieces. One main backend service, a fro
 
 ---
 
-**Architecture Diagram**
-
----
-
 ## Recap of Resource Hierarchy
 
 ---
@@ -405,10 +401,10 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 ### Exercise - Putting It Together
 
-* Build your own Image.
+* Build your own Image (Docker Hub ID requried).
   * In the cloned repo (`cd k8s-example/`)
-  * `docker build -t localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0 .`
-  * `docker push localhost:5000/[YOUR USER]/k8s-real-demo:v1.0.0`
+  * `docker build -t [YOUR USER]/k8s-real-demo:v1.0.0 .`
+  * `docker push [YOUR USER]/k8s-real-demo:v1.0.0`
 * Create a deployment config for your image
   * Use the same image name as above
 * Deploy on the cluster

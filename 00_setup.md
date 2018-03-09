@@ -14,14 +14,14 @@ csuser@111.111.111.111's password:
 ```
 
 ---
-
-Retrieve permissions file: https://storage.googleapis.com/qcon-k8s-workshop/ca.pem
+Retrieve config files: https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
+Retrieve permissions file: https://storage.googleapis.com/qcon-k8s/ca.pem
 
 Configure kubectl (Replace *user-x* and *password*)
 
 ```bash
 $ kubectl config set-cluster workshop \
-  --server=https://[CLUSTER_IP] \
+  --server=https://35.195.126.56 \
   --certificate-authority=/path/to/ca.pem
 $ kubectl config set-credentials workshop-user \
   --username=user-X \
