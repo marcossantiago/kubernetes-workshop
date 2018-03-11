@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-real-demo-config
+data:
+  VERSION: "2.1"
+  PORT: "8080"
+  SQL_DATASTORE_CONNECTION: "host=cockroachdb-public port=26257 user=root dbname=gorm sslmode=disable"

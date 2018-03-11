@@ -2,38 +2,40 @@
 
 ---
 
-We will use `kubectl`, and `docker`.
+### Connect to your VM
 
-You can either use your own laptop, or a provided cloud VM.
+We will use `kubectl`, and `docker`. You have been provided with a VM containing the necessary tools.
 
----
-
-### Installing Locally
-
-kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl
-
-docker - https://www.docker.com/community-edition#/download
-
----
-
-To view the slides locally:
+Login to the provided cloud VM via ssh:
 
 ```
-docker run -d -p 8000:1948 -v $(pwd):/usr/src/app/ \
-   containersol/reveal-md
+$ ssh csuser@111.111.111.111
+csuser@111.111.111.111's password:
 ```
-
-Open a browser to localhost:8000
 
 ---
 
-Retrieve permissions file: https://storage.googleapis.com/goto-k8s-workshop/ca.pem
+Retrieve config files: https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
+
+```
+$ wget https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
+$ tar -xvf k8s-configs.tar.gz
+```
+
+
+Retrieve permissions file: 
+
+```
+$ wget https://storage.googleapis.com/qcon-k8s/ca.pem
+```
+
+---
 
 Configure kubectl (Replace *user-x* and *password*)
 
 ```bash
 $ kubectl config set-cluster workshop \
-  --server=https://35.195.195.187 \
+  --server=https://35.195.126.56 \
   --certificate-authority=/path/to/ca.pem
 $ kubectl config set-credentials workshop-user \
   --username=user-X \
@@ -43,6 +45,14 @@ $ kubectl config set-context workshop \
   --user=workshop-user \
   --namespace=user-X
 $ kubectl config use-context workshop
+```
+
+---
+
+### Verify you can access the cluster:
+
+```
+$ kubectl cluster-info
 ```
 
 ---
