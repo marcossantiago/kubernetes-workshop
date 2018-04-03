@@ -1,10 +1,10 @@
-## Beyond The Basics
+## A Real Application
 
 ---
 
-### In this section we will:
+### In this section we will
 
-* Work with a non trivial application
+* Work with a non-trivial application
 * Create a Deployment
 * Deploy the application on your cluster
 * Scale the application
@@ -13,16 +13,25 @@
 
 ---
 
-## 'Real' demo application
+## Our Demo Application
 
-We will work the following demo application: `https://github.com/idcrosby/k8s-example`
-Clone the repo to your VM:
+This application is composed of multiple pieces:
 
-```
+- One main back-end service.
+- A front-end (UI) service.
+- A data layer.
+
+We will deploy these pieces one at a time on our cluster.
+
+---
+
+## Demo application
+
+Clone the demo application's repository to your VM
+
+```bash
 $ git clone https://github.com/idcrosby/k8s-example.git
 ```
-
-This application is composed of multiple pieces. One main backend service, a front end (UI) service, and a data layer. We will deploy these pieces one at a time on our cluster.
 
 ---
 
@@ -30,14 +39,14 @@ This application is composed of multiple pieces. One main backend service, a fro
 
 ---
 
-### Pod
-A Pod is a group of one or more containers deployed and scheduled together.
+### Deployment
+A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
 
 ### ReplicaSet
 A ReplicaSet ensures that a specified number of Pods are running at any given time.
 
-### Deployment
-A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
+### Pod
+A Pod is a group of one or more containers deployed and scheduled together.
 
 ---
 
@@ -45,11 +54,12 @@ A Deployment manages ReplicaSets and defines how updates to Pods should be rolle
 
 ---
 
-### Creating a Deployment
+### Deployment Configuration
 
-./resources/deployment.yaml (in the resources folder)
+Look in "./resources" folder for the following Deployment configuration.
 
 ```
+# resources/deployment.yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -70,7 +80,7 @@ spec:
 
 ---
 
-### Deploy to K8s
+### Deploy to the Cluster
 
 ```
 $ kubectl apply -f resources/deployment.yaml
@@ -80,7 +90,7 @@ $ kubectl apply -f resources/deployment.yaml
 
 ### View Resource Details
 
-Use the `kubectl get` and `kubectl describe` to view details for the `k8s-real-demo` resources:
+Use the "kubectl get" and "kubectl describe" to view details of the deployed resources:
 
 ```
 $ kubectl get deployments
@@ -90,7 +100,6 @@ $ kubectl get pods
 
 ```
 $ kubectl describe pods <pod-name>
-...
 ```
 
 ---
@@ -104,18 +113,19 @@ $ kubectl describe pods <pod-name>
 
 ---
 
-### Use two terminals
+### Open 2 Terminals
 
-* Terminal 1
+#### Terminal 1
 
 ```
 $ kubectl port-forward <pod-name> 8080:8080
 ```
 
-* Terminal 2
+#### Terminal 2
 
 ```
 $ curl 0.0.0.0:8080
+
 Hello from Container Solutions.
 I'm running version 1.0 on k8s-real-demo-648d67845-hh8bn
 ```
@@ -128,8 +138,10 @@ I'm running version 1.0 on k8s-real-demo-648d67845-hh8bn
 * Each deployment is mapped to one active ReplicaSet.
 * Use `kubectl get replicasets` to view the current set of replicas.
 * `kubectl get deployments` will give us the same info (plus more)
+
 ```
 $ kubectl get rs
+
 NAME                   DESIRED   CURRENT   READY     AGE
 k8s-real-demo-364036756   1         1         1         16s
 ```
@@ -140,6 +152,7 @@ k8s-real-demo-364036756   1         1         1         16s
 
 ```
 $ kubectl scale deployments k8s-real-demo --replicas=2
+
 deployment "k8s-real-demo" scaled
 ```
 
@@ -147,7 +160,7 @@ deployment "k8s-real-demo" scaled
 
 ### Check the status of the Deployment
 
-Notice the new pod(s)
+Notice the new Pod(s)
 ```
 $ kubectl get pods
 ```
@@ -160,17 +173,20 @@ $ kubectl describe deployment k8s-real-demo
 
 ---
 
-### Fault tolerance
+### Fault Tolerance
 
-What happens if we kill one of the pods?
+What happens if we kill one of the Pods?
 
 ```
-$ kubectl delete po <pod-name>
+$ kubectl get pods
+$ kubectl delete pod <pod-name>
 ```
 
 ---
 
 ## Debugging
+
+---
 
 ### View the logs of a Pod
 
@@ -194,27 +210,27 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ---
 
-## How to access our application?
+## Accessing our Application
 
+---
+
+## Reminder
+
+* Pods are ephemeral (no fixed IP)
 * Port-forwarding strictly a debugging tool
-* Pods are ephemal (no fixed IP)
-* Need to be able to scale 
+* Need to be able to scale
 
 ---
 
-## Services
-
----
-
-### Recap of services
+### Services
 * Stable endpoints for Pods.
-* Based on labels and selectors.
+* Based on Labels and Selectors.
 
 ---
 
 ### Labels & Selectors
 * Label: key/value pair attached to objects (e.g. Pods)
-* Selector: Identify and group a set of objects. 
+* Selector: Identify and group a set of objects.
 
 ---
 
@@ -222,23 +238,24 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ---
 
-### Service types
+### Service Types
 
-* `ClusterIP` (Default) Exposes the service on a cluster-internal IP.
+* ClusterIP (Default): Exposes the service on a cluster-internal IP.
 
-* `NodePort` Expose the service on a specific port on each node.
+* NodePort: Expose the service on a specific port on each node.
 
-* `LoadBalancer` Use a loadbalancer from a Cloud Provider. Creates `NodePort` and `ClusterIP`.
+* LoadBalancer: Use a loadbalancer from a Cloud Provider. Creates `NodePort` and `ClusterIP`.
 
-* `ExternalName` Connect an external service (CNAME) to the cluster.
+* ExternalName: Connect an external service (CNAME) to the cluster.
 
 ---
 
-### Create a Service
+### Service Configuration
 
-Explore the ./resources/service.yaml service configuration file:
+Look in "./resources" folder for the following Service configuration.
 
 ```
+# resources/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -257,11 +274,10 @@ spec:
 
 ---
 
-Create the ./resources/service.yaml service using kubectl:
+### Create the Service
 
 ```
 $ kubectl apply -f ./resources/service.yaml
-service "k8s-real-demo" created
 ```
 
 ---
@@ -276,16 +292,17 @@ $ curl [IP]:[NODE_PORT]
 
 ---
 
-### Load Balancing
+### Test Load Balancing
 
 Make several calls to the service and notice the different responses.
 
 ---
 
-### Explore the k8s-real-demo Service
+### Explore the Service
 
 ```bash
 $ kubectl get services k8s-real-demo
+
 NAME         CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
 k8s-real-demo   10.0.0.142   <nodes>       8080:30080/TCP   1m
 ```
@@ -323,8 +340,6 @@ $ kubectl get pods -l "secure=disabled"
 
 ---
 
-### Using Labels
-
 We can also modify existing labels
 
 ```
@@ -345,11 +360,15 @@ kubectl describe services k8s-real-demo
 ```
 
 
-Revert the label to the orginal setting.
+Revert the label to the original setting.
 
 ---
 
-### Updating Deployments 
+## Deployments
+
+---
+
+### Updating Deployments
 
 (`RollingUpdate`)
 
@@ -372,6 +391,7 @@ First check the current version running
 
 ```
 $ curl [EXTERNAL_IP]:[NodePort]
+
 Hello from Container Solutions.
 I'm running version 1.0 on k8s-real-demo-648d67845-jml8j
 ```
@@ -385,7 +405,9 @@ $ kubectl set image \
 
 ---
 
-Check status via 
+## Monitor the Deployment
+
+Check status via
 
 ```
 kubectl rollout status deployment k8s-real-demo
@@ -399,33 +421,54 @@ $ curl [EXTERNAL_IP]:[NodePort]
 
 ---
 
-### Exercise - Putting It Together
-
-* Build your own Image (Docker Hub ID requried).
-  * In the cloned repo (`cd k8s-example/`)
-  * `docker build -t [YOUR USER]/k8s-real-demo:v1.0.0 .`
-  * `docker push [YOUR USER]/k8s-real-demo:v1.0.0`
-* Create a deployment config for your image
-  * Use the same image name as above
-* Deploy on the cluster
+## Now it's your turn
 
 ---
 
-### Exercise (cont.)
+## Step 1: Build your own Image
 
-* Scale the deployment to 3 instances
+Build your own image and push to Docker Hub.
+
+Open the example application in "k8s-example/"
+
+```
+docker build -t [DOCKERHUB_USER]/k8s-real-demo:v1.0.0 .
+```
+
+```
+docker push [DOCKERHUB_USER]/k8s-real-demo:v1.0.0
+```
+
+---
+
+## Step 2: Create a Deployment
+
+* Create a Deployment configuration for your Image.
+  * Use the same Image name as above.
+* Deploy on the cluster.
+
+---
+
+## Step 3: Scale
+
+* Scale the Deployment to 3 instances.
 * Verify the scaling was successful and all instances are getting requests.
-* Modify the `Dockerfile` to return different Version
-* Build the image and tag as `v2`
-* Update the deployment to use the new tag
-* Verify the new version by making an HTTP request
-* View the logs of the application
 
 ---
 
-### Deploy the Front End
+## Step 4: Update
 
-In the /resources folder you will find configuration files for the Front End (Deployment and Service). 
+* Modify the `Dockerfile` to return a different Version.
+* Build the Image and tag as `v2`.
+* Update the Deployment to use the new tag.
+* Verify the new version by making an HTTP request.
+* View the logs of the application.
+
+---
+
+## Step 5: Deploy the Front-end
+
+In the /resources folder you will find configuration files for the front-end (Deployment and Service).
 
 * ./resources/front-end-deploy.yaml
 * ./resources/front-end-svc.yaml
@@ -434,17 +477,17 @@ Using these configuration files deploy and expose the application on to the clus
 
 ```
 $ kubectl apply -f ./resources/front-end-deploy.yaml
-
+```
+```
 $ kubectl apply -f ./resources/front-end-svc.yaml
 
 ```
 
 ---
 
-### Accessing the Front End
+## Step 6: Accessing the Front-end
 
-Find the port on which the front end is exposed (via the service)
-And access this via the browser
+Find the port on which the front end is exposed (via the Service) and access this in your browser.
 
 ```
 $ kubectl get svc front-end
@@ -452,21 +495,21 @@ $ kubectl get svc front-end
 
 ---
 
-### Bonus (if time permits)
+## Bonus Exercise
 
-Storage!
+---
+
+### Storage
 
 While we would like to ideally run stateless applications on Kubernetes, we will eventually run into the challenge of requiring state within our cluster.
-
-We will deploy CockroachDB to maintain the state for our demo application.
-
-CockroachDB (link) is an open source 'cloud native' SQL database.
 
 ---
 
 ## CockroachDB
 
-A Cloud Native SQL Database.
+An open source 'Cloud Native' SQL database.
+
+We will deploy CockroachDB to maintain the state for our demo application.
 
 ---
 
@@ -485,25 +528,22 @@ statefulset "cockroachdb" created
 
 ### What did this do?
 
-* Pull the Kubernetes configuration file from the web (github)
-* Created two services (`kubectl get services`)
+* Pull the Kubernetes configuration file from Github
+* Created two Services
 * Created a `poddisruptionbudget`
 * Created a `StatefulSet`
-  * Creates 3 Pods
-  * Creates 3 PersistentVolumes
-  * Creates 3 PersistentVolumeClaims
-
-`We will cover StatefulSets and PersistentVolumes later on`
+  * Three Pods
+  * Three PersistentVolumes
+  * Three PersistentVolumeClaims
 
 ---
 
-<Verify storage?>
+Don't worry, we will cover StatefulSets and PersistentVolumes later on
 
 ---
 
-### Summary
+## What have we Learned?
 
-What have we learned?
 * How to deploy a 'real world' application on Kubernetes
 * Deal with Deployment and Services
 * Connecting Services with labels and selectors

@@ -1,57 +1,57 @@
-
-## A Brief History of 
+## A Brief History of
 ## Container Orchestration
 
 ---
 
-## Overview
+### In this section we will cover
 
- - Some context...
-  - Cloud Native
-  - Devops
-  - Microservices
-  - Containers
-  - Orchestration
+* Cloud Native
+* The rise of DevOps
+* Microservices
+* Containers
+* Orchestration
+
+---
+
+## What is Cloud Native?
+
+ - Designing applications for the Cloud - *First*
+ - Designing for scalability
+   - ability to handle large numbers of users
+ - And reliability
+   - "99.999%" etc
+   - assume failures
 
 ---
 
 ## Cloud Native
 
- - Designing apps for the Cloud *First*
- - Designing for scalability
-   - Ability to handle large numbers of users
- - And reliability
-   - 5 nines etc
-   - Assume failure
-
----
-
  - Using modern techniques
    - Microservices
    - Programmable infrastructure
  - And modern technology
-   - containers
-   - dynamic orchestration platforms
+   - Containers
+   - Dynamic orchestration platforms
 
 ---
 
-## DevOps
+## Traditionally
 
- - Traditionally
-  - Developers created applications
-  - Operations hosted and maintained them
+ - Developers created applications
+ - Operations hosted and maintained them
 
-<img width="500" src="img/ops_problem.jpeg">
+<img width="400" src="img/ops_problem.jpeg">
 
 ---
 
-## Lead to a "wall"
+## Led to a "wall"
 
  - Developers "threw" software over the wall
-  - Little regard for complete testing or reliability
+  - little regard for complete testing or reliability
+
  - Ops responsible for keeping things running
-  - On call
-  - Pushed back heavily on software/libraries
+  - on call
+  - pushed back heavily on software/libraries
 
 <img src="img/devops-wall.jpeg">
 
@@ -60,18 +60,18 @@
 ## Issues
 
  - Slow updates
- - Poor relations between dev and ops
- - Issues with upgrades/releases
+ - Poor relations between Dev and Ops
+ - Problems with upgrades and releases
 
 ---
 
-## Devops
+## DevOps
 
- - Acknowledges both dev and ops
+ - Acknowledges both Dev and Ops
    - are part of the same team
    - attempts to tear down the wall
  - *Teams* become responsible for running services
-  - made up of both dev and ops
+  - made up of both Dev and Ops
   - on-call
 
 ---
@@ -81,24 +81,24 @@
  - System architecture that uses multiple small services
  - Each one has a simple, well-defined job
  - As opposed to "monolithic" architectures
- - Lightweight SOA
+ - Lightweight Service-oriented architecture (SOA)
  - Composable
   - Talk over APIs
-  - REST and HTTP, GRPC
+  - REST & HTTP / gRPC
  - May use multiple languages
- - Scale *out* as opposed to *up*
+ - Scale *OUT* as opposed to *UP*
 
 ---
 
 ## Containers
 
  - Portable format for developing and deploying applications
- - Almost synonymous with microservices
- - Also great fit for Devops
+ - Almost synonymous with Microservices
+ - Also great fit for DevOps
 
 ---
 
-## Orchestration
+## Coordination Challenges
 
  - Splitting a monolith into dozens of pieces..
  - How do we manage all of these?
@@ -125,7 +125,7 @@ effect, especially surreptitiously"
 
 ---
 
-## Elements
+## The Elements
 
  - Containers
  - Hosts
@@ -140,13 +140,13 @@ effect**, especially surreptitiously"
 
 ---
 
-## Desired Effect
+## The Desired Effect
 
  - Running application
- - Automatically scale
- - Fault tolerant
-   - failover, node rebalancing, health checks
- - Use resources efficiently
+ - Automatically scaling
+ - Fault tolerance
+   - e.g. Failover, node re-balancing, health checks
+ - Efficient use of resources
  - Little manual intervention
 
 ---
@@ -161,23 +161,12 @@ effect, **especially surreptitiously**"
 ## Surreptitiously
 
  - Should happen in the background
- - User doesn't need to details
  - Complexity is hidden
+ - User doesn't need to know the details
 
 ---
 
 ## Container Orchestrators
-
- - Kubernetes
-
- - Mesos, DC/OS
-
- - Docker Swarm
-
- - Plus others
-   - Nomad
-   - Fleet from CoreOS (no more)
-   - PaaSs...
 
 ---
 
@@ -191,17 +180,31 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Kubernetes
+## Many Options
 
-* Open Source container orchestrator from Google
-
-* Now part of Cloud Native Computing Foundation 
-
-* Popular and Active: >32K stars on Github
+ - Kubernetes
+ - Mesos, DC/OS
+ - Docker Swarm
+ - Plus others
+   - Nomad
+   - Fleet from CoreOS (no more)
+   - PaaSs...
 
 ---
 
 ## Kubernetes
+
+---
+
+## Background
+
+* Open-source container orchestrator from Google
+* Now part of Cloud Native Computing Foundation
+* Popular and Active: >32K stars on Github
+
+---
+
+## Features
 
  - Based on Google's experience running containers
  - Bakes in various features
@@ -211,8 +214,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-### Architecture Diagram
-
+### Architecture
 
 <img src="img/kubernetes-architecture.png">
 
@@ -220,12 +222,23 @@ effect, **especially surreptitiously**"
 
 ## Core Concepts
 
+ - Nodes
  - Pods
  - Labels & Selectors
  - Services
- - Deployments
  - ReplicaSets
+ - Deployments
  - Namespaces
+ - Jobs
+
+---
+
+## Nodes
+
+ - Worker machine
+ -- May be a VM or physical machine
+ - A Node can host one or multiple Pods
+ - Include Docker, kubelet and kube-proxy
 
 ---
 
@@ -249,7 +262,7 @@ effect, **especially surreptitiously**"
 
 ## Labels
 
- - Key/Value pairs attached to objects 
+ - Key/Value pairs attached to objects
     - e.g: "version: dev", "tier: frontend"
  - Objects include Pods, ReplicaSets, Services
  - Label selectors then used to identify groups
@@ -278,7 +291,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Service types
+## Service Types
 
 * ClusterIP (default)
   - Uses internal IP for service
@@ -314,7 +327,106 @@ effect, **especially surreptitiously**"
 
 ---
 
-<!-- .slide: data-background="img/nodeport-service.png" data-background-size="70%"-->
+<!-- .slide: data-background="img/nodeport-service.png" data-background-size="60%"-->
+
+---
+
+## ReplicaSets
+
+ - ReplicaSets monitor status of Pods
+   - define number of pods to run
+   - start/stop pods as needed
+
+---
+
+## Deployments
+
+ - Deployments start ReplicaSets
+ - Rollout/Rollback & Updates
+
+---
+
+<!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="60%"-->
+
+---
+
+## Namespaces
+
+ - Resources can be partitioned into namespaces
+ - Logical groups
+ - System resources run in their own namespace
+ - Normally only use one namespace
+
+---
+
+## Jobs
+
+ - Typically for performing batch processing
+ - Spins up short-lived pods
+ - Ensures given number run to completion
+
+---
+
+### More & More
+
+ - Volumes
+ - Stateful Sets
+ - Ingress
+ - Annotations
+ - Daemon Sets
+ - Horizontal Pod Autoscaling
+ - Network Policies
+ - Resource Quotas
+ - Secrets
+ - Security Context
+ - Service Accounts
+ - ...
+
+---
+
+## Dashboard
+
+* Simple Web User Interface
+* Good *high-level* overview of the cluster
+* Can drill down into details
+* Useful for debugging
+
+---
+
+<img src="img/dashboard.png">
+
+---
+
+## Kubernetes Configuration
+
+---
+
+## Configuring a Cluster
+
+ - Use configuration files to manage resources
+ - Specified in YAML or JSON
+  - YAML tends to be more user-friendly
+ - Can be combined
+ - Should be stored in version control
+
+---
+
+## Pod Example
+
+```
+apiVersion: v1
+   kind: Pod
+   metadata:
+     name: hello-node
+     labels:
+       app: hello-node
+   spec:
+     containers:
+       - name: hello-node
+         image: hello-node:v1
+         ports:
+           - containerPort: 8080
+```
 
 ---
 
@@ -339,108 +451,11 @@ spec:
 
 ---
 
-## Deployments & ReplicaSets
-
- - ReplicaSets monitor status of Pods
-   - define number of pods to run 
-   - start/stop pods as needed
- - Deployments start ReplicaSets
- - Rollout/Rollback & Updates
+## Get Hands on!
 
 ---
 
-<!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="70%"-->
-
----
-
-## Dashboard
-
-<img src="img/dashboard.png">
-
----
-
-## Dashboard
-
-* Simple Web User Interface
-
-* Good *high-level* overview of the cluster
-
-* Can drill down into details
-
-* Useful for debugging
-
----
-
-## Defining Resources
-
- - Used to define resources
- - Specified in YAML or JSON
-
----
-
-
-## Example (Pod)
-
-```
-apiVersion: v1
-   kind: Pod
-   metadata:
-     name: hello-node
-     labels:
-       app: hello-node
-   spec:
-     containers:
-       - name: hello-node
-         image: hello-node:v1
-         ports:
-           - containerPort: 8080
-```
-
-
-
----
-
-## Namespaces
-
- - Resources can be paritioned into namespaces
- - Logical groups
- - System resources run in their own namespace
- - Normally only use one namespace
-
----
-
-## Jobs
-
- - Typically for performing batch processing
- - Spins up short-lived pods
- - Ensures given number run to completion
-
----
-
-### And more
-
- - Annotations
- - Daemon Sets
- - Horizontal Pod Autoscaling
- - Ingress Resources
- - Namespaces
- - Network Policies
- - Persistent Volumes
- - Stateful Sets
- - Resource Quotas
- - Secrets
- - Security Context
- - Service Accounts
- - Volumes
- - ...
-
----
-
-## Hands on!
-
----
-
-### kubectl
+### Introducting Kubectl
 
 `kubectl` is the command line interface (CLI) tool for sending commands to a Kubernetes cluster.
 
@@ -448,13 +463,13 @@ We will use this tool to deploy, view, and access an application on our cluster.
 
 ---
 
-### Step 1: kubectl basics
+## Step 1: Kubectl Basics
 
-* The format of a kubectl command is: 
+* The format of a kubectl command is:
 ```
 kubectl [action] [resource]
 ```
-* This performs the specified action  (like `create`, `describe`) on the specified resource (like `node`, `container`). 
+* This performs the specified action  (like `create`, `describe`) on the specified resource (like `node`, `container`).
 * Use `--help` after the command to get additional info about possible parameters
 ```
 $ kubectl get nodes --help
@@ -475,6 +490,7 @@ To view how to reach the cluster, run the `cluster-info` command:
 
 ```
 $ kubectl cluster-info
+
 Kubernetes master is running at https://35.205.211.112
 GLBCDefaultBackend is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
 Heapster is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/heapster/proxy
@@ -486,14 +502,16 @@ Grafana is running at https://35.205.211.112/api/v1/namespaces/kube-system/servi
 InfluxDB is running at https://35.205.211.112/api/v1/namespaces/kube-system/services/monitoring-influxdb:http/proxy
 ```
 
-To further debug and diagnose cluster problems, use `kubectl cluster-info dump`
-
+To further debug and diagnose cluster problems, use:
+```
+kubectl cluster-info dump
+```
 
 ---
 
-### Step 2: Deploy a Simple Application 
+## Step 2: Deploy an Application
 
-Let’s run our first app on Kubernetes with the kubectl run command. The `run` command creates a new deployment for the specified container. This is the simpliest way of deploying a container.
+Let’s run our first application on Kubernetes with the kubectl run command. The `run` command creates a new deployment for the specified container. This is the simplest way of deploying a container.
 
 ```bash
 $ kubectl run hello-kubernetes \
@@ -511,54 +529,60 @@ This performed a few things:
 
 ---
 
-### List your deployments
+List your deployments
 
 ```bash
 $ kubectl get deployments
-NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-hello-kubernetes   1         1         1            1           31s
+
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE
+hello-kubernetes   1         1         1            1
 ```
 
-We see that there is 1 deployment running a single instance of your app. 
+We see that there is 1 deployment running a single instance of your app.
 
 ---
 
-### Inspect your application
+Gather information about the status of your objects (pods, deployments, services, etc) using
 
-With 
 ```
-kubectl get <obejct>
+kubectl get <object>
 ```
-and 
+and
 ```
 kubectl describe <object>
 ```
-you can gather information about the status of your objects like pods, deployments, services, etc.
 
 ---
 
-### Step 3: View our app
+## Step 3: Make the App Visible
 
-By default applications are only visible inside the cluster. We can create a proxy to connect to our application.  
-Find out the pod name:
+By default applications are only visible inside the cluster. We can create a proxy to connect to our application.
+
+Start by finding out the pod name:
 ```
 $ kubectl get pod
-NAME                               READY     STATUS    RESTARTS   AGE
-hello-kubernetes-624527933-nth9d   1/1       Running   0          2m
+
+NAME                               READY     STATUS    RESTARTS
+hello-kubernetes-624527933-nth9d   1/1       Running   0
 ```
-Create the proxy:
+
+---
+
+Create a proxy for the pod
+
 ```bash
-$ kubectl port-forward hello-kubernetes-624527933-nth9d 8080 &
+$ kubectl port-forward <POD NAME> 8080 &
 ```
 We now have a connection between our host and the Kubernetes cluster.
 
 ---
 
-### Accessing the application
+## Step 4: Access the App
 
 To see the output of our application, run a curl request to the local port:
 ```bash
 $ curl http://localhost:8080
+
 CLIENT VALUES:
 client_address=127.0.0.1
 command=GET
@@ -580,41 +604,43 @@ BODY:
 
 ---
 
-### Expose service while creating the deployment
+## Step 5: Clean Up
 
-`kubectl port-forward` is meant for testing services that are not exposed. To expose the application, use a service (covered later).
+`port-forward` is meant for testing services that are not exposed. To expose the application, use a Service (covered later).
 
-Kill Port Forward
+Kill port forward
 ```
 $ kill %2
 ```
 
-Delete old deployment
+Delete old Deployment
 ```
 $ kubectl delete deployment hello-kubernetes
 ```
 
 ---
 
-Create a new **Deployment** and a **Service**
+## Step 6: Create a new Deployment & Service
 
 ```
 $ kubectl run hello --image=gcr.io/google_containers/echoserver:1.4 \
    --port=8080 \
    --expose \
    --service-overrides='{ "spec": { "type": "NodePort" } }'
+
 service "hello" created
 deployment "hello" created
 ```
 
-This creates a new deployment and a service of type:NodePort. A random high port will be allocated to which we can connect.
+This creates a new Deployment and Service of type:NodePort. A random high port will be allocated to which we can connect.
 
 ---
 
-View the **Service**:
+View the Service
 
 ```
 $ kubectl get service
+
 NAME               CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
 hello   			10.0.122.112   <nodes>       8080:30659/TCP   10m
 ```
@@ -627,6 +653,7 @@ To find the IP on which to call we need information on the nodes (use the EXTERN
 
 ```
 $ kubectl get nodes -o wide
+
 NAME                           STATUS                     AGE       VERSION   EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION
 kubernetes-master              Ready,SchedulingDisabled   17m       v1.7.5    35.187.38.163    Container-Optimized OS from Google   4.4.52+
 kubernetes-minion-group-c9bz   Ready                      17m       v1.7.5    35.189.206.159   Debian GNU/Linux 7 (wheezy)          3.16.0-4-amd64
@@ -636,10 +663,11 @@ kubernetes-minion-group-ftw1   Ready                      17m       v1.7.5    35
 
 ---
 
-Access the external IP with curl:
+Access the external IP with Curl:
 
 ```
 $ curl 35.189.206.159:30659
+
 CLIENT VALUES:
 client_address=10.132.0.3
 command=GET
@@ -661,22 +689,29 @@ BODY:
 
 ---
 
-## Clean up
+## Step 7: Clean Up
+
+Delete the Deployment
 
 ```
 $ kubectl delete deploy hello
+```
+
+Delete the Service
+
+```
 $ kubectl delete svc hello
+```
 
 ---
 
-## Summary
+## What have we Learned?
 
-In this section we have:
-* Looked at the the history of Container Orchestration.
-* Learned the basics of Kubernetes. 
-* Deployed a simple application on to our own cluster.
+* The history of Container Orchestration.
+* Basics of Kubernetes.
+* How to deploy a simple application on to our own cluster.
 
 ---
 
-[Next up, a real applciation...](../02_real_app.md)
+[Next up, a real application!](../02_real_app.md)
 

@@ -1,15 +1,15 @@
-## Productionize
+## Running in Production
 
 ---
 
-We have a 'real world' application now running on our cluster.
+We now have a 'real world' application running on our cluster.
 It is fault tolerant and multi-tiered.
 
 But we are not yet ready for Production.
 
 ---
 
-In this section we will look to add some important pieces to make our application production ready:
+### In this section we will cover
 
 - Readiness and Liveness Probes
 - Resource Requests & Limits
@@ -19,7 +19,7 @@ In this section we will look to add some important pieces to make our applicatio
 
 ### Liveness and Readiness Probes
 
-Kubernetes health checks are divided into liveness and readiness probes. 
+Kubernetes health checks are divided into liveness and readiness probes.
 
 For running in production, Kubernetes needs a way to ensure pods are actually running and healthy.
 
@@ -41,7 +41,7 @@ Response must be HTTP Status Code between 200 and 399
 
 ---
 
-### Liveness probe
+### Liveness Probe
 
 Once the application pod is up we need to confirm that it’s healthy and ready for serving traffic.
 
@@ -54,14 +54,12 @@ livenessProbe:
     port: 8080
   initialDelaySeconds: 15
   periodSeconds: 10        # Will be called every 10 seconds
-  timeoutSeconds: 1        # Probe must respond within 1 second 
+  timeoutSeconds: 1        # Probe must respond within 1 second
 ```
 
 ---
 
-### Liveness Probes
-
-As a simple example here is a health for a Go applications.
+A simple example in Go
 
 ```
 http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +70,8 @@ http.ListenAndServe(":8080", nil)
 
 ---
 
-And this needs to be added into the Kubernetes configuration:
+This needs to be added into the Kubernetes configuration
+
 ```
 livenessProbe:
   httpGet:
@@ -100,7 +99,7 @@ http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     ok = false
     errMsg += "Database not ok.\n"
-  } 
+  }
 
   if ok {
     w.Write([]byte("OK"))
@@ -114,7 +113,7 @@ http.ListenAndServe(":8080", nil)
 
 ---
 
-This can be added to the configuration in the same way:
+This can be added to the configuration in the same way
 
 ```
 readinessProbe:
@@ -125,11 +124,9 @@ readinessProbe:
   timeoutSeconds: 5
 ```
 
-Combining the readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you may also monitor downstream dependencies.
-
 ---
 
-### Advanced liveness probe example
+### Advanced Liveness probe
 
 ```
 livenessProbe:
@@ -147,9 +144,15 @@ livenessProbe:
 
 ---
 
-### Creating Pods with Liveness and Readiness Probes
+Combining readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you may also monitor downstream dependencies.
 
-Explore the healthy-monolith pod configuration:
+---
+
+## Creating Pods with Liveness and Readiness Probes
+
+---
+
+Look in "resources" folder for the "Healthy Monolith" Pod configuration.
 
 ```
 ...
@@ -172,7 +175,7 @@ Explore the healthy-monolith pod configuration:
 
 ---
 
-Create the healthy-monolith pod using 
+Create the healthy-monolith pod using
 ```
 $ kubectl create -f ./resources/healthy-monolith.yaml
 ```
@@ -191,7 +194,7 @@ The healthy-monolith Pod logs each health check. Use the `kubectl logs` command 
 
 ### Experiment with Readiness Probes
 
-Let's see how Kubernetes handels failed readiness probes. 
+Let's see how Kubernetes handles failed readiness probes.
 
 The monolith container supports the ability to force failures of it's readiness and liveness probes (again thanks to Kelsey)
 
@@ -264,8 +267,7 @@ $ curl http://127.0.0.1:10081/healthz/status
 
 ---
 
-
-### Cleanup
+### Clean Up
 
 ```
 $ kubectl delete -f ./resources/healthy-monolith.yaml
@@ -273,15 +275,18 @@ $ kubectl delete -f ./resources/healthy-monolith.yaml
 
 ---
 
-### Exercise - Add Probes for our k8s-real-demo service
+## Now it's your turn
+
+---
+
+### Add Probes for our k8s-real-demo service
 
 * Add Readiness probe to the Deployment
- (hint: endpoints are already implemented in the code `server.go`)
+ * Hint: endpoints are already implemented in the code `server.go`
 * Deploy the updated config
 * Add Liveness probe to the Deployment
 * Deploy the updated config
-* Verify the probes are working:
-  `kubectl describe pod [POD_NAME]`
+* Verify the probes are working
 
 ---
 
@@ -295,24 +300,30 @@ In this section we'll discuss:
 
 ---
 
-### The resource model
+### The Resource Model
 
 What exactly is a resource in Kubernetes?
+
+---
 
 **CPU & Memory**
 * Accounted
 * Scheduled
 * Isolated
 
+---
+
 **Local Storage (Disk or SSD)**
 * Accounted (restriction to single partition /)
+
+---
 
 **Nvidia GPU**
 * Alpha support (1 GPU per-node)
 
 ---
 
-There are two main kinds of resource management for contianers/pods.
+There are two main kinds of resource management for containers/pods.
 
 * Requests
 * Limits
@@ -321,7 +332,8 @@ There are two main kinds of resource management for contianers/pods.
 
 ### Requests
 
-A Request must be fulfilled for a Pod to be scheduled.  
+A Request must be fulfilled for a Pod to be scheduled.
+
 Assume I have a pod I want to schedule.
 
 * Request 512Mb RAM & 300m CPU
@@ -358,16 +370,13 @@ Repercussions:
 
 ### Quality of Service
 
-* In an overcommitted system, need to prioritise killing Containers.
+* In an over-committed system, need to prioritise killing Containers.
 * Mark containers as more/less important.
 * Kill off less important Containers first.
 
-
 ---
 
-### Quality of Service
-
-There are three tiers, in decreasing order of priority.
+There are three tiers of QoS, in decreasing order of priority:
 
 * Guaranteed
 * Burstable
@@ -380,6 +389,7 @@ There are three tiers, in decreasing order of priority.
 * `limits` is non-zero, and set across all containers.
 * `requests` are optionally defined and equal `limits`.
 * last to be killed off.
+
 ```yaml
 containers:
     name: foo
@@ -481,7 +491,7 @@ Each container is getting 30% of the CPU time per their scheduling request, and 
 
 ---
 
-### Cleanup
+### Clean Up
 
 ```
 $ kubectl delete deployment cpustress
@@ -489,7 +499,7 @@ $ kubectl delete deployment cpustress
 
 ---
 
-### CPU limit
+### CPU Limit
 
 Setting a limit will allow you to control the maximum amount of CPU that your container can burst to.
 
@@ -512,6 +522,9 @@ If you scale your application, we should see that each Pod is consuming a maximu
 ```
 $ kubectl scale deployment cpustress --replicas=9
 ```
+
+---
+
 Once all the Pods are running, you will see that each Pod is getting approximately an equal proportion of CPU time.
 
 ```
@@ -530,9 +543,11 @@ cpustress-2801690769-6ssdk   198m         0Mi
 
 ---
 
-### Memory requests
+### Memory Requests
 
 By default, a container is able to consume as much memory on the node as possible. It is recommended to specify the amount of memory your container will require to run.
+
+---
 
 Let's demonstrate this by creating a Pod that runs a single container which requests 100Mi of memory. The container will allocate and write to 200MB of memory every 2 seconds.
 
@@ -555,18 +570,19 @@ We request 100Mi, but have burst our memory usage to a greater value. That's cal
 
 ---
 
-Clean up
+### Clean Up
 
 ```
 $ kubectl delete deploy memhog
-deployment "memhog" deleted
 ```
 
 ---
 
-### Memory limits
+### Memory Limits
 
 If you specify a memory limit, you can constrain the amount of memory your container can use.
+
+---
 
 For example, let's limit our container to 200Mi of memory, and just consume 100MB.
 
@@ -705,7 +721,7 @@ $ kubectl get pods --namespace=limit-example-user-<X>
 NAME                     READY     STATUS    RESTARTS   AGE
 nginx-2371676037-tfncs   1/1       Running   0          4m
 
-$ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example-user-<X>  
+$ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example-user-<X>
 ...
 Containers:
   nginx:
@@ -749,7 +765,8 @@ Try to deploy this and see what happens (`./resources/invalid-cpu-pod.yaml`)
 
 ---
 
-Clean up the resources used during this module:
+### Clean Up
+
 ```
 $ kubectl delete --all pods
 $ kubectl delete --all deployments
@@ -758,28 +775,36 @@ $ kubectl delete --all po,deploy -n limit-example-user-<X>
 
 ---
 
-### Exercise - Add Resources to the k8s-real-demo service
+## Now it's your turn
 
-* Add resources section to the Deployment
-* Add limits and requests for memory and cpu
+---
+
+### Add Resources to the k8s-real-demo service
+
+* Add a resources section to the Deployment
+* Add Limits and Requests for memory and CPU
 * Apply the updated config
 * Trigger high CPU on our app via the `/mineBitcoin` endpoint and verify the CPU limit is respected
 
 ---
 
-## ConfigMaps & Secrets
+## Secure Configuration
+
+---
+
+### ConfigMaps & Secrets
 
 ConfigMaps and Secrets are designed to separate configuration data from your applications. This may include api keys, tokens, passwords, or just configuration parameters.
 
 ---
 
-### ConfigMaps
+## ConfigMaps
 
 ConfigMaps hold both fine and coarse-grained data. Applications read configuration settings from both environment variables and files containing configuration data.
 
 ---
 
-Example ConfigMap that contains both types of configuration:
+An example ConfigMap that contains both types of configuration:
 
 ```
 apiVersion: v1
@@ -870,7 +895,7 @@ A ConfigMap can also be used to set the value of the command or arguments in a c
 
 ### Consuming in Volumes
 
-A ConfigMap can also be consumed in volumes. 
+A ConfigMap can also be consumed in volumes.
 
 The most basic way to consume the ConfigMap is to populate the volume with files where the key is the file name and the content of the file is the value of the key.
 
@@ -913,14 +938,7 @@ very
 
 ## Secrets
 
-In this section you will learn:
-* Why we need secrets
-* How to create secrets
-* use secrets
-
----
-
-## How do we handle sensitive information?
+Provide a way to handle sensitive information:
 
 * Database passwords
 * API Keys
@@ -928,26 +946,24 @@ In this section you will learn:
 
 ---
 
-### This has become more complicated with microservices
+This has become more complicated with microservices.
 
 Ephemeral nature of services/containers means we need automation
 
 ---
 
-### How to handle this?
+### Possible Approaches
 
 * Bake into the Docker image
 * Use environment variables
-* Use volumes
 * Use a specialist solution
   * Orchestrator built-in solution
   * Dedicated K/V store
+* Use volumes
 
 ---
 
 ### Inside Docker Image
-
-Inside the Dockerfile:
 
 ```
 FROM mongo:3.0
@@ -980,14 +996,12 @@ spec:
 
 ---
 
-### Environment Variables
-
-PROS
+#### PROS
 
 * Popular solution
 * Simple / easy to use
 
-CONS
+#### CONS
 
 * Secret is still visible
 * In config file
@@ -997,7 +1011,7 @@ CONS
 
 ### Hashicorp Vault
 
-Advanced tool for securing, storing and controlling access to secrets. 
+Advanced tool for securing, storing and controlling access to secrets.
 
 * Leasing
 * Key revocation
@@ -1016,7 +1030,7 @@ Advanced tool for securing, storing and controlling access to secrets.
 
 ---
 
-### Secrets in action
+### Creating a Secret
 
 We want to share the value *some-base64-encoded-payload* under the key *my-super-secret-key* as a Kubernetes Secret for a pod.
 First you need to base64-encode it like so:
@@ -1028,8 +1042,6 @@ c29tZS1iYXNlNjQtZW5jb2RlZC1wYXlsb2Fk
 Note the -n parameter with echo; this is necessary to suppress the trailing newline character.
 
 ---
-
-### Creating the secret
 
 We put the result of the base64 encoding into the secret manifest:
 ```
@@ -1045,9 +1057,9 @@ Currently there is no other type available, also no other "encryption" method de
 
 ---
 
-### Using Secret
+### Using the Secret
 
-Create a pod with that secret
+Create a pod with the secret
 ```
 apiVersion: v1
 kind: Pod
@@ -1073,7 +1085,7 @@ kubectl create -f secret.yaml -f pod_secret.yaml
 
 ---
 
-### Validate Secret
+Validate the secret was configured correctly
 
 ```
 kubectl exec -ti secret /bin/bash
@@ -1086,9 +1098,11 @@ One word of warning here, in case it’s not obvious: `secret.yaml` should never
 
 ---
 
-### Working with secrets
+### Working with Secret Volumes
 
-A secret volume is used to pass sensitive information, such as passwords, to pods. You can store secrets in the Kubernetes API and mount them as files for use by pods without coupling to Kubernetes directly. 
+A secret volume is used to pass sensitive information, such as passwords, to pods. You can store secrets in the Kubernetes API and mount them as files for use by pods without coupling to Kubernetes directly.
+
+---
 
 Secret volumes are backed by tmpfs (a RAM-backed filesystem) so they are never written to non-volatile storage.
 Important: You must create a secret in the Kubernetes API before you can use it
@@ -1099,18 +1113,20 @@ We'll serve a webpage via a Volume using secrets. This is definitely the wrong w
 
 ---
 
-### Creating a Secret Using kubectl create secret
+### Creating a Secret Using kubectl
 
 ```
 kubectl create secret generic index --from-file=configs/secrets/index.html
 ```
 
-Validate that it's been created:
+Validate that it's been created
+
 ```
 kubectl get secrets
 
 kubectl describe secret index
 ```
+
 Note that neither get nor describe shows the contents of the file by default
 
 ---
@@ -1164,7 +1180,7 @@ kubectl delete secret index
 kubectl create secret generic index --from-file=configs/secrets/index.html
 ```
 
-Mounted Secrets are updated automatically but it's using its local ttl-based cache for getting the current value of the secret. The total time is kubelet sync period + ttl of secrets cache in kubelet (~1min). But as we can't do at the moment `kubectl apply --from-file` this isn' working. 
+Mounted Secrets are updated automatically but it's using its local ttl-based cache for getting the current value of the secret. The total time is kubelet sync period + ttl of secrets cache in kubelet (~1min). But as we can't do at the moment `kubectl apply --from-file` this isn' working.
 
 ---
 
@@ -1178,15 +1194,14 @@ Hello again
 
 ---
 
-### Summary
+## What have we Learned?
 
-What have we learned?
 - How to use and configure Readiness and Liveness Probes
-- How Resources and specified
+- How to specify Resources
 - Setting Limits and Requests and QoS
 - To use ConfigMaps and Secrets to share data with our applications
 
 ---
 
-[Next up advanced...](./04_advanced.md)
+[Next up advanced Kubernetes features...](./04_advanced.md)
 
