@@ -1,16 +1,16 @@
-## Kubernetes Ops
+## Kubernetes Clustering
 
 ---
 
-### In this section we will look at the custer itself:
+### In this section we will cover
 
-* Architecture
+* Cluster Architecture
 * High Availability
-* Multi cluster/region
+* Multi Cluster/Region
 
 ---
 
-### Architecture Diagram
+### Architecture
 
 
 <img src="img/kubernetes-architecture.png">
@@ -44,12 +44,11 @@
 * controller-manager
   * Runs "control loops"
   * Regulates the state of the system
-  * Watches cluster state through the apiserver
+  * Watches cluster state through the api-server
   * Changes current state towards the desired state
      - e.g. checks correct number of pods running
 
 ---
-
 
 ### Master
 
@@ -71,7 +70,7 @@
 
 * kubelet
   * Agent that runs on each node
-  * Takes a set of `PodSpecs` from API server 
+  * Takes a set of `PodSpecs` from API server
   * Starts containers to fulfill specs
   * Exposes monitoring data
 
@@ -82,7 +81,7 @@
 
 * kube-proxy
   * Implements service endpoints (virtual IPs)
-  * iptables
+  * IPTables
 
 ---
 
@@ -93,7 +92,7 @@
 
 ### Highly Available
 
-Why do we want out systems to be Highly Available?
+Why do we want our systems to be Highly Available?
 
 ---
 
@@ -102,8 +101,6 @@ Why do we want out systems to be Highly Available?
 -Werner Vogels
 
 ---
-
-### Highly Available
 
 What does HA even mean?
 
@@ -119,7 +116,7 @@ _High availability is a characteristic of a system, which aims to ensure an agre
 
 When we talk about systems which are Highly Available we mean that there should be no **single point of failure**
 
-What are the potential single points of failure in a Kubernetes cluster? 
+What are the potential single points of failure in a Kubernetes cluster?
 
 ---
 
@@ -159,7 +156,7 @@ Kubernetes Architecture
 
 ### To co-locate Masters and Etcd nodes?
 
-This is a trade off between managing/paying for more instances vs isolation.
+This is a trade-off between managing/paying for more instances vs isolation.
 
 ---
 
@@ -189,7 +186,7 @@ $ gcloud container clusters create my-first-cluster
 
 ---
 
-Depends on your infra:
+### Depends on your Infrastructure
 
 - Google Kubernetes Engine
 - Amazon EKS
@@ -207,20 +204,7 @@ Depends on your infra:
 
 ---
 
-...
-- KTHW
-- Terraform/Ansible
-- Bare Metal
-- OpenShift Online
-- Apprenda
-- Deis
-- Stackpoint
-- Platform9
-- and more...
-
----
-
-### Depends on your needs
+### Depends on your Needs
 
 * Budget (time and money)
 * Are you running in the cloud or onprem?
@@ -230,15 +214,17 @@ Depends on your infra:
 
 ---
 
-## RBAC
+## Role-based Access Control (RBAC)
 
 ---
 
-### A bit about roles
+### A bit about Roles
 
-Role Based Access Control (RBAC) is a common approach to managing users’ access to resources or operations.
+Role-based access control (RBAC) is a common approach to managing users’ access to resources or operations.
 
-Permissions specify exactly which resources and actions can be accessed. 
+Permissions specify exactly which resources and actions can be accessed.
+
+---
 
 The basic principle is: instead of separately managing the permissions of each user, permissions are given to roles, which are then assigned to users, or better - groups of users.
 
@@ -246,15 +232,15 @@ The basic principle is: instead of separately managing the permissions of each u
 
 ### Roles Bundle Permissions
 
-- Managing permissions per user can be a tedious task when many users are involved. 
-- As users are added to the system, maintaining user permissions becomes harder and more prone to errors. 
+- Managing permissions per user can be a tedious task when many users are involved.
+- As users are added to the system, maintaining user permissions becomes harder and more prone to errors.
 - Incorrect assignment of permissions can block users’ access to required systems, or worse - allow unauthorized users to access restricted areas or perform risky operations.
 
 ---
 
-* A regular user can only perform a limited number of actions (e.g. get, watch, list). 
+* A regular user can only perform a limited number of actions (e.g. get, watch, list).
 * A closer look into these user actions can reveal that some actions tend to go together e.g. checking logs.
-* Once roles are identified and assigned to each user, permissions can then be assigned to roles, instead of users. 
+* Once roles are identified and assigned to each user, permissions can then be assigned to roles, instead of users.
 
 Managing the permissions of a small number of roles is a much easier task.
 
@@ -287,7 +273,7 @@ The RBAC API declares four top-level types which will be covered in this section
 ---
 
 ### Role
-A `Role` contains rules that represent a set of permissions. Permissions are additive (there are no “deny” rules). 
+A `Role` contains rules that represent a set of permissions. Permissions are additive (there are no “deny” rules).
 
 A `Role` can be defined within a namespace, or cluster-wide (`Role` vs `ClusterRole`)
 
@@ -343,7 +329,7 @@ Permissions can be granted within a namespace with a `RoleBinding`, or cluster-w
 
 ---
 
-A `RoleBinding` may reference a `Role` in the same namespace. The following `RoleBinding` grants the “pod-reader” role to the user “jane” within the “default” namespace. 
+A `RoleBinding` may reference a `Role` in the same namespace. The following `RoleBinding` grants the “pod-reader” role to the user “jane” within the “default” namespace.
 
 ```
 # This role binding allows "jane" to read pods in the "default" namespace.
@@ -364,7 +350,7 @@ roleRef:
 
 ---
 
-In this example, even though the following RoleBinding refers to a `ClusterRole`, 
+In this example, even though the following RoleBinding refers to a `ClusterRole`,
 **dave** will only be able read secrets in the **development** namespace (the namespace of the RoleBinding).
 
 ```

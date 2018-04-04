@@ -1,9 +1,14 @@
-
 ## Cloud Native Monitoring
 
 ---
 
-### Run the Sock Shop
+### In this section we will cover
+
+* Sock Shop: A Microservice Demo Application.
+
+---
+
+## Run the Sock Shop
 
 Read the documentation located at: https://microservices-demo.github.io/microservices-demo
 
@@ -16,11 +21,11 @@ $ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
 
 ---
 
-## Expose the Front End
+## Expose the Front-end
 
 * Modify the front-end service of the Sock Shop to be of type LoadBalancer.
 
-* Then access the application via the public dns name.
+* Then access the application via the public DNS name.
 
 ---
 
@@ -44,7 +49,7 @@ $ kubectl apply -f microservices-demo/deploy/kubernetes/complete-demo.yaml
 
 ### Connecting to Prometheus
 
-First, connect to prometheus. The service exposed a `NodePort` on port `31090`.
+First, connect to Prometheus. The service exposed a `NodePort` on port `31090`.
 
 As before we will need the external IP of one of the cluster nodes
 
@@ -122,14 +127,10 @@ Grafana documentation can be found here: http://docs.grafana.org/guides/basic_co
 
 ---
 
-### Extra
+## Bonus Exercise
 
 If you've finished all this, and you have some extra time, browse to the alertmanager directory:
 
 `cd /deploy/kubernetes/manifests-alerting/`
 
-The prometheus alertmanager provides an alert mechanism for prometheus.
-
-* Investigate. :-)
-
-
+Investigate the Prometheus alertmanager which provides an alert mechanism for Prometheus.

@@ -1,29 +1,37 @@
-## Setup
+## Workshop Setup
 
 ---
 
-### Connect to your VM
+We have provided everything you need to participate in this workshop.
 
-We will use `kubectl`, and `docker`. You have been provided with a VM containing the necessary tools.
+We have provisioned you a Virtual Machine running a Kubernetes cluster.
 
-Login to the provided cloud VM via ssh:
-
-```
-$ ssh csuser@111.111.111.111
-csuser@111.111.111.111's password:
-```
+The following steps will get you access to your cluster.
 
 ---
 
-Retrieve config files: https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
+### Connect to your Virtual Machine
+
+Open a Terminal window and login to the VM via SSH
+
+```
+$ ssh csuser@[PROVIDED IP]
+```
+
+Enter the password provided to you.
+
+---
+
+### Retrieve configuration files
+
+Download cluster config files onto your VM
 
 ```
 $ wget https://storage.googleapis.com/qcon-k8s/k8s-configs.tar.gz
 $ tar -xvf k8s-configs.tar.gz
 ```
 
-
-Retrieve permissions file: 
+Retrieve the permissions file
 
 ```
 $ wget https://storage.googleapis.com/qcon-k8s/ca.pem
@@ -31,28 +39,44 @@ $ wget https://storage.googleapis.com/qcon-k8s/ca.pem
 
 ---
 
-Configure kubectl (Replace *user-x* and *password*)
+### Configure your Kubernetes cluster
+
+Execute the following commands to setup your cluster
 
 ```bash
 $ kubectl config set-cluster workshop \
-  --server=https://35.195.126.56 \
-  --certificate-authority=/path/to/ca.pem
+  --server=https://[CLUSTER IP] \
+  --certificate-authority=ca.pem
+```
+
+```bash
 $ kubectl config set-credentials workshop-user \
-  --username=user-X \
-  --password=<password>
+  --username=[PROVIDED USERNAME] \
+  --password=[PROVIDED PASSWORD]
+```
+
+```bash
 $ kubectl config set-context workshop \
   --cluster=workshop \
   --user=workshop-user \
-  --namespace=user-X
+  --namespace=[PROVIDED USERNAME]
+```
+
+```bash
 $ kubectl config use-context workshop
 ```
 
 ---
 
-### Verify you can access the cluster:
+### Verify the Configuration
+
+Check the cluster is up and running correctly by retrieving information about it
 
 ```
 $ kubectl cluster-info
+
+Kubernetes master is running at https://...
+....
 ```
 
 ---
@@ -73,7 +97,7 @@ Tag images as `localhost:5000/[user]/image`
 
 ---
 
-Docker for Mac fix/hack
+### Docker for Mac fix
 
 Add `docker.for.mac.localhost:5000` to Insecure Registries
 

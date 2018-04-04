@@ -1,11 +1,12 @@
-## Advanced.
-### Beyond the Basics
+## Advanced Features
 
 ---
 
-We now have a 'real life' application deployed and running. We have added the necessary pieces to consider this 'production ready'. 
+We now have a 'real life' application deployed and running. We have added the necessary pieces to consider this 'production ready'.
 
-Next we will look at some of the more useful advanced features of Kubernetes: 
+---
+
+### In this section we will cover
 
 - Autoscaling
 - Advanced Deployments
@@ -14,7 +15,7 @@ Next we will look at some of the more useful advanced features of Kubernetes:
 
 ### Auto Scaling
 
-As we have seen in the previous section scaling our applications is very simple. `kubectl scale deployment/k8s-real-demo replicas=5`.  However, ideally this would not be a manual action. 
+As we have seen in the previous section scaling our applications is very simple. `kubectl scale deployment/k8s-real-demo replicas=5`.  However, ideally this would not be a manual action.
 
 Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
@@ -55,14 +56,13 @@ spec:
   targetCPUUtilizationPercentage: 80
 ```
 
-
 ---
-
-### Adding an HPA
 
 We can create this resource on the cluster just as we have done with the others:
 
-`$ kubectl apply -f ./resources/hpa.yaml`
+```
+$ kubectl apply -f ./resources/hpa.yaml
+```
 
 And view the resource with `kubectl get` and `kubectl describe`
 
@@ -76,13 +76,13 @@ In order to test that the HPA works as expected we will need our application to 
 
 Make a request (or several) to the endpoint `/mineBitcoin` (note this endpoint can take a query parameter `seconds`).
 
-See if your Deployment scales succesfully. 
+See if your Deployment scales successfully.
 
 ---
 
 ### Advanced Deployments
 
-Kubernetes offers a variety of ways to release an application. 
+Kubernetes offers a variety of ways to release an application.
 
 The correct option depends on your specific requirements and use case.
 
@@ -92,16 +92,16 @@ In this section we will try out several options and look at some possible use ca
 
 ## Deployment Strategies
 
-- **recreate**: Terminate the old version then release a new one
-- **ramped**: Release a new version via a rolling update
-- **blue/green**: Release a new version alongside the old version then switch traffic
-- **canary**: Release a new version to a subset of users, then proceed to a full rollout
-- **a/b testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.).
+- **Recreate**: Terminate the old version then release a new one
+- **Ramped**: Release a new version via a rolling update
+- **Blue/Green**: Release a new version alongside the old version then switch traffic
+- **Canary**: Release a new version to a subset of users, then proceed to a full rollout
+- **A/B testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.).
 
 ---
 
-
 ## Recreate deployment
+
 First terminate (all instances of) the old version and then release the new one.
 
 Add the below `strategy` section to your existing deployment.yaml and remove the `env` section
@@ -152,7 +152,7 @@ $ kubectl set image deploy/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
 
 ---
 
-Now test the second deployment progress. 
+Now test the second deployment progress.
 
 (N.B. Since we are not removing the service, the NodePort will not change)
 
@@ -245,7 +245,7 @@ $ kubectl delete deploy my-app-v1
 
 ---
 
-Cleanup:
+### Clean Up
 
 ```
 $ kubectl deployment k8s-real-demo
