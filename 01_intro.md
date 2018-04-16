@@ -3,76 +3,80 @@
 
 ---
 
-### In this section we will cover
+## In The Beginning
 
-* Cloud Native
-* The rise of DevOps
-* Microservices
-* Containers
-* Orchestration
+ - **Developers** created applications
+ - **Operations** hosted and maintained them
+
+---
+
+<img src="img/ops_problem.jpeg" width="60%">
+
+---
+
+ **Developers** "threw" software over the wall, often with little regard for complete testing or reliability.
+
+---
+
+ **Operations** were responsible for keeping things running. Constantly on call and pushing back on new software & libraries.
+
+---
+
+<img src="img/devops-wall.jpeg" width="60%">
+
+---
+
+## This led to Issues...
+
+ - Long release cycles
+ - Painful deployments
+ - Problems with upgrades
+ - Poor relations between Dev and Ops
+
+---
+
+# Hello DevOps!
+
+---
+
+## Developer Operations (???)
+
+ * Acknowledges Dev and Ops are on the same team
+ * Attempts to tear down the Wall
+ * Point #3
+
+---
+
+## One Team
+
+ - **Teams** become responsible for running services
+ * Made up of both Dev and Ops
+ * On-call(?)
+
+---
+
+# ?How do we transition to CN?
 
 ---
 
 ## What is Cloud Native?
 
- - Designing applications for the Cloud - *First*
- - Designing for scalability
-   - ability to handle large numbers of users
- - And reliability
-   - "99.999%" etc
-   - assume failures
+ - Architect applications for the Cloud - **First**
+ - Design for Scalability
+ - Design for Reliability
+ - Assume something will go wrong
 
 ---
 
-## Cloud Native
+## Cloud Native Approach
 
- - Using modern techniques
+ - Follow modern techniques
    - Microservices
    - Programmable infrastructure
- - And modern technology
+ - Use modern technologies
    - Containers
    - Dynamic orchestration platforms
-
----
-
-## Traditionally
-
- - Developers created applications
- - Operations hosted and maintained them
-
-<img width="400" src="img/ops_problem.jpeg">
-
----
-
-## Led to a "wall"
-
- - Developers "threw" software over the wall
-  - little regard for complete testing or reliability
-
- - Ops responsible for keeping things running
-  - on call
-  - pushed back heavily on software/libraries
-
-<img src="img/devops-wall.jpeg">
-
----
-
-## Issues
-
- - Slow updates
- - Poor relations between Dev and Ops
- - Problems with upgrades and releases
-
----
-
-## DevOps
-
- - Acknowledges both Dev and Ops
-   - are part of the same team
-   - attempts to tear down the wall
- - *Teams* become responsible for running services
-  - made up of both Dev and Ops
-  - on-call
+ - 12 Factor (?)
 
 ---
 
@@ -87,6 +91,14 @@
   - REST & HTTP / gRPC
  - May use multiple languages
  - Scale *OUT* as opposed to *UP*
+
+---
+
+## Programmable infrastructure
+
+ * 1
+ * 2
+ * 3
 
 ---
 
