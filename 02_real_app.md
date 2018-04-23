@@ -32,7 +32,7 @@ We will deploy these pieces one at a time on our cluster.
 
 ---
 
-<img src="img/2. Demo App-01.png">
+<img src="img/real_app/2. Demo App-01.png" alt="Demo App">
 
 ---
 
@@ -56,10 +56,6 @@ A ReplicaSet ensures that a specified number of Pods are running at any given ti
 
 **Pod**<br>
 A Pod is a group of one or more containers deployed and scheduled together.
-
----
-
-<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Deployments">
 
 ---
 
@@ -219,7 +215,7 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ---
 
-## Accessing our Application
+# Accessing our Application
 
 ---
 
@@ -231,31 +227,30 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ---
 
-### Services
-* Stable endpoints for Pods.
-* Based on Labels and Selectors.
+## Services
+
+* Stable endpoints for Pods
+* Based on Labels and Selectors
 
 ---
 
-### Labels & Selectors
-* Label: key/value pair attached to objects (e.g. Pods)
-* Selector: Identify and group a set of objects.
+## Labels & Selectors
+
+* **Label**: key/value pair attached to objects (e.g. Pods)
+* **Selector**: Identify and group a set of objects
 
 ---
 
-<img src="img/labels2.svg" height="600">
+<img src="img/intro/35. Kubernetes Labels diagram-01.png" alt="Services & Labels">
 
 ---
 
 ### Service Types
 
-* ClusterIP (Default): Exposes the service on a cluster-internal IP.
-
-* NodePort: Expose the service on a specific port on each node.
-
-* LoadBalancer: Use a loadbalancer from a Cloud Provider. Creates `NodePort` and `ClusterIP`.
-
-* ExternalName: Connect an external service (CNAME) to the cluster.
+* **ClusterIP**: Exposes the service on a cluster-internal IP.
+* **NodePort**: Expose the service on a specific port on each node.
+* **LoadBalancer**: Use a loadbalancer from a Cloud Provider. Creates `NodePort` and `ClusterIP`.
+* **ExternalName**: Connect an external service (CNAME) to the cluster.
 
 ---
 

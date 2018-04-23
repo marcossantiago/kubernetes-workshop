@@ -30,16 +30,18 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 ## HorizontalPodAutoscaler (HPA)
 
+---
+
+<img src="img/advanced/5. Auto scaling process-01.png" alt="HorizontalPodAutoscaler">
+
+---
+
 * Periodically fetches metrics (default 30 seconds)
 * Compares to user specified target value.
 * Adjusts the number of replicas (pods) of a Deployment if needed.
 * CPU usage is built in.
 * Fetched from Heapster.
 * Can also read Prometheus (for custom metrics)
-
----
-
-<img src="img/5. Auto sclaing process-01.png">
 
 ---
 

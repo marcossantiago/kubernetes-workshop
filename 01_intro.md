@@ -17,7 +17,7 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/ops_problem.jpeg" alt="Cloud Native">
+<img src="img/intro/ops_problem.jpeg" alt="Ops Problem">
 
 ---
 
@@ -36,11 +36,11 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/" width="75%">
-
-"Wall of Confusion"
+<img src="img/intro/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/" width="75%" alt="Wall of Confusion">
 
 ---
+
+## Wall of Confusion
 
  - Long release cycles
  - Painful deployments
@@ -53,11 +53,9 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/devops.png">
+<img src="img/intro/devops.png" alt="DevOps">
 
 ---
-
-## DevOps
 
  * Acknowledges Dev and Ops are on the same team
  * Attempts to tear down the Wall
@@ -65,15 +63,13 @@ title: Production Grade Kubernetes
 
 ---
 
-# Hello Cloud Native
+# Hello Cloud Native!
 
 ---
 
-<img src="img/11. Abstract diagram to represent “Cloud Native”-01.png" alt="Cloud Native">
+<img src="img/intro/11. Abstract diagram to represent Cloud Native-01.png" alt="Cloud Native">
 
 ---
-
-## Cloud Native
 
  - Architect applications for the Cloud - **First**
  - Design for Scalability
@@ -81,8 +77,6 @@ title: Production Grade Kubernetes
  - Assume something will go wrong
 
 ---
-
-## Cloud Native
 
  - Follow modern techniques
    - Microservices
@@ -98,11 +92,9 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/13. Abstract diagram to represent a “MicroServices” architecture-01.png" alt="Cloud Native">
+<img src="img/intro/13. Abstract diagram to represent a MicroServices architecture-01.png" alt="Microservices">
 
 ---
-
-## Microservices
 
  - System architecture that uses multiple small services
  - Each one has a simple, well-defined job
@@ -110,8 +102,6 @@ title: Production Grade Kubernetes
  - Lightweight Service-oriented architecture (SOA)
 
 ---
-
-## Microservices
 
  - Composable
   - Talk over APIs
@@ -125,11 +115,9 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/containers.png" alt="Containers">
+<img src="img/intro/containers.png" alt="Containers">
 
 ---
-
-## Containers
 
  - Portable format for developing and deploying applications
  - Almost synonymous with Microservices
@@ -146,14 +134,14 @@ title: Production Grade Kubernetes
 
 # What is Orchestration?
 
-&nbsp;
+---
 
 <blockquote>
 "The planning or coordination of the elements of a situation to produce a desired
 effect, especially surreptitiously"
-</blockquote><!-- .element: class="fragment" data-fragment-index="2" -->
+</blockquote>
 
-Oxford English Dictionary<!-- .element: class="fragment" data-fragment-index="2" -->
+<small>Oxford English Dictionary</small>
 
 ---
 
@@ -253,7 +241,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/30. High-level Kubernetes architecture diagram-01.png">
+<img src="img/intro/30. High-level Kubernetes architecture diagram-01.png" alt="Kubernetes Architecture">
 
 ---
 
@@ -263,16 +251,18 @@ effect, **especially surreptitiously**"
  - Pods
  - Labels & Selectors
  - Services
- - ReplicaSets
  - Deployments
- - Jobs
+ - ReplicaSets
  - Namespaces
+ - Jobs
 
 ---
 
 ## Nodes
 
-<img src="img/32. Kubernetes Node diagram-01.png">
+---
+
+<img src="img/intro/32. Kubernetes Node diagram-01.png" alt="Kubernetes Node">
 
 ---
 
@@ -285,7 +275,9 @@ effect, **especially surreptitiously**"
 
 ## Pods
 
-<img src="img/33. Kubernetes Pods diagram-01.png">
+---
+
+<img src="img/intro/33. Kubernetes Pods diagram-01.png" alt="Kubernetes Pod">
 
 ---
 
@@ -299,7 +291,9 @@ effect, **especially surreptitiously**"
 
 ## Flat networking space
 
-<img src="img/34. Flat Networking Space-01.png">
+---
+
+<img src="img/intro/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
 
 ---
 
@@ -311,7 +305,11 @@ effect, **especially surreptitiously**"
 
 ## Labels
 
-<img src="img/35. Kubernetes Labels diagram-01.png">
+
+---
+
+
+<img src="img/intro/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Labels">
 
 ---
 
@@ -325,7 +323,9 @@ effect, **especially surreptitiously**"
 
 ## Selectors
 
-<img src="img/36. Kubernetes Selectors diagram-01.png">
+---
+
+<img src="img/intro/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Selectors">
 
 ---
 
@@ -340,19 +340,25 @@ effect, **especially surreptitiously**"
 
 ## Services
 
+---
+
+<img src="img/intro/37. Kubernetes Services diagram_A-01.png" alt="Kubernetes Services 1">
+
+---
+
+<img src="img/intro/37. Kubernetes Services diagram-01.png" alt="Kubernetes Services 2">
+
+---
+
+<img src="img/intro/36. Kubernetes Selectors diagram-01.png" alt="Kubernetes Services 3">
+
+---
+
  - Stable endpoints addressed by name
  - Forward traffic to Pods
  - Pods are selected by Labels
  - Round-robin load-balancing
  - Separates endpoint from implementation
-
----
-
-<img src="img/37. Kubernetes Services diagram_A-01.png">
-
----
-
-<img src="img/37. Kubernetes Services diagram-01.png">
 
 ---
 
@@ -372,7 +378,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/41. Cluster IP Service diagram-01.png">
+<img src="img/intro/41. Cluster IP Service diagram-01.png" alt="Kubernetes ClusterIP">
 
 ---
 
@@ -384,7 +390,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/43. NodePort service diagram-01.png">
+<img src="img/intro/43. NodePort service diagram-01.png" alt="Kubernetes NodePort">
 
 ---
 
@@ -395,7 +401,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/41. Cluster IP Service diagram-01.png">
+<img src="img/intro/Load balancer-01.png" alt="Kubernetes LoadBalancer">
 
 ---
 
@@ -409,21 +415,45 @@ effect, **especially surreptitiously**"
 
 ## Deployments
 
+---
 
- - Deployments start ReplicaSets
- - Rollout/Rollback & Updates
+<img src="img/intro/45. Kubernetes Deployments diagram-01.png" alt="Kubernetes Deployments">
 
 ---
 
-<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Deployments">
+ * Start/Create ReplicaSets
+ * Handle Rollout, Rollback & Updates
+
 
 ---
 
 ## ReplicaSets
 
+---
+
+<img src="img/intro/Deployment Replicaset.png" alt="Kubernetes Deployments">
+
+---
+
+ * Explicit definition of Desired State
  * Monitor the status of Pods
-   - define number of pods to run
-   - start/stop pods as needed
+   * Too few? Start a new one
+   * Too many? Kill some
+
+---
+
+## Namespaces
+
+---
+
+<img src="img/intro/47. Kubernetes Namespaces diagram-01.png" alt="Kubernetes Namespaces">
+
+---
+
+ - Resources can be partitioned into Namespaces
+ - Logical groups
+ - System resources run in their own Namespace
+ - Normally only use one Namespace
 
 ---
 
@@ -435,19 +465,6 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Namespaces
-
- - Resources can be partitioned into Namespaces
- - Logical groups
- - System resources run in their own Namespace
- - Normally only use one Namespace
-
----
-
-<img src="img/47. Kubernetes Namespaces diagram-01.png" alt="Namespaces">
-
----
-
 ### More & More
 
  - Volumes
@@ -455,10 +472,7 @@ effect, **especially surreptitiously**"
  - Ingress
  - Annotations
  - Daemon Sets
- - Horizontal Pod Autoscaling
  - Network Policies
- - Resource Quotas
- - Secrets
  - Security Context
  - Service Accounts
  - ...
@@ -474,7 +488,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/dashboard.png">
+<img src="img/intro/dashboard.png" alt="Kubernetes Dashboard">
 
 ---
 

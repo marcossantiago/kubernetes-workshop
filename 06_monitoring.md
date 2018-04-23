@@ -9,7 +9,7 @@ title: Production Grade Kubernetes
 
 ---
 
-### In this section we will cover
+## In this section we will cover
 
 * Sock Shop: A Microservice Demo Application.
 
