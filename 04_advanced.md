@@ -8,8 +8,582 @@ We now have a 'real life' application deployed and running. We have added the ne
 
 ### In this section we will cover
 
+- Volumes / Storage
+- Ingress
 - Autoscaling
 - Advanced Deployments
+
+---
+
+### Storage
+
+ - A Pod is made up of one or more containers and data volumes that can be mounted inside the containers. 
+ - In this section you will learn how to: 
+
+* define a deployment backed by a emptyDir
+* define a deployment backed by a emptyDir(memory backed storage)
+* define a deployment backed by a persistent volume and persistent volume claim 
+* define a deployment backed by a persistent volume and persistent volume claim using a StorageClass
+
+---
+
+### Volumes
+
+Volumes are means to save data, as well as share it between containers. Any volumes in a pod are accessible by all containers running inside that same pod. The data is persisted across container restarts. 
+
+There are a large number of implementations to back the storage. From local options such as `hostPath`, cloud specific options such as `awsElasticBlockStore`, distributed storage such as `ceph` or `nfs`, and many many more.
+
+---
+
+### emptyDir
+
+* In this exercise we will demonstrate the use of an emptyDir as a volume.
+
+---
+
+ * The volume is of type `emptyDir`. 
+ * The kubelet will create an empty directory on the node when the Pod is scheduled. 
+ * Once the Pod is destroyed, the kubelet will delete the directory.
+
+---
+
+Place the following in a file called `empty-dir.yaml`
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  containers:
+  - name: busy
+    image: busybox
+    volumeMounts:
+    - name: test
+      mountPath: /busy
+    command:  
+      - sleep
+      - "3600"
+  - name: box
+    image: busybox
+    volumeMounts:
+    - name: test
+      mountPath: /box
+    command:
+      - sleep
+      - "3600"
+  volumes:
+  - name: test
+    emptyDir: {} 
+``` 
+
+```
+kubectl apply -f empty-dir.yaml
+```
+
+---
+
+Once the pods are deployed we can exec into one pod, create a file, then verify the existence of that file in the other pod.
+
+```
+$ kubectl exec -ti busybox -c box -- touch /box/foobar
+$ kubectl exec -ti busybox -c busy -- ls -l /busy
+total 0
+-rw-r--r--    1 root     root             0 Nov 19 16:26 foobar
+```
+
+---
+
+### Persistent Volumes and Claims
+
+In this exercise we'll demonstrate the use of Persistent Volumes(PV) and Persistent Volume Claims(PVC).
+
+
+---
+
+First we will create a disk and a PV that we will later claim and use with a Pod
+```
+$ gcloud compute disks create disk-$HOSTNAME --size 8GB --type pd-standard
+```
+
+---
+
+Create a file called `pv.yaml` with the following contents.
+*Note that you will need to replace <MY_DISK_NAME> with the name you used in the create command and you should replace <MY_PV_NAME> with the output of `echo pv-$HOSTNAME`.*
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <MY_PV_NAME>
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: training
+  gcePersistentDisk:
+    pdName: <MY_DISK_NAME>
+    fsType: "ext4"
+```
+
+
+---
+
+Create the PV and check it's status with the `get` and `describe` command.
+
+```
+$ kubectl create -f pv.yaml
+$ kubectl get pv pv-$HOSTNAME
+$ kubectl describe pv pv-$HOSTNAME
+```
+
+---
+
+Next we need to create a PVC which claims the PV defined above. Crate a file `pvc.yaml` with the following contents, replacing <MY_PVC_NAME> with the output of `echo pvc-$HOSTNAME`. 
+
+```
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: <MY_PVC_NAME>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: training
+  resources:
+    requests:
+      storage: 4Gi
+```
+
+---
+
+Create the PVC and check it's status with the `get` and `describe` command.
+
+```
+$ kubectl create -f pvc.yaml
+$ kubectl get pvc pvc-$HOSTNAME
+$ kubectl describe pvc pvc-$HOSTNAME
+```
+
+---
+
+Lastly we'll create a Pod and attach the PVC to it. Create the file `pod_pvc.yaml` with the following contents (replacing <MY_PVC_NAME> with the output of `echo pvc-$HOSTNAME`.
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  containers:
+  - name: busy
+    image: busybox
+    volumeMounts:
+    - name: test
+      mountPath: /busy
+    command:
+      - sleep
+      - "3600"
+  - name: box
+    image: busybox
+    volumeMounts:
+    - name: test
+      mountPath: /box
+    command:
+      - sleep
+      - "3600"
+  volumes:
+    - name: test
+      persistentVolumeClaim:
+        claimName: <MY_PVC_NAME>
+```
+
+---
+
+Create the pod and check its status via the `get`and `describe` command. 
+
+```
+$ kubectl create -f pod_pvc.yaml
+$ kubectl get pods
+$ kubectl describe pods
+```
+
+---
+
+### PV and PVC using StorageClass
+
+
+### Dynamic Provisioning
+
+While handling volumes with a persistent volume definition and abstracting the storage provider using a claim is powerful, an administrator of the cluster still needs to create those volumes in the first place.
+
+Since Kubernetes 1.4 it is possible to use dynamic provisioning of persistent volumes (beta).
+
+---
+
+A new API resource has been introduced in Kubernetes 1.2 called StorageClass. If configured and a user requests a claim, this claim will be created even if an existing pv does not exist. The volume provisioner defined in the StorageClass will dynamically create the volume.
+
+---
+
+Here is an example of a StorageClass on GCE:
+
+```
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mystorageclaim
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  zone: us-central1-a
+```
+
+You might be interested to test this using this [example](https://github.com/kubernetes/kubernetes/tree/master/examples/persistent-volume-provisioning).
+
+---
+
+GKE comes with a default StorageClass that will dynamically provision persitent disks on demand. We can see this by running:
+
+```
+$ kubectl get storageclass
+...
+$ kubectl describe storageclass standard
+...
+```
+
+---
+
+Next we create a persistent volume claim including that storage class.
+
+
+```
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: <MY_SC_CLAIM>
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "standard"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+```
+
+---
+
+Let's create the claim and then verify that a persistent volume is created automatically. It should be bound to the claim requesting storage.
+
+```
+$ kubectl create -f pvc-storage.yaml
+$ kubectl get pv
+$ kubectl get pvc
+```
+
+---
+
+Finally, if we delete the persistent volume claim, we can see the volume gets released and is automatically deleted
+
+```
+$ kubectl delete pvc mystorageclaim
+$ kubectl get pv
+```
+
+---
+
+
+### Do it yourself
+
+* Our sample app currently is writing logs to `/var/log/app.log`
+* Create a PV and PVC to persist logs.
+* Update the exiting deployment to use the PVC.
+* Verify the logs are persisted (even after the application dies)
+
+---
+
+### Cheat
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/somepath/log01"
+```
+
+---
+
+```
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: logclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+```
+
+---
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-logs
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: logs
+      mountPath: /var/log
+    command:
+      - sleep
+      - "3600"
+  volumes:
+    - name: logs
+      persistentVolumeClaim:
+        claimName: logclaim
+```
+
+---
+
+### Ingress
+
+### What is ingress?
+
+Typically, services and pods have IPs only routable by the cluster network. All traffic that ends up at an edge router is either dropped or forwarded elsewhere. Conceptually, this might look like:
+```
+    internet
+        |
+  ------------
+  [ Services ]
+```
+
+---
+
+An Ingress is a collection of rules that allow inbound connections to reach the cluster services.
+```
+    internet
+        |
+   [ Ingress ]
+   --|-----|--
+   [ Services ]
+```
+
+---
+
+It can be configured to:
+* Give services externally-reachable urls
+* Loadbalance traffic
+* Terminate SSL
+* Offer name based virtual hosting
+
+An Ingress controller is responsible for fulfilling the Ingress, usually with a loadbalancer, though it may also configure your edge router or additional frontends to help handle the traffic in an HA manner.
+
+---
+
+### Ingress controller
+
+In order for the Ingress resource to work, the cluster must have an `Ingress Controller` running.
+
+An `Ingress Controller` is a daemon, deployed as a Kubernetes Pod, that watches the ApiServer's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for ingress.
+
+---
+
+### Ingress Workflow
+
+* Poll until apiserver reports a new Ingress.
+* Write the LB config file based on a go text/template.
+* Reload LB config.
+
+---
+
+### Example
+Ingress resource
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+spec:
+  rules:
+    - host: frontend.example.com
+      http:
+        paths:
+          -
+            backend:
+              serviceName: front-end
+              servicePort: 80
+            path: /
+```
+*POSTing this to the API server will have no effect if you have not configured an Ingress controller.*
+
+---
+
+### Ingress Controllers
+
+This section will focus on the nginx-ingress-controller. There are others available, suchs as HAProxy or Traefik. 
+
+They can easily be exchanged. To check which one is best suited for you, please check the documentation of the loadbalancers if they meet your requirements.
+
+There are also implementations for hardware loadbalancers like F5 available, but I haven't seen them used out in the wild.
+
+---
+
+### Specialities of the NGINX ingress controller
+The NGINX ingress controller does not use Services to route traffic to the pods. 
+
+Instead it uses the Endpoints API in order to bypass kube-proxy to allow NGINX features like session affinity and custom load balancing algorithms. 
+
+It also removes some overhead, such as conntrack entries for iptables DNAT.
+
+---
+
+### Setup
+
+For the controller, the first thing we need to do is setup a default backend service for nginx.
+
+This is the default fall-back service if the controller cannot route a request to a service. The default backend needs to satisfy the following two requirements :
+* Serve a 404 page at /
+* Serve 200 on a /healthz
+
+Info on the default backend can be found [here](https://github.com/kubernetes/ingress-nginx/blob/797b6b6a55999e180cfecd9809599b14c0e5b394/images/404-server/README.md)
+
+---
+
+### Create the default backend
+
+Let’s use the example default backend of the official kubernetes nginx ingress project:
+
+```
+kubectl create ns ingress-nginx
+kubectl create -f \
+https://raw.githubusercontent.com/kubernetes/ingress-nginx/gce-release-0.9.0/examples/deployment/nginx/default-backend.yaml
+
+```
+
+---
+
+### Deploy the loadbalancer
+
+```
+kubectl create -f configs/ingress/ingress-daemonset.yaml
+```
+
+This will create a nginx-ingress-controller on each available node.
+
+---
+
+### Deploy some application
+
+First we need to deploy some application to publish. To keep this simple we will use the echoheaders app that just returns information about the http request as output.
+```
+kubectl run echoheaders --image=gcr.io/google_containers/echoserver:1.4 \
+  --replicas=1 --port=8080
+```
+Now we expose the same application in two different services (so we can create different Ingress rules).
+```
+kubectl expose deployment echoheaders --port=80 --target-port=8080 \
+  --name=echoheaders-x
+kubectl expose deployment echoheaders --port=80 --target-port=8080 \
+  --name=echoheaders-y
+```
+
+---
+
+### Create ingress rules
+
+Create some Ingress rules to explore:
+
+```
+kubectl create -f configs/ingress/ingress.yaml
+```
+
+```
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /foo
+            backend:
+              serviceName: echoheaders-x
+              servicePort: 80           
+    - host: bar.baz.com
+      http:
+        paths:
+          - path: /bar
+            backend:
+              serviceName: echoheaders-y
+              servicePort: 80
+          - path: /foo
+            backend:
+              serviceName: echoheaders-x
+              servicePort: 80
+```
+
+---
+
+### Accessing the application
+
+To access the applications via a browser you need either to edit your `/etc/hosts` file with the domains `foo.bar.com` and `bar.baz.com` pointing to the IP of your k8s cluster. Or use a browser plugin to manipulate the host header.
+
+Here we'll use `curl`.
+
+```
+curl -H "Host: foo.bar.com" http://<HOST_IP>/bar
+curl -H "Host: bar.baz.com" http://<HOST_IP>/bar
+curl -H "Host: bar.baz.com" http://<HOST_IP>/foo
+```
+
+---
+
+### Do it yourself
+
+* Deploy an nginx and expose it using a service.
+* Write an ingress manifest to expose the nginx service on port 80 listening on training.example.com/nginx
+* Access the nginx via `curl` or a browser on port 80.
+
+---
+
+### Path rewrites
+
+Sometimes, you want to rewrite the path of a request to match up with the backend service.
+
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: apitest
+  namespace: applications
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /new/get
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: "foo.bar.com"
+    http:
+      paths:
+      - path: /get/new
+        backend:
+          serviceName: echoheaders-y
+          servicePort: 80
+```
 
 ---
 
