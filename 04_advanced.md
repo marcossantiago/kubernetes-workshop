@@ -47,7 +47,7 @@ There are a large number of implementations to back the storage. From local opti
 
 ---
 
-Place the following in a file called `empty-dir.yaml`
+Find the `empty-dir.yaml` file in the `./kuberetes/` folder
 
 ```
 apiVersion: v1
@@ -77,171 +77,78 @@ spec:
     emptyDir: {} 
 ``` 
 
+---
+
+Apply the configuration file:
+
 ```
-kubectl apply -f empty-dir.yaml
+kubectl apply -f ./kubernetes/empty-dir.yaml
+```
+
+This create a single pod with two containers and one volume.
+
+---
+
+Once the pod is deployed, `exec` into one of the containers:
+
+```
+$ kubectl exec -ti busybox -c box /bin/sh
+#
+```
+
+Now create a new file in the `/box` directory:
+
+```
+$ touch /box/foobar
+$ ls /box
 ```
 
 ---
 
-Once the pods are deployed we can exec into one pod, create a file, then verify the existence of that file in the other pod.
+Exit from the ccontainer and exec into the second:
 
 ```
-$ kubectl exec -ti busybox -c box -- touch /box/foobar
-$ kubectl exec -ti busybox -c busy -- ls -l /busy
+#exit
+$ kubectl exec -ti busybox -c busy
+#
+```
+
+List the contents of the `/busy` directory
+
+```
+#ls -l /busy
 total 0
 -rw-r--r--    1 root     root             0 Nov 19 16:26 foobar
 ```
 
----
-
-### Persistent Volumes and Claims
-
-In this exercise we'll demonstrate the use of Persistent Volumes(PV) and Persistent Volume Claims(PVC).
-
+Note that this works in both directions. But once the pod dies, the directory is removed.
 
 ---
 
-First we will create a disk and a PV that we will later claim and use with a Pod
-```
-$ gcloud compute disks create disk-$HOSTNAME --size 8GB --type pd-standard
-```
-
----
-
-Create a file called `pv.yaml` with the following contents.
-*Note that you will need to replace <MY_DISK_NAME> with the name you used in the create command and you should replace <MY_PV_NAME> with the output of `echo pv-$HOSTNAME`.*
-
-```
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: <MY_PV_NAME>
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: training
-  gcePersistentDisk:
-    pdName: <MY_DISK_NAME>
-    fsType: "ext4"
-```
-
-
----
-
-Create the PV and check it's status with the `get` and `describe` command.
-
-```
-$ kubectl create -f pv.yaml
-$ kubectl get pv pv-$HOSTNAME
-$ kubectl describe pv pv-$HOSTNAME
-```
-
----
-
-Next we need to create a PVC which claims the PV defined above. Crate a file `pvc.yaml` with the following contents, replacing <MY_PVC_NAME> with the output of `echo pvc-$HOSTNAME`. 
-
-```
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: <MY_PVC_NAME>
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: training
-  resources:
-    requests:
-      storage: 4Gi
-```
-
----
-
-Create the PVC and check it's status with the `get` and `describe` command.
-
-```
-$ kubectl create -f pvc.yaml
-$ kubectl get pvc pvc-$HOSTNAME
-$ kubectl describe pvc pvc-$HOSTNAME
-```
-
----
-
-Lastly we'll create a Pod and attach the PVC to it. Create the file `pod_pvc.yaml` with the following contents (replacing <MY_PVC_NAME> with the output of `echo pvc-$HOSTNAME`.
-
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox
-spec:
-  containers:
-  - name: busy
-    image: busybox
-    volumeMounts:
-    - name: test
-      mountPath: /busy
-    command:
-      - sleep
-      - "3600"
-  - name: box
-    image: busybox
-    volumeMounts:
-    - name: test
-      mountPath: /box
-    command:
-      - sleep
-      - "3600"
-  volumes:
-    - name: test
-      persistentVolumeClaim:
-        claimName: <MY_PVC_NAME>
-```
-
----
-
-Create the pod and check its status via the `get`and `describe` command. 
-
-```
-$ kubectl create -f pod_pvc.yaml
-$ kubectl get pods
-$ kubectl describe pods
-```
-
----
-
-### PV and PVC using StorageClass
-
-
-### Dynamic Provisioning
+### Persistent Volumes
 
 While handling volumes with a persistent volume definition and abstracting the storage provider using a claim is powerful, an administrator of the cluster still needs to create those volumes in the first place.
 
-Since Kubernetes 1.4 it is possible to use dynamic provisioning of persistent volumes (beta).
+---
+
+## Dynamic Provisioning
+Alternatively a `StorageClass` can be configured to dynamically provision Persistent Volumes (PV).  User requests a Persistent Volume Claim (PVC), and the provisioner defined in the StorageClass will dynamically create the volume.
 
 ---
 
-A new API resource has been introduced in Kubernetes 1.2 called StorageClass. If configured and a user requests a claim, this claim will be created even if an existing pv does not exist. The volume provisioner defined in the StorageClass will dynamically create the volume.
-
----
-
-Here is an example of a StorageClass on GCE:
+Here is an example of a StorageClass on AWS:
 
 ```
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: mystorageclaim
-provisioner: kubernetes.io/gce-pd
+  name: slow
+provisioner: kubernetes.io/aws-ebs
 parameters:
-  type: pd-standard
-  zone: us-central1-a
+  type: io1
+  zones: us-east-1d, us-east-1c
+  iopsPerGB: "10"
 ```
-
-You might be interested to test this using this [example](https://github.com/kubernetes/kubernetes/tree/master/examples/persistent-volume-provisioning).
-
 ---
 
 GKE comes with a default StorageClass that will dynamically provision persitent disks on demand. We can see this by running:
@@ -255,8 +162,7 @@ $ kubectl describe storageclass standard
 
 ---
 
-Next we create a persistent volume claim including that storage class.
-
+First we create a persistent volume claim including the above storage class. (This file can be found at `./kubernetes/pvc.yaml`). Be sure to replace the <MY_SC_CLAIM>.
 
 ```
 kind: PersistentVolumeClaim
@@ -271,7 +177,6 @@ spec:
   resources:
     requests:
       storage: 2Gi
-
 ```
 
 ---
@@ -279,7 +184,7 @@ spec:
 Let's create the claim and then verify that a persistent volume is created automatically. It should be bound to the claim requesting storage.
 
 ```
-$ kubectl create -f pvc-storage.yaml
+$ kubectl create -f pvc.yaml
 $ kubectl get pv
 $ kubectl get pvc
 ```
@@ -289,41 +194,22 @@ $ kubectl get pvc
 Finally, if we delete the persistent volume claim, we can see the volume gets released and is automatically deleted
 
 ```
-$ kubectl delete pvc mystorageclaim
+$ kubectl delete pvc <MY_SC_NAME>
 $ kubectl get pv
 ```
 
 ---
 
-
 ### Do it yourself
 
 * Our sample app currently is writing logs to `/var/log/app.log`
-* Create a PV and PVC to persist logs.
+* Create a Persistent Volume Claim to persist logs.
 * Update the exiting deployment to use the PVC.
 * Verify the logs are persisted (even after the application dies)
 
 ---
 
 ### Cheat
-
-```
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv0002
-  labels:
-    type: local
-spec:
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/somepath/log01"
-```
-
----
 
 ```
 kind: PersistentVolumeClaim
@@ -341,20 +227,10 @@ spec:
 ---
 
 ```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-logs
-spec:
-  containers:
-  - name: nginx
-    image: nginx
+...
     volumeMounts:
     - name: logs
       mountPath: /var/log
-    command:
-      - sleep
-      - "3600"
   volumes:
     - name: logs
       persistentVolumeClaim:
@@ -364,8 +240,6 @@ spec:
 ---
 
 ### Ingress
-
-### What is ingress?
 
 Typically, services and pods have IPs only routable by the cluster network. All traffic that ends up at an edge router is either dropped or forwarded elsewhere. Conceptually, this might look like:
 ```
@@ -438,55 +312,9 @@ spec:
 
 ### Ingress Controllers
 
-This section will focus on the nginx-ingress-controller. There are others available, suchs as HAProxy or Traefik. 
+There are multiple Ingress controllers we can use, including nginx, HAProxy or Traefik. However there are some subtle differences between them.
 
-They can easily be exchanged. To check which one is best suited for you, please check the documentation of the loadbalancers if they meet your requirements.
-
-There are also implementations for hardware loadbalancers like F5 available, but I haven't seen them used out in the wild.
-
----
-
-### Specialities of the NGINX ingress controller
-The NGINX ingress controller does not use Services to route traffic to the pods. 
-
-Instead it uses the Endpoints API in order to bypass kube-proxy to allow NGINX features like session affinity and custom load balancing algorithms. 
-
-It also removes some overhead, such as conntrack entries for iptables DNAT.
-
----
-
-### Setup
-
-For the controller, the first thing we need to do is setup a default backend service for nginx.
-
-This is the default fall-back service if the controller cannot route a request to a service. The default backend needs to satisfy the following two requirements :
-* Serve a 404 page at /
-* Serve 200 on a /healthz
-
-Info on the default backend can be found [here](https://github.com/kubernetes/ingress-nginx/blob/797b6b6a55999e180cfecd9809599b14c0e5b394/images/404-server/README.md)
-
----
-
-### Create the default backend
-
-Let’s use the example default backend of the official kubernetes nginx ingress project:
-
-```
-kubectl create ns ingress-nginx
-kubectl create -f \
-https://raw.githubusercontent.com/kubernetes/ingress-nginx/gce-release-0.9.0/examples/deployment/nginx/default-backend.yaml
-
-```
-
----
-
-### Deploy the loadbalancer
-
-```
-kubectl create -f configs/ingress/ingress-daemonset.yaml
-```
-
-This will create a nginx-ingress-controller on each available node.
+Our cluster has Google's L7 ingress controller already installed.
 
 ---
 
@@ -499,21 +327,15 @@ kubectl run echoheaders --image=gcr.io/google_containers/echoserver:1.4 \
 ```
 Now we expose the same application in two different services (so we can create different Ingress rules).
 ```
-kubectl expose deployment echoheaders --port=80 --target-port=8080 \
-  --name=echoheaders-x
-kubectl expose deployment echoheaders --port=80 --target-port=8080 \
-  --name=echoheaders-y
+kubectl expose deployment echoheaders --type=NodePort --port=80 \
+  --target-port=8080 --name=echoheaders-x
+kubectl expose deployment echoheaders --type=NodePort --port=80 \
+--target-port=8080 --name=echoheaders-y
 ```
 
 ---
 
-### Create ingress rules
-
-Create some Ingress rules to explore:
-
-```
-kubectl create -f configs/ingress/ingress.yaml
-```
+### Add ingress rules (in `./kubernetes/echo-ingress.yaml`)
 
 ```
   rules:
@@ -539,6 +361,17 @@ kubectl create -f configs/ingress/ingress.yaml
 
 ---
 
+
+```
+kubectl create -f ./kubernetes/echo-ingress.yaml
+```
+
+Note this may take a few minutes spin up.
+
+Wait until you see an IP under the `ADDRESS` via `kubectl get ingress`
+
+---
+
 ### Accessing the application
 
 To access the applications via a browser you need either to edit your `/etc/hosts` file with the domains `foo.bar.com` and `bar.baz.com` pointing to the IP of your k8s cluster. Or use a browser plugin to manipulate the host header.
@@ -546,44 +379,18 @@ To access the applications via a browser you need either to edit your `/etc/host
 Here we'll use `curl`.
 
 ```
-curl -H "Host: foo.bar.com" http://<HOST_IP>/bar
-curl -H "Host: bar.baz.com" http://<HOST_IP>/bar
-curl -H "Host: bar.baz.com" http://<HOST_IP>/foo
+curl -H "Host: foo.bar.com" http://<INGRESS_ADDRESS>/bar
+curl -H "Host: bar.baz.com" http://<INGRESS_ADDRESS>/bar
+curl -H "Host: bar.baz.com" http://<INGRESS_ADDRESS>/foo
 ```
 
 ---
 
 ### Do it yourself
 
-* Deploy an nginx and expose it using a service.
-* Write an ingress manifest to expose the nginx service on port 80 listening on training.example.com/nginx
-* Access the nginx via `curl` or a browser on port 80.
-
----
-
-### Path rewrites
-
-Sometimes, you want to rewrite the path of a request to match up with the backend service.
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: apitest
-  namespace: applications
-  annotations:
-    ingress.kubernetes.io/rewrite-target: /new/get
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-  - host: "foo.bar.com"
-    http:
-      paths:
-      - path: /get/new
-        backend:
-          serviceName: echoheaders-y
-          servicePort: 80
-```
+* Expose our application via Ingress.
+* Write an ingress manifest to expose the front-end service on port 80 listening on goto-chicago.example.com/demo
+* Access the application via `curl` or a browser on port 80.
 
 ---
 
@@ -614,7 +421,7 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 We can add an HPA to our existing Deployment
 
-./resources/hpa.yaml
+./kubernetes/hpa.yaml
 
 ```
 apiVersion: autoscaling/v1
@@ -627,7 +434,7 @@ spec:
     name: k8s-real-demo
   minReplicas: 1
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 50
 ```
 
 ---
@@ -635,7 +442,7 @@ spec:
 We can create this resource on the cluster just as we have done with the others:
 
 ```
-$ kubectl apply -f ./resources/hpa.yaml
+$ kubectl apply -f ./kubernetes/hpa.yaml
 ```
 
 And view the resource with `kubectl get` and `kubectl describe`

@@ -59,7 +59,7 @@ livenessProbe:
 
 ---
 
-A simple example in Go
+A simple example (in Go)
 
 ```
 http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +144,13 @@ livenessProbe:
 
 ---
 
-Combining readiness and liveness probes help ensure only healthy containers are running within the cluster. With the liveness probe you may also monitor downstream dependencies.
+### Why do we need these?
+
+Combining readiness and liveness probes help ensure only healthy containers are running within the cluster.
+
+Readiness probes ensure applications only receive traffic when they are able to handle it.
+
+You may also monitor downstream dependencies with probes (but be careful).
 
 ---
 
@@ -432,7 +438,7 @@ containers:
 
 ---
 
-### Examples
+### Examples - CPU Requests and Limits
 
 Each container in a Pod may specify the amount of CPU it requests on a node.
 
@@ -443,9 +449,9 @@ CPU requests are used at schedule time, and represent a minimum amount of CPU th
 Let's demonstrate this concept using a simple container that will consume as much CPU as possible.
 ```
 $ kubectl run cpustress --image=busybox --requests=cpu=100m \
--- md5sum /dev/urandom
+--limits=cpu=200m -- md5sum /dev/urandom
 ```
-This will create a single Pod on your node that requests 1/10 of a CPU, but it has no limit on how much CPU it may actually consume on the node.
+This will create a single Pod on your node that requests 1/10 of a CPU, and has a limit of 2/10 of a CPU.
 
 ---
 
@@ -456,60 +462,6 @@ To demonstrate this, you can use `kubectl top Pod <PODNAME>` to view the the use
 $ kubectl get pods
 NAME                         READY     STATUS    RESTARTS   AGE
 cpustress-4101692926-zqw2p   1/1       Running   0          1m
-$ kubectl top pod cpustress-4101692926-zqw2p
-NAME                         CPU(cores)   MEMORY(bytes)
-cpustress-4101692926-zqw2p   924m         0Mi
-```
-
-As you can see it uses 924m of a 1vCPU machine.
-
----
-
-If you scale your application, we should see that each Pod is given an equal proportion of CPU time.
-
-```
-$ kubectl scale deployment cpustress --replicas=9
-```
-Once all the Pods are running, you will see that each Pod is getting approximately an equal proportion of CPU time.
-Note: it can take a moment for the top output to reflect the changes to your deployment.
-
-```
-$ kubectl top pods
-NAME                         CPU(cores)   MEMORY(bytes)
-cpustress-1696410962-08kf9   314m         0Mi
-cpustress-1696410962-r123x   310m         0Mi
-cpustress-1696410962-5r61m   314m         0Mi
-cpustress-1696410962-177g3   322m         0Mi
-cpustress-1696410962-zgfqc   322m         0Mi
-cpustress-1696410962-rh2kn   317m         0Mi
-cpustress-1696410962-nmlvs   321m         0Mi
-cpustress-1696410962-8gl26   318m         0Mi
-cpustress-1696410962-fn667   317m         0Mi
-```
-
-Each container is getting 30% of the CPU time per their scheduling request, and we are unable to schedule more.
-
----
-
-### Clean Up
-
-```
-$ kubectl delete deployment cpustress
-```
-
----
-
-### CPU Limit
-
-Setting a limit will allow you to control the maximum amount of CPU that your container can burst to.
-
-```
-$ kubectl run cpustress --image=busybox --requests=cpu=100m \
---limits=cpu=200m -- md5sum /dev/urandom
-```
-
-You can verify that by using `kubectl top pod`:
-```
 $ kubectl top pod
 NAME                         CPU(cores)   MEMORY(bytes)
 cpustress-1437538636-wkzh7   199m         0Mi
@@ -520,7 +472,7 @@ cpustress-1437538636-wkzh7   199m         0Mi
 If you scale your application, we should see that each Pod is consuming a maximum of 200m CPU shares.
 
 ```
-$ kubectl scale deployment cpustress --replicas=9
+$ kubectl scale deployment cpustress --replicas=3
 ```
 
 ---
@@ -533,12 +485,6 @@ NAME                         CPU(cores)   MEMORY(bytes)
 cpustress-2801690769-895wj   198m         0Mi
 cpustress-2801690769-735dt   198m         0Mi
 cpustress-2801690769-gm9cz   199m         0Mi
-cpustress-2801690769-ljt1w   199m         0Mi
-cpustress-2801690769-wt54n   199m         0Mi
-cpustress-2801690769-7c3tc   198m         0Mi
-cpustress-2801690769-f2blv   199m         0Mi
-cpustress-2801690769-7fm9n   201m         0Mi
-cpustress-2801690769-6ssdk   198m         0Mi
 ```
 
 ---
@@ -549,12 +495,12 @@ By default, a container is able to consume as much memory on the node as possibl
 
 ---
 
-Let's demonstrate this by creating a Pod that runs a single container which requests 100Mi of memory. The container will allocate and write to 200MB of memory every 2 seconds.
+Let's demonstrate this by creating a Pod that runs a single container which requests 100Mi of memory. The container will allocate and write to 300MB of memory every 2 seconds. We are not setting any limit on the memory.
 
 ```
 $ kubectl run memhog --image=derekwaynecarr/memhog \
   --requests=memory=100Mi --command -- /bin/sh \
-  -c "while true; do memhog -r100 200m; sleep 1; done"
+  -c "while true; do memhog -r100 300m; sleep 1; done"
 ```
 
 ---
@@ -563,7 +509,7 @@ Verify the usage with `kubectl top pod`
 ```
 $ kubectl top pod
 NAME                     CPU(cores)   MEMORY(bytes)
-memhog-328396322-dh03t   772m         200Mi
+memhog-328396322-dh03t   772m         300Mi
 ```
 
 We request 100Mi, but have burst our memory usage to a greater value. That's called Burstable.
@@ -575,29 +521,6 @@ We request 100Mi, but have burst our memory usage to a greater value. That's cal
 ```
 $ kubectl delete deploy memhog
 ```
-
----
-
-### Memory Limits
-
-If you specify a memory limit, you can constrain the amount of memory your container can use.
-
----
-
-For example, let's limit our container to 200Mi of memory, and just consume 100MB.
-
-```
-$ kubectl run memhog --image=derekwaynecarr/memhog \
-  --limits=memory=200Mi --command -- /bin/sh \
-  -c "while true; do memhog -r100 100m; sleep 1; done"
-```
-
-```
-$ kubectl top pod
-NAME                      CPU(cores)   MEMORY(bytes)
-memhog-4201114837-svfjl   632m         100Mi
-```
-As you can see we are only consuming 100MB on the node.
 
 ---
 
@@ -639,139 +562,28 @@ If any individual container consumes more than their specified limit, it will be
 
 ---
 
+### OOMScoreAdjust
+
 With *BestEffort* and *Burstable* resources it is possible that a container will request more memory than is actually available on the node.
 
-If this happens:
-* The system will attempt to prioritize the containers that are killed based on their quality of service.
-* This is done by using the OOMScoreAdjust feature in the Linux kernel
-* Processes with lower values are preserved in favor of processes with higher values.
-* The system daemons (kubelet, kube-proxy, docker) all run with low OOMScoreAdjust values.
+If this happens the system will attempt to prioritize the containers that are killed based on their quality of service.
 
 ---
 
-Containers with *Guaranteed* memory are given a lower value than *Burstable* containers which have a lower value than *BestEffort* containers. As a consequence, containers with *BestEffort* should be killed before the other tier.
+Containers with **Guaranteed** memory are given a lower value than **Burstable** containers which have a lower value than **BestEffort** containers. As a consequence, containers with **BestEffort** should be killed before the other tier.
 
 ---
 
-### Resource Quota
+### Resource Quota and Limit Range
 
-Quotas can be set per-namespace.
+Quotas and Limits can also be set on a namespace level.
 * Maximum request and limit across all Pods.
 * Applies to each type of resource (CPU, mem).
 * User must specify request or limit.
 * Maximum number of a particular kind of object.
 Ensure no user/app/department abuses the cluster.
 
-Applied at admission time.
-
 Pods which explicitly specify resource limits and requests will not pick up the namespace default values.
-
----
-
-Apply the LimitRange (`resources/limits.yaml`) to the new namespace
-```
-$ kubectl create -f resources/limits.yaml -n limit-example-user-<X>
-```
-
-```
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: mylimits
-spec:
-  limits:
-  - max:
-      cpu: "2"
-      memory: 1Gi
-    min:
-      cpu: 200m
-      memory: 6Mi
-    type: Pod
-  - default:
-      cpu: 300m
-      memory: 200Mi
-    defaultRequest:
-      cpu: 200m
-      memory: 100Mi
-    max:
-      cpu: "2"
-      memory: 1Gi
-    min:
-      cpu: 100m
-      memory: 3Mi
-    type: Container
-```
-
----
-
-Create a deployment in this namespace
-
-```
-$ kubectl run nginx --image=nginx --replicas=1 \
-  --namespace=limit-example-user-<X>
-deployment "nginx" created
-```
-
----
-
-The default values of the namespace limit will be applied to this Pod
-(`kubectl describe pod <pod_name> --namespace=<namespace_name>`)
-```bash
-$ kubectl get pods --namespace=limit-example-user-<X>
-NAME                     READY     STATUS    RESTARTS   AGE
-nginx-2371676037-tfncs   1/1       Running   0          4m
-
-$ kubectl describe pod nginx-2371676037-tfncs --namespace=limit-example-user-<X>
-...
-Containers:
-  nginx:
-    Container ID:       docker://dece4453779a2664c045ea7edc21f41382d5b067552f5d41f4d65fa984628314
-    Image:              nginx
-    Image ID:           docker://sha256:e4e6d42c70b3f79c5d57c170526592168992eb3303a6594c439302fabd92d9a3
-    Port:               <none>
-    State:              Running
-      Started:          Fri, 14 Jul 2017 12:44:24 +0000
-    Ready:              True
-    Restart Count:      0
-    Limits:
-      cpu:      300m
-      memory:   200Mi
-    Requests:
-      cpu:              200m
-      memory:           100Mi
-...
-```
-
----
-
-What if we deploy a Pod which exceeds the limit, using the following yaml:
-
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: invalid-pod
-spec:
-  containers:
-  - name: kubernetes-serve-hostname
-    image: gcr.io/google_containers/serve_hostname
-    resources:
-      limits:
-        cpu: "3"
-        memory: 100Mi
-```
-
-Try to deploy this and see what happens (`./resources/invalid-cpu-pod.yaml`)
-
----
-
-### Clean Up
-
-```
-$ kubectl delete --all pods
-$ kubectl delete --all deployments
-$ kubectl delete --all po,deploy -n limit-example-user-<X>
-```
 
 ---
 
@@ -1094,25 +906,6 @@ cat /tmp/mysec/my-super-secret-key
 
 ---
 
-One word of warning here, in case it’s not obvious: `secret.yaml` should never ever be committed to a source control system such as Git. If you do that, you’re exposing the secret and the whole exercise would have been for nothing.
-
----
-
-### Working with Secret Volumes
-
-A secret volume is used to pass sensitive information, such as passwords, to pods. You can store secrets in the Kubernetes API and mount them as files for use by pods without coupling to Kubernetes directly.
-
----
-
-Secret volumes are backed by tmpfs (a RAM-backed filesystem) so they are never written to non-volatile storage.
-Important: You must create a secret in the Kubernetes API before you can use it
-
----
-
-We'll serve a webpage via a Volume using secrets. This is definitely the wrong way to do things, but serves as an example of how secrets are dynamically updated.
-
----
-
 ### Creating a Secret Using kubectl
 
 ```
@@ -1142,54 +935,6 @@ Note that neither get nor describe shows the contents of the file by default
         - name: config
           secret:
             secretName: index
-```
-
----
-
-### Create a nginx pod
-
-```
-kubectl create -f configs/secrets/nginx-controller.yaml
-```
-
----
-
-### Validate that the nginx is working
-```
-kubectl port-forward <PODNAME> 8080:80 > /dev/null &
-```
-```bash
-curl localhost:8080
-Hello World
-```
-
----
-
-### Update the message
-```
-echo "Hello again" > configs/secrets/index.html
-```
-or just with your editor
-
----
-
-### Update your secret
-
-```
-kubectl delete secret index
-kubectl create secret generic index --from-file=configs/secrets/index.html
-```
-
-Mounted Secrets are updated automatically but it's using its local ttl-based cache for getting the current value of the secret. The total time is kubelet sync period + ttl of secrets cache in kubelet (~1min). But as we can't do at the moment `kubectl apply --from-file` this isn' working.
-
----
-
-### Validate that the index.html has updated
-
-
-```
-curl localhost:8080
-Hello again
 ```
 
 ---

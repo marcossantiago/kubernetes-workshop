@@ -56,10 +56,10 @@ A Pod is a group of one or more containers deployed and scheduled together.
 
 ### Deployment Configuration
 
-Look in "./resources" folder for the following Deployment configuration.
+The "./kubernetes" directory of the git repo contains all of the yaml configurations we will need:
 
 ```
-# resources/deployment.yaml
+# ./kubernetes/be-deployment.yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -83,7 +83,7 @@ spec:
 ### Deploy to the Cluster
 
 ```
-$ kubectl apply -f resources/deployment.yaml
+$ kubectl apply -f kubernetes/be-deployment.yaml
 ```
 
 ---
@@ -252,10 +252,10 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ### Service Configuration
 
-Look in "./resources" folder for the following Service configuration.
+Look in "./kubernetes" folder of the git repo for the Service configuration.
 
 ```
-# resources/service.yaml
+# kubernetes/be-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -277,7 +277,7 @@ spec:
 ### Create the Service
 
 ```
-$ kubectl apply -f ./resources/service.yaml
+$ kubectl apply -f ./kubernetes/be-service.yaml
 ```
 
 ---
@@ -398,18 +398,18 @@ docker push [DOCKERHUB_USER]/k8s-real-demo:v1.0.0
 
 ## Step 5: Deploy the Front-end
 
-In the /resources folder you will find configuration files for the front-end (Deployment and Service).
+In the `./kubernetes/` folder you will find configuration files for the front-end (Deployment and Service).
 
-* ./resources/front-end-deploy.yaml
-* ./resources/front-end-svc.yaml
+* ./kubernetes/fe-deployment.yaml
+* ./kubernetes/fe-service.yaml
 
 Using these configuration files deploy and expose the application on to the cluster.
 
 ```
-$ kubectl apply -f ./resources/front-end-deploy.yaml
+$ kubectl apply -f ./kubernetes/fe-deployment.yaml
 ```
 ```
-$ kubectl apply -f ./resources/front-end-svc.yaml
+$ kubectl apply -f ./kubernetes/fe-service.yaml
 
 ```
 
@@ -432,6 +432,34 @@ $ kubectl get svc front-end
 ### Storage
 
 While we would like to ideally run stateless applications on Kubernetes, we will eventually run into the challenge of requiring state within our cluster.
+
+Add some state to our application via the front end and refresh the browser a few times.
+
+---
+
+## What is happening to our entries?
+
+The current state is local only to a particular instance. So the view you get depends on which back end is hit. This is obviously not a production ready setup.
+
+We want the state to be shared across all instances.
+
+---
+
+## Problem #2
+
+Kill one of the pods and see how this affects the front end view.
+
+```
+$ kubectl delete pod k8s-real-demo-364036756
+```
+
+---
+
+## No more state
+
+The state currently shares the same lifetime as the pod. This not an acceptible setup.
+
+How can we solve this?
 
 ---
 
@@ -469,6 +497,22 @@ statefulset "cockroachdb" created
 ---
 
 Don't worry, we will cover StatefulSets and PersistentVolumes later on
+
+---
+
+### Connecting to the Database
+
+Finally we need to configure our back end to use the database instead of local storage.
+
+Add the following environment variable to the back end.
+
+```
+        env:
+        - name: SQL_DATASTORE_CONNECTION
+          value: "host=cockroachdb-public port=26257 user=root dbname=gorm sslmode=disable"
+```
+
+Restart the back end (kill all pods) for this to take effect (we will look at a better way to solve this later on).
 
 ---
 

@@ -218,7 +218,7 @@ $ gcloud container clusters create my-first-cluster
 
 ---
 
-### A bit about Roles
+### A Bit About Roles
 
 Role-based access control (RBAC) is a common approach to managing users’ access to resources or operations.
 
@@ -231,12 +231,6 @@ The basic principle is: instead of separately managing the permissions of each u
 ---
 
 ### Roles Bundle Permissions
-
-- Managing permissions per user can be a tedious task when many users are involved.
-- As users are added to the system, maintaining user permissions becomes harder and more prone to errors.
-- Incorrect assignment of permissions can block users’ access to required systems, or worse - allow unauthorized users to access restricted areas or perform risky operations.
-
----
 
 * A regular user can only perform a limited number of actions (e.g. get, watch, list).
 * A closer look into these user actions can reveal that some actions tend to go together e.g. checking logs.
