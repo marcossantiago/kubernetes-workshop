@@ -1,5 +1,5 @@
-## A Brief History of
-## Container Orchestration
+# A Brief History of
+# Container Orchestration
 
 ---
 
@@ -10,28 +10,35 @@
 
 ---
 
-<img src="img/ops_problem.jpeg" width="60%">
+<img src="img/ops_problem.jpeg">
 
 ---
 
- **Developers** "threw" software over the wall, often with little regard for complete testing or reliability.
+## Developers
+
+* "Threw" software over the wall
+* Often with little regard for complete testing or reliability
 
 ---
 
- **Operations** were responsible for keeping things running. Constantly on call and pushing back on new software & libraries.
+## Operations
+
+* Responsible for keeping things running
+* Striving for stability with software and libraries
+* Constantly on call
 
 ---
 
-<img src="img/devops-wall.jpeg" width="60%">
+<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/">
 
 ---
 
-## This led to Issues...
+## The Wall of Confusion
 
  - Long release cycles
  - Painful deployments
  - Problems with upgrades
- - Poor relations between Dev and Ops
+ - Poor relations
 
 ---
 
@@ -39,23 +46,15 @@
 
 ---
 
-## Developer Operations (???)
+## DevOps
 
  * Acknowledges Dev and Ops are on the same team
  * Attempts to tear down the Wall
- * Point #3
+ * **Teams** become responsible for running services
 
 ---
 
-## One Team
-
- - **Teams** become responsible for running services
- * Made up of both Dev and Ops
- * On-call(?)
-
----
-
-# ?How do we transition to CN?
+# ?Transition to CN?
 
 ---
 
@@ -70,17 +69,24 @@
 
 ## Cloud Native Approach
 
+<img src="img/11. Abstract diagram to represent “Cloud Native”-01.png" alt="Cloud Native">
+
+---
+
  - Follow modern techniques
    - Microservices
    - Programmable infrastructure
  - Use modern technologies
    - Containers
    - Dynamic orchestration platforms
- - 12 Factor (?)
 
 ---
 
 ## Microservices
+
+<img src="img/13. Abstract diagram to represent a “MicroServices” architecture-01.png" alt="Cloud Native">
+
+---
 
  - System architecture that uses multiple small services
  - Each one has a simple, well-defined job
@@ -94,15 +100,11 @@
 
 ---
 
-## Programmable infrastructure
+## Containers
 
- * 1
- * 2
- * 3
+<img src="img/containers.png" alt="Containers">
 
 ---
-
-## Containers
 
  - Portable format for developing and deploying applications
  - Almost synonymous with Microservices
@@ -117,7 +119,7 @@
 
 ---
 
-## What is Orchestration?
+# What is Orchestration?
 
 &nbsp;
 
@@ -178,7 +180,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Container Orchestrators
+# Container Orchestrators
 
 ---
 
@@ -204,7 +206,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Kubernetes
+# Kubernetes
 
 ---
 
@@ -226,13 +228,11 @@ effect, **especially surreptitiously**"
 
 ---
 
-### Architecture
-
-<img src="img/kubernetes-architecture.png">
+<img src="img/30. High-level Kubernetes architecture diagram-01.png">
 
 ---
 
-## Core Concepts
+## Components
 
  - Nodes
  - Pods
@@ -240,21 +240,29 @@ effect, **especially surreptitiously**"
  - Services
  - ReplicaSets
  - Deployments
- - Namespaces
  - Jobs
+ - Namespaces
 
 ---
 
 ## Nodes
 
- - Worker machine
- -- May be a VM or physical machine
- - A Node can host one or multiple Pods
- - Include Docker, kubelet and kube-proxy
+<img src="img/32. Kubernetes Node diagram-01.png">
+
+---
+
+ * Worker machine
+ * May be a VM or physical machine
+ * A Node can host one or multiple Pods
+ * Include Container runtime, kubelet and kube-proxy
 
 ---
 
 ## Pods
+
+<img src="img/33. Kubernetes Pods diagram-01.png">
+
+---
 
  - Groups of containers deployed and scheduled together
  - Atomic unit (scaling and deployment)
@@ -266,6 +274,10 @@ effect, **especially surreptitiously**"
 
 ## Flat networking space
 
+<img src="img/34. Flat Networking Space-01.png">
+
+---
+
  - All pods, across all hosts, are in the same network space
    - Can see each other without NAT
  - Simple cross host communication
@@ -273,6 +285,10 @@ effect, **especially surreptitiously**"
 ---
 
 ## Labels
+
+<img src="img/35. Kubernetes Labels diagram-01.png">
+
+---
 
  - Key/Value pairs attached to objects
     - e.g: "version: dev", "tier: frontend"
@@ -283,6 +299,10 @@ effect, **especially surreptitiously**"
 ---
 
 ## Selectors
+
+<img src="img/36. Kubernetes Selectors diagram-01.png">
+
+---
 
  - Used to query labels
    - environment = production
@@ -296,78 +316,89 @@ effect, **especially surreptitiously**"
 ## Services
 
  - Stable endpoints addressed by name
- - Forward traffic to pods
- - Pods are selected by labels
+ - Forward traffic to Pods
+ - Pods are selected by Labels
  - Round-robin load-balancing
  - Separates endpoint from implementation
 
 ---
 
-## Service Types
+<img src="img/37. Kubernetes Services diagram_A-01.png">
+
+---
+
+<img src="img/37. Kubernetes Services diagram-01.png">
+
+---
+
+## Types of Service
 
 * ClusterIP (default)
-  - Uses internal IP for service
-  - No external exposure
-
 * NodePort
-  - Service is externally exposed via port on host
-  - Same port on every host
-  - Port automatically chosen or can be specified
-
----
-
-## Service Types
-
 * LoadBalancer
-  - Exposes service externally
-  - Implementation dependent on cloud provider
-
 * ExternalName
-  - For forwarding to resources outside of k8s
 
 ---
 
-## Cluster IP Service Diagram
+## ClusterIP
+
+ * Uses internal IP for service
+ * No external exposure
 
 ---
 
-<!-- .slide: data-background="img/cluster-ip-service.png" -->
+<img src="img/41. Cluster IP Service diagram-01.png">
 
 ---
 
-## NodePort Service Diagram
+## NodePort
+
+ * Service is externally exposed via port on host
+ * Same port on every host
+ * Port automatically chosen or can be specified
 
 ---
 
-<!-- .slide: data-background="img/nodeport-service.png" data-background-size="60%"-->
+<img src="img/43. NodePort service diagram-01.png">
 
 ---
 
-## ReplicaSets
+## LoadBalancer
 
- - ReplicaSets monitor status of Pods
-   - define number of pods to run
-   - start/stop pods as needed
+ * Exposes service externally
+ * Implementation dependent on cloud provider
+
+---
+
+<img src="img/41. Cluster IP Service diagram-01.png">
+
+---
+
+## ExternalName
+
+ * For forwarding to resources outside of Kubernetes
+   * e.g. Existing database
+ * CNAME created
 
 ---
 
 ## Deployments
+
 
  - Deployments start ReplicaSets
  - Rollout/Rollback & Updates
 
 ---
 
-<!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="60%"-->
+<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Deployments">
 
 ---
 
-## Namespaces
+## ReplicaSets
 
- - Resources can be partitioned into namespaces
- - Logical groups
- - System resources run in their own namespace
- - Normally only use one namespace
+ * Monitor the status of Pods
+   - define number of pods to run
+   - start/stop pods as needed
 
 ---
 
@@ -376,6 +407,19 @@ effect, **especially surreptitiously**"
  - Typically for performing batch processing
  - Spins up short-lived pods
  - Ensures given number run to completion
+
+---
+
+## Namespaces
+
+ - Resources can be partitioned into Namespaces
+ - Logical groups
+ - System resources run in their own Namespace
+ - Normally only use one Namespace
+
+---
+
+<img src="img/47. Kubernetes Namespaces diagram-01.png" alt="Namespaces">
 
 ---
 
@@ -409,7 +453,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Kubernetes Configuration
+# Kubernetes Configuration
 
 ---
 
