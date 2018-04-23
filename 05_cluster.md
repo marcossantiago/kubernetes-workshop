@@ -1,8 +1,8 @@
-## Kubernetes Clustering
+# Kubernetes Clustering
 
 ---
 
-### In this section we will cover
+## In this section we will cover
 
 * Cluster Architecture
 * High Availability
@@ -10,18 +10,11 @@
 
 ---
 
-### Architecture
-
-
-<img src="img/kubernetes-architecture.png">
+<img src="img/3. Kubernetes architecture diagram-01.png">
 
 ---
 
-<img src="img/arch.png" width="800">
-
----
-
-<img src="img/control_plane.png" width="800">
+<img src="img/control_plane.png">
 
 ---
 
@@ -29,9 +22,9 @@
 
 ---
 
-### Master
+## Master
 
-* api-server
+* API-server
  * Provides outbound Kubernetes REST API
  * Validates requests
  * Saves cluster state to etcd
@@ -39,45 +32,47 @@
 ---
 
 
-### Master
+## Master
 
 * controller-manager
   * Runs "control loops"
   * Regulates the state of the system
-  * Watches cluster state through the api-server
+  * Watches cluster state through the API-server
   * Changes current state towards the desired state
      - e.g. checks correct number of pods running
 
 ---
 
-### Master
+## Master
 
 * Scheduler
   - Selects node on which to run a pod
 
 ---
 
-### Master
+## Master
 
 * etcd
 
- - Distributed, consistent key-value store for shared configuration and service discovery
+ - Distributed, consistent key-value store
+ - Shared configuration
+ - Service discovery
 
 ---
 
 
-### Node
+## Node
 
 * kubelet
   * Agent that runs on each node
-  * Takes a set of `PodSpecs` from API server
+  * Takes a set of `PodSpecs` from API-server
   * Starts containers to fulfill specs
   * Exposes monitoring data
 
 ---
 
 
-### Node
+## Node
 
 * kube-proxy
   * Implements service endpoints (virtual IPs)
@@ -85,12 +80,11 @@
 
 ---
 
-## High Availability
-## And Multi Region
+# High Availability and Multi Region
 
 ---
 
-### Highly Available
+## Highly Available
 
 Why do we want our systems to be Highly Available?
 
@@ -120,16 +114,13 @@ What are the potential single points of failure in a Kubernetes cluster?
 
 ---
 
-Kubernetes Architecture
-
-![Architecture](./img/k8s_arch.webp)
+<img src="img/3. Kubernetes architecture diagram-01.png">
 
 ---
 
-### HA Kubernetes
+## High Availability Kubernetes - Master
 
-**Master**
-* API Server
+* API-server
 * Controller Manager*
 * Scheduler*
 
@@ -137,44 +128,39 @@ Kubernetes Architecture
 
 ---
 
-### HA Kubernetes
+## High Availability Kubernetes - Etcd
 
-**Etcd**
-
-* Etcd maintains the state of our cluster. This is crucial to maintain high availability.
-
-* We can accomplish by creating a (minimum) 3 node Etcd cluster.
-
-* We can also use persistent storage (e.g. on a cloud provider) to ensure no data is lost.
+* Etcd maintains the state of our cluster. This is crucial to maintain high availability
+* We can accomplish by creating a (minimum) 3 node Etcd cluster
+* We can also use persistent storage (e.g. on a cloud provider) to ensure no data is lost
 
 ---
 
-![HA Architecture](./img/ha_kubernetes.svg)
+<img src="img/21. High Availability Diagram-01.png">
 
 ---
 
-
-### To co-locate Masters and Etcd nodes?
+## To co-locate Masters and Etcd nodes?
 
 This is a trade-off between managing/paying for more instances vs isolation.
 
 ---
 
-## Load Balancing the API Server
+## Load Balancing the API-server
 
 * Need to handle master failure
-* Kube-proxies need to point to API Server
+* Kube-proxies need to point to API-server
 * kubectl (or any other integration as well)
 
 ---
 
-Common HA Setup on the Cloud
+## Common HA Setup on the Cloud
 
-Spread across 3 regions
+* Spread across 3 regions
 
 ---
 
-## How to setup a Highly Available Kubernetes cluster?
+## How can I setup a Highly Available Kubernetes cluster?
 
 ---
 
@@ -186,7 +172,7 @@ $ gcloud container clusters create my-first-cluster
 
 ---
 
-### Depends on your Infrastructure
+## Depends on your Infrastructure
 
 - Google Kubernetes Engine
 - Amazon EKS
@@ -204,7 +190,7 @@ $ gcloud container clusters create my-first-cluster
 
 ---
 
-### Depends on your Needs
+## Depends on your Needs
 
 * Budget (time and money)
 * Are you running in the cloud or onprem?
@@ -214,11 +200,11 @@ $ gcloud container clusters create my-first-cluster
 
 ---
 
-## Role-based Access Control (RBAC)
+# Role-based Access Control (RBAC)
 
 ---
 
-### A bit about Roles
+## A bit about Roles
 
 Role-based access control (RBAC) is a common approach to managing users’ access to resources or operations.
 
@@ -230,7 +216,7 @@ The basic principle is: instead of separately managing the permissions of each u
 
 ---
 
-### Roles Bundle Permissions
+## Roles Bundle Permissions
 
 - Managing permissions per user can be a tedious task when many users are involved.
 - As users are added to the system, maintaining user permissions becomes harder and more prone to errors.
@@ -246,7 +232,7 @@ Managing the permissions of a small number of roles is a much easier task.
 
 ---
 
-### Basic concepts
+## Basic concepts
 
 **Rule**: grants permission
 * Applies to resource types
@@ -262,7 +248,7 @@ Managing the permissions of a small number of roles is a much easier task.
 
 ---
 
-### API overview
+## API overview
 
 The RBAC API declares four top-level types which will be covered in this section:
 * Role
@@ -272,7 +258,7 @@ The RBAC API declares four top-level types which will be covered in this section
 
 ---
 
-### Role
+## Role
 A `Role` contains rules that represent a set of permissions. Permissions are additive (there are no “deny” rules).
 
 A `Role` can be defined within a namespace, or cluster-wide (`Role` vs `ClusterRole`)
@@ -295,7 +281,7 @@ rules:
 
 ---
 
-### Cluster Role
+## Cluster Role
 
 * A `ClusterRole` can be used to grant the same permissions as a `Role`, but because they are cluster-scoped, they can also be used to grant access to:
 * cluster-scoped resources (like nodes)
@@ -303,7 +289,7 @@ rules:
 
 ---
 
-### Cluster Role
+## Cluster Role
 
 The following ClusterRole can be used to grant read access to secrets in any particular namespace, or across all namespaces
 
@@ -321,7 +307,7 @@ rules:
 
 ---
 
-### RoleBinding
+## RoleBinding
 
 A role binding grants the permissions defined in a role to a user
 
@@ -372,7 +358,7 @@ roleRef:
 
 ---
 
-### Cluster Role Binding
+## Cluster Role Binding
 A `ClusterRoleBinding` may be used to grant permission at the cluster level and in all namespaces. The following `ClusterRoleBinding` allows any user in the group “manager” to read secrets in any namespace.
 
 ```

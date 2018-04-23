@@ -1,4 +1,4 @@
-## Running in Production
+# Running in Production
 
 ---
 
@@ -9,7 +9,7 @@ But we are not yet ready for Production.
 
 ---
 
-### In this section we will cover
+## In this section we will cover
 
 - Readiness and Liveness Probes
 - Resource Requests & Limits

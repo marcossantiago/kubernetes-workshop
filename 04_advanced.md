@@ -1,4 +1,4 @@
-## Advanced Features
+# Advanced Features
 
 ---
 
@@ -6,14 +6,14 @@ We now have a 'real life' application deployed and running. We have added the ne
 
 ---
 
-### In this section we will cover
+## In this section we will cover
 
 - Autoscaling
 - Advanced Deployments
 
 ---
 
-### Auto Scaling
+## Auto Scaling
 
 As we have seen in the previous section scaling our applications is very simple. `kubectl scale deployment/k8s-real-demo replicas=5`.  However, ideally this would not be a manual action.
 
@@ -21,7 +21,7 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 ---
 
-### HorizontalPodAutoscaler (HPA)
+## HorizontalPodAutoscaler (HPA)
 
 * Periodically fetches metrics (default 30 seconds)
 * Compares to user specified target value.
@@ -32,7 +32,7 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 ---
 
-<img src="img/hpa.svg">
+<img src="img/5. Auto sclaing process-01.png">
 
 ---
 

@@ -20,3 +20,4 @@ git clone https://github.com/container-solutions/goto-k8s.git
 * [Advanced features](./04_advanced.md)
 * [Kubernetes Clustering](./05_cluster.md)
 * [Cloud Native Monitoring](./06_monitoring.md)
+* [Next Step](./07_next_steps.md)
