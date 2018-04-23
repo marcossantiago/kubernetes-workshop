@@ -38,9 +38,9 @@ title: Production Grade Kubernetes
 
 <img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/" width="75%">
 
----
+"Wall of Confusion"
 
-## The "Wall of Confusion"
+---
 
  - Long release cycles
  - Painful deployments

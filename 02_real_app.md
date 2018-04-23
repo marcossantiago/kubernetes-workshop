@@ -2,7 +2,6 @@
 showLeftCol: 'false'
 hideFirstStyle: 'false'
 showFooterText : 'true'
-email: '@iandcrosby'
 title: Production Grade Kubernetes
 ---
 
@@ -49,13 +48,13 @@ $ git clone https://github.com/idcrosby/k8s-example.git
 
 ## Recap of Resource Hierarchy
 
-### Deployment
+**Deployment**<br>
 A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
 
-### ReplicaSet
+**ReplicaSet**<br>
 A ReplicaSet ensures that a specified number of Pods are running at any given time.
 
-### Pod
+**Pod**<br>
 A Pod is a group of one or more containers deployed and scheduled together.
 
 ---
