@@ -1,3 +1,11 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+email: '@iandcrosby'
+title: Production Grade Kubernetes
+---
+
 ## Cloud Native Monitoring
 
 ---

@@ -1,16 +1,23 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # A Brief History of
 # Container Orchestration
 
 ---
 
-## In The Beginning
+## In the Beginning
 
  - **Developers** created applications
  - **Operations** hosted and maintained them
 
 ---
 
-<img src="img/ops_problem.jpeg">
+<img src="img/ops_problem.jpeg" alt="Cloud Native">
 
 ---
 
@@ -25,15 +32,15 @@
 
 * Responsible for keeping things running
 * Striving for stability with software and libraries
-* Constantly on call
+* Constantly on-call
 
 ---
 
-<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/">
+<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/" width="75%">
 
 ---
 
-## The Wall of Confusion
+## The "Wall of Confusion"
 
  - Long release cycles
  - Painful deployments
@@ -46,6 +53,10 @@
 
 ---
 
+<img src="img/devops.png">
+
+---
+
 ## DevOps
 
  * Acknowledges Dev and Ops are on the same team
@@ -54,11 +65,15 @@
 
 ---
 
-# ?Transition to CN?
+# Hello Cloud Native
 
 ---
 
-## What is Cloud Native?
+<img src="img/11. Abstract diagram to represent “Cloud Native”-01.png" alt="Cloud Native">
+
+---
+
+## Cloud Native
 
  - Architect applications for the Cloud - **First**
  - Design for Scalability
@@ -67,11 +82,7 @@
 
 ---
 
-## Cloud Native Approach
-
-<img src="img/11. Abstract diagram to represent “Cloud Native”-01.png" alt="Cloud Native">
-
----
+## Cloud Native
 
  - Follow modern techniques
    - Microservices
@@ -82,16 +93,26 @@
 
 ---
 
-## Microservices
+
+# Microservices
+
+---
 
 <img src="img/13. Abstract diagram to represent a “MicroServices” architecture-01.png" alt="Cloud Native">
 
 ---
 
+## Microservices
+
  - System architecture that uses multiple small services
  - Each one has a simple, well-defined job
  - As opposed to "monolithic" architectures
  - Lightweight Service-oriented architecture (SOA)
+
+---
+
+## Microservices
+
  - Composable
   - Talk over APIs
   - REST & HTTP / gRPC
@@ -100,11 +121,15 @@
 
 ---
 
-## Containers
+# Containers
+
+---
 
 <img src="img/containers.png" alt="Containers">
 
 ---
+
+## Containers
 
  - Portable format for developing and deploying applications
  - Almost synonymous with Microservices
