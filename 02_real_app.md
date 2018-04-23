@@ -1,8 +1,8 @@
-## A Real Application
+# A Real Application
 
 ---
 
-### In this section we will
+## In this section we will
 
 * Work with a non-trivial application
 * Create a Deployment
@@ -25,6 +25,10 @@ We will deploy these pieces one at a time on our cluster.
 
 ---
 
+<img src="img/2. Demo App-01.png">
+
+---
+
 ## Demo application
 
 Clone the demo application's repository to your VM
@@ -37,8 +41,6 @@ $ git clone https://github.com/idcrosby/k8s-example.git
 
 ## Recap of Resource Hierarchy
 
----
-
 ### Deployment
 A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
 
@@ -50,7 +52,7 @@ A Pod is a group of one or more containers deployed and scheduled together.
 
 ---
 
-<!-- .slide: data-background="img/deployments-to-containers.png" data-background-size="70%"-->
+<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Deployments">
 
 ---
 
