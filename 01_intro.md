@@ -74,6 +74,12 @@ title: Production Grade Kubernetes
 
 ---
 
+Continuous Delivery
+
+<img src="img/continous_delivery.png" alt="Continuous Delivery">
+
+---
+
 ## Continuous Delivery
 
 * Build, Test and ship code all with the push of a button
