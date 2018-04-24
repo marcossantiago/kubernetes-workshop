@@ -10,77 +10,75 @@
 
 ---
 
-<img src="img/3. Kubernetes architecture diagram-01.png">
+## Cluster Architecture
 
 ---
 
-<img src="img/control_plane.png">
-
----
-
-<img src="img/node.png">
+<img src="img/31. Detailed diagram to represent all of Kubernetes components C-01.png" alt="Kubernetes Architecture">
 
 ---
 
 ## Master
+### API server
 
-* API-server
- * Provides outbound Kubernetes REST API
- * Validates requests
- * Saves cluster state to etcd
+* Provides outbound Kubernetes REST API
+* Validates requests
+* Saves cluster state to etcd
 
 ---
 
 
 ## Master
+### Controller-manager
 
-* controller-manager
-  * Runs "control loops"
-  * Regulates the state of the system
-  * Watches cluster state through the API-server
-  * Changes current state towards the desired state
-     - e.g. checks correct number of pods running
-
----
-
-## Master
-
-* Scheduler
-  - Selects node on which to run a pod
+* Runs "control loops"
+* Regulates the state of the system
+* Watches cluster state through the API server
+* Changes current state towards the desired state
+ * e.g. checks correct number of pods running
 
 ---
 
 ## Master
+### Scheduler
 
-* etcd
+* Selects node on which to run a pod
 
- - Distributed, consistent key-value store
- - Shared configuration
- - Service discovery
+---
+
+## Master
+### etcd
+
+* Distributed, consistent key-value store
+* Shared configuration
+* Service discovery
+
+---
+
+<img src="img/31. Detailed diagram to represent all of Kubernetes components C-01.png" alt="Kubernetes Architecture">
+
+---
+
+## Node
+### kubelet
+
+* Agent that runs on each node
+* Takes a set of `PodSpecs` from API server
+* Starts containers to fulfill specs
+* Exposes monitoring data
 
 ---
 
 
 ## Node
+### kube-proxy
 
-* kubelet
-  * Agent that runs on each node
-  * Takes a set of `PodSpecs` from API-server
-  * Starts containers to fulfill specs
-  * Exposes monitoring data
+* Implements service endpoints (virtual IPs)
+* IPTables
 
 ---
 
-
-## Node
-
-* kube-proxy
-  * Implements service endpoints (virtual IPs)
-  * IPTables
-
----
-
-# High Availability and Multi Region
+# High Availability<br>and<br>Multi Region
 
 ---
 
@@ -90,21 +88,25 @@ Why do we want our systems to be Highly Available?
 
 ---
 
+<blockquote>
 "Everything fails, all the time"
+</blockquote>
 
 -Werner Vogels
 
 ---
 
-What does HA even mean?
+## What does HA even mean?
 
 ---
 
+<blockquote>
 _High availability is a characteristic of a system, which aims to ensure an agreed level of operational performance, usually uptime, for a higher than normal period._
+</blockquote>
 
 -Wikipedia
 
-(This sounds a bit vague)
+**(This sounds a bit vague)**
 
 ---
 
@@ -118,9 +120,9 @@ What are the potential single points of failure in a Kubernetes cluster?
 
 ---
 
-## High Availability Kubernetes - Master
+## High Availability - Master
 
-* API-server
+* API server
 * Controller Manager*
 * Scheduler*
 
@@ -128,9 +130,10 @@ What are the potential single points of failure in a Kubernetes cluster?
 
 ---
 
-## High Availability Kubernetes - Etcd
+## High Availability - Etcd
 
-* Etcd maintains the state of our cluster. This is crucial to maintain high availability
+* Etcd maintains the state of our cluster
+  * This is crucial to maintain high availability
 * We can accomplish by creating a (minimum) 3 node Etcd cluster
 * We can also use persistent storage (e.g. on a cloud provider) to ensure no data is lost
 
@@ -140,16 +143,16 @@ What are the potential single points of failure in a Kubernetes cluster?
 
 ---
 
-## To co-locate Masters and Etcd nodes?
+## To co-locate Masters and Etcd?
 
 This is a trade-off between managing/paying for more instances vs isolation.
 
 ---
 
-## Load Balancing the API-server
+## Load Balancing the API server
 
 * Need to handle master failure
-* Kube-proxies need to point to API-server
+* Kube-proxies need to point to API server
 * kubectl (or any other integration as well)
 
 ---
@@ -160,7 +163,7 @@ This is a trade-off between managing/paying for more instances vs isolation.
 
 ---
 
-## How can I setup a Highly Available Kubernetes cluster?
+### How can I setup a Highly Available Kubernetes cluster?
 
 ---
 
