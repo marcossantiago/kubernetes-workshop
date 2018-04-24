@@ -1,16 +1,23 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # A Brief History of
 # Container Orchestration
 
 ---
 
-## In The Beginning
+## In the Beginning
 
  - **Developers** created applications
  - **Operations** hosted and maintained them
 
 ---
 
-<img src="img/ops_problem.jpeg">
+<img src="img/ops_problem.jpeg" alt="Ops Problem">
 
 ---
 
@@ -25,15 +32,15 @@
 
 * Responsible for keeping things running
 * Striving for stability with software and libraries
-* Constantly on call
+* Constantly on-call
 
 ---
 
-<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/">
+<img src="img/devops-wall.png" alt="http://blog.anotheria.net/devops/devopsruntime-prologue/" width="75%" alt="Wall of Confusion">
 
 ---
 
-## The Wall of Confusion
+## Wall of Confusion
 
  - Long release cycles
  - Painful deployments
@@ -42,11 +49,7 @@
 
 ---
 
-# Hello DevOps!
-
----
-
-## DevOps
+## Hello DevOps!
 
  * Acknowledges Dev and Ops are on the same team
  * Attempts to tear down the Wall
@@ -54,7 +57,7 @@
 
 ---
 
-# ?Transition to CN?
+# A Cloud Native Approach
 
 ---
 
@@ -67,26 +70,26 @@
 
 ---
 
-## Cloud Native Approach
-
-<img src="img/11. Abstract diagram to represent “Cloud Native”-01.png" alt="Cloud Native">
+<img src="img/cloud_native.png" alt="Cloud Native" width="50%">
 
 ---
 
- - Follow modern techniques
-   - Microservices
-   - Programmable infrastructure
- - Use modern technologies
-   - Containers
-   - Dynamic orchestration platforms
+## Continuous Delivery
+
+* Build, Test and ship code all with the push of a button
+* Development becomes more efficient, reliable and continuous
+* Enable developers to safely push new features at a rapid pace
+* Removes risk from the build process
+
+---
+
+Microservices
+
+<img src="img/13. Abstract diagram to represent a MicroServices architecture-01.png" alt="Microservices">
 
 ---
 
 ## Microservices
-
-<img src="img/13. Abstract diagram to represent a “MicroServices” architecture-01.png" alt="Cloud Native">
-
----
 
  - System architecture that uses multiple small services
  - Each one has a simple, well-defined job
@@ -100,11 +103,13 @@
 
 ---
 
-## Containers
+Containers
 
 <img src="img/containers.png" alt="Containers">
 
 ---
+
+## Containers
 
  - Portable format for developing and deploying applications
  - Almost synonymous with Microservices
@@ -121,14 +126,14 @@
 
 # What is Orchestration?
 
-&nbsp;
+---
 
 <blockquote>
 "The planning or coordination of the elements of a situation to produce a desired
 effect, especially surreptitiously"
-</blockquote><!-- .element: class="fragment" data-fragment-index="2" -->
+</blockquote>
 
-Oxford English Dictionary<!-- .element: class="fragment" data-fragment-index="2" -->
+<small>Oxford English Dictionary</small>
 
 ---
 
@@ -228,7 +233,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/30. High-level Kubernetes architecture diagram-01.png">
+<img src="img/30. High-level Kubernetes architecture diagram-01.png" alt="Kubernetes Architecture">
 
 ---
 
@@ -238,18 +243,14 @@ effect, **especially surreptitiously**"
  - Pods
  - Labels & Selectors
  - Services
- - ReplicaSets
  - Deployments
- - Jobs
+ - ReplicaSets
  - Namespaces
+ - Jobs
 
 ---
 
 ## Nodes
-
-<img src="img/32. Kubernetes Node diagram-01.png">
-
----
 
  * Worker machine
  * May be a VM or physical machine
@@ -258,11 +259,11 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Pods
-
-<img src="img/33. Kubernetes Pods diagram-01.png">
+<img src="img/32. Kubernetes Node diagram-01.png" alt="Kubernetes Node">
 
 ---
+
+## Pods
 
  - Groups of containers deployed and scheduled together
  - Atomic unit (scaling and deployment)
@@ -272,11 +273,11 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Flat networking space
-
-<img src="img/34. Flat Networking Space-01.png">
+<img src="img/33. Kubernetes Pods diagram-01.png" alt="Kubernetes Pod">
 
 ---
+
+## Flat networking space
 
  - All pods, across all hosts, are in the same network space
    - Can see each other without NAT
@@ -284,11 +285,11 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Labels
-
-<img src="img/35. Kubernetes Labels diagram-01.png">
+<img src="img/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
 
 ---
+
+## Labels
 
  - Key/Value pairs attached to objects
     - e.g: "version: dev", "tier: frontend"
@@ -298,18 +299,22 @@ effect, **especially surreptitiously**"
 
 ---
 
-## Selectors
-
-<img src="img/36. Kubernetes Selectors diagram-01.png">
+<img src="img/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Labels">
 
 ---
 
- - Used to query labels
+## Selectors
+
+ - Used to query Labels
    - environment = production
    - tier != frontend
  - Also set based comparisons
    - environment in (production, staging)
    - tier notin (frontend, backend)
+
+---
+
+<img src="img/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Selectors">
 
 ---
 
@@ -323,11 +328,15 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/37. Kubernetes Services diagram_A-01.png">
+<img src="img/37. Kubernetes Services diagram_A-01.png" alt="Kubernetes Services 1">
 
 ---
 
-<img src="img/37. Kubernetes Services diagram-01.png">
+<img src="img/37. Kubernetes Services diagram-01.png" alt="Kubernetes Services 2">
+
+---
+
+<img src="img/36. Kubernetes Selectors diagram-01.png" alt="Kubernetes Services 3">
 
 ---
 
@@ -347,7 +356,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/41. Cluster IP Service diagram-01.png">
+<img src="img/41. Cluster IP Service diagram-01.png" alt="Kubernetes ClusterIP">
 
 ---
 
@@ -359,7 +368,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/43. NodePort service diagram-01.png">
+<img src="img/43. NodePort service diagram-01.png" alt="Kubernetes NodePort">
 
 ---
 
@@ -370,7 +379,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/41. Cluster IP Service diagram-01.png">
+<img src="img/Load balancer-01.png" alt="Kubernetes LoadBalancer">
 
 ---
 
@@ -384,29 +393,25 @@ effect, **especially surreptitiously**"
 
 ## Deployments
 
-
- - Deployments start ReplicaSets
- - Rollout/Rollback & Updates
+ * Declarative state of your Pods and ReplicaSets
+ * Handles Rollout, Rollback & Updates
 
 ---
 
-<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Deployments">
+<img src="img/45. Kubernetes Deployments diagram-01.png" alt="Kubernetes Deployments">
 
 ---
 
 ## ReplicaSets
 
- * Monitor the status of Pods
-   - define number of pods to run
-   - start/stop pods as needed
+ * Explicit definition of Desired State
+ * Monitors the status of Pods
+   * Too few? Start a new one
+   * Too many? Kill some
 
 ---
 
-## Jobs
-
- - Typically for performing batch processing
- - Spins up short-lived pods
- - Ensures given number run to completion
+<img src="img/Deployment Replicaset.png" alt="Kubernetes Deployments">
 
 ---
 
@@ -419,7 +424,15 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/47. Kubernetes Namespaces diagram-01.png" alt="Namespaces">
+<img src="img/47. Kubernetes Namespaces diagram-01.png" alt="Kubernetes Namespaces">
+
+---
+
+## Jobs
+
+ - Typically for performing batch processing
+ - Spins up short-lived pods
+ - Ensures given number run to completion
 
 ---
 
@@ -430,10 +443,7 @@ effect, **especially surreptitiously**"
  - Ingress
  - Annotations
  - Daemon Sets
- - Horizontal Pod Autoscaling
  - Network Policies
- - Resource Quotas
- - Secrets
  - Security Context
  - Service Accounts
  - ...
@@ -449,7 +459,7 @@ effect, **especially surreptitiously**"
 
 ---
 
-<img src="img/dashboard.png">
+<img src="img/dashboard.png" alt="Kubernetes Dashboard">
 
 ---
 
