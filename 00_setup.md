@@ -38,7 +38,7 @@ Execute the following commands to setup your cluster
 
 ```bash
 $ kubectl config set-cluster workshop \
-  --server=https://35.184.157.223
+  --server=https://35.184.157.223 \
   --certificate-authority=ca.pem
 ```
 
