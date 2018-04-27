@@ -62,7 +62,7 @@ The "./kubernetes" directory of the git repo contains all of the yaml configurat
 
 ```
 # ./kubernetes/be-deployment.yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: k8s-real-demo
@@ -115,21 +115,26 @@ $ kubectl describe pods <pod-name>
 
 ---
 
-### Open 2 Terminals
-
-#### Terminal 1
-
 ```
-$ kubectl port-forward <pod-name> 8080:8080
+$ kubectl port-forward <pod-name> 8080 &
 ```
-
-#### Terminal 2
 
 ```
 $ curl 0.0.0.0:8080
 
 Hello from Container Solutions.
 I'm running version 1.0 on k8s-real-demo-648d67845-hh8bn
+```
+
+---
+
+### Clean Up
+
+`port-forward` is meant for testing services that are not exposed. To expose the application, use a Service (covered later).
+
+Kill port forward
+```
+$ kill %2
 ```
 
 ---
