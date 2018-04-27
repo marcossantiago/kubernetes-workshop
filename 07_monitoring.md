@@ -1,4 +1,11 @@
-## Cloud Native Monitoring
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
+# Cloud Native Monitoring
 
 ---
 
@@ -134,3 +141,7 @@ If you've finished all this, and you have some extra time, browse to the alertma
 `cd /deploy/kubernetes/manifests-alerting/`
 
 Investigate the Prometheus alertmanager which provides an alert mechanism for Prometheus.
+
+---
+
+[What Next?](../08_next_steps.md)

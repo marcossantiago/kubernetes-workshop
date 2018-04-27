@@ -1,3 +1,10 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 ## Workshop Setup
 
 ---
@@ -32,9 +39,13 @@ $ wget https://storage.googleapis.com/goto-chicago/ca.pem
 
 ---
 
-### Configure your Kubernetes cluster
+## Configure your Kubernetes cluster
 
 Execute the following commands to setup your cluster
+
+---
+
+## Step 1: Point to the Cluster
 
 ```bash
 $ kubectl config set-cluster workshop \
@@ -42,11 +53,19 @@ $ kubectl config set-cluster workshop \
   --certificate-authority=ca.pem
 ```
 
+---
+
+## Step 2: Authenticate
+
 ```bash
 $ kubectl config set-credentials workshop-user \
   --username=[PROVIDED USERNAME] \
   --password=[PROVIDED PASSWORD]
 ```
+
+---
+
+## Step 3: Set Context
 
 ```bash
 $ kubectl config set-context workshop \
@@ -54,6 +73,10 @@ $ kubectl config set-context workshop \
   --user=workshop-user \
   --namespace=[PROVIDED USERNAME]
 ```
+
+---
+
+## Step 4: Connect
 
 ```bash
 $ kubectl config use-context workshop
@@ -71,7 +94,3 @@ $ kubectl cluster-info
 Kubernetes master is running at https://...
 ....
 ```
-
----
-
-[On to the first lab...](../01_intro.md)

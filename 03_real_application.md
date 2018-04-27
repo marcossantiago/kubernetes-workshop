@@ -1,3 +1,10 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # A Real Application
 
 ---
@@ -532,5 +539,5 @@ Restart the back end (kill all pods) for this to take effect (we will look at a 
 
 ---
 
-[Next up, heading to Production...](../03_productionize.md)
+[Next up, heading to Production...](../04_productionize.md)
 

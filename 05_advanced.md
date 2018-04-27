@@ -1,3 +1,10 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # Advanced Features
 
 ---
@@ -668,4 +675,4 @@ spec:
 
 ---
 
-[Next up Setting up an HA cluster](../05_cluster.md)
+[Next up Setting up an HA cluster](../06_cluster.md)

@@ -1,3 +1,10 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # Running in Production
 
 ---
@@ -950,5 +957,5 @@ Note that neither get nor describe shows the contents of the file by default
 
 ---
 
-[Next up advanced Kubernetes features...](./04_advanced.md)
+[Next up advanced Kubernetes features...](./05_advanced.md)
 

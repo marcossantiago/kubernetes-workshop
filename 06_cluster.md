@@ -1,3 +1,10 @@
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
 # Kubernetes Clustering
 
 ---
@@ -376,4 +383,4 @@ roleRef:
 
 ---
 
-[Next up Monitoring...](../06_monitoring.md)
+[Next up Monitoring...](../07_monitoring.md)

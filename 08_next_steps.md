@@ -1,4 +1,11 @@
-## What Next?
+---
+showLeftCol: 'false'
+hideFirstStyle: 'false'
+showFooterText : 'true'
+title: Production Grade Kubernetes
+---
+
+# What Next?
 
 ---
 
