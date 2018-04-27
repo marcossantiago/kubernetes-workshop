@@ -158,7 +158,7 @@ You may also monitor downstream dependencies with probes (but be careful).
 
 ---
 
-Look in "resources" folder for the "Healthy Monolith" Pod configuration.
+Look in "healthy-monolith" folder for a Pod configuration.
 
 ```
 ...
@@ -183,7 +183,7 @@ Look in "resources" folder for the "Healthy Monolith" Pod configuration.
 
 Create the healthy-monolith pod using
 ```
-$ kubectl create -f ./resources/healthy-monolith.yaml
+$ kubectl create -f ./healthy-monolith/pod.yaml
 ```
 
 Thanks to Kelsey Hightower for this application
@@ -276,7 +276,7 @@ $ curl http://127.0.0.1:10081/healthz/status
 ### Clean Up
 
 ```
-$ kubectl delete -f ./resources/healthy-monolith.yaml
+$ kubectl delete -f ./healthy-monolith/pod.yaml
 ```
 
 ---
@@ -285,12 +285,12 @@ $ kubectl delete -f ./resources/healthy-monolith.yaml
 
 ---
 
-### Add Probes for our k8s-real-demo service
+### Add Probes for our Real App service
 
-* Add Readiness probe to the Deployment
+* Add Readiness probe to the back-end Deployment
  * Hint: endpoints are already implemented in the code `server.go`
 * Deploy the updated config
-* Add Liveness probe to the Deployment
+* Add Liveness probe to the back-end Deployment
 * Deploy the updated config
 * Verify the probes are working
 
@@ -591,9 +591,9 @@ Pods which explicitly specify resource limits and requests will not pick up the 
 
 ---
 
-### Add Resources to the k8s-real-demo service
+### Add Resources to the Real App service
 
-* Add a resources section to the Deployment
+* Add a resources section to the back-end Deployment
 * Add Limits and Requests for memory and CPU
 * Apply the updated config
 * Trigger high CPU on our app via the `/mineBitcoin` endpoint and verify the CPU limit is respected
@@ -606,7 +606,7 @@ Pods which explicitly specify resource limits and requests will not pick up the 
 
 ### ConfigMaps & Secrets
 
-ConfigMaps and Secrets are designed to separate configuration data from your applications. This may include api keys, tokens, passwords, or just configuration parameters.
+ConfigMaps and Secrets are designed to separate configuration data from your applications. This may include API keys, tokens, passwords, or just configuration parameters.
 
 ---
 
@@ -872,6 +872,7 @@ Currently there is no other type available, also no other "encryption" method de
 ### Using the Secret
 
 Create a pod with the secret
+
 ```
 apiVersion: v1
 kind: Pod
@@ -891,6 +892,7 @@ spec:
         - mountPath: "/tmp/mysec"
           name: "secret"
 ```
+
 ```
 kubectl create -f secret.yaml -f pod_secret.yaml
 ```
