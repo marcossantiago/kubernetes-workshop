@@ -8,7 +8,7 @@ We now have a 'real life' application deployed and running. We have added the ne
 
 ## In this section we will cover
 
-- Volumes / Storage
+- Storage / Volumes
 - Ingress
 - Autoscaling
 - Advanced Deployments
@@ -17,19 +17,19 @@ We now have a 'real life' application deployed and running. We have added the ne
 
 ### Storage
 
- - A Pod is made up of one or more containers and data volumes that can be mounted inside the containers. 
- - In this section you will learn how to: 
+ - A Pod is made up of one or more containers and data volumes that can be mounted inside the containers.
+ - In this section you will learn how to:
 
 * define a deployment backed by a emptyDir
 * define a deployment backed by a emptyDir(memory backed storage)
-* define a deployment backed by a persistent volume and persistent volume claim 
+* define a deployment backed by a persistent volume and persistent volume claim
 * define a deployment backed by a persistent volume and persistent volume claim using a StorageClass
 
 ---
 
 ### Volumes
 
-Volumes are means to save data, as well as share it between containers. Any volumes in a pod are accessible by all containers running inside that same pod. The data is persisted across container restarts. 
+Volumes are means to save data, as well as share it between containers. Any volumes in a pod are accessible by all containers running inside that same pod. The data is persisted across container restarts.
 
 There are a large number of implementations to back the storage. From local options such as `hostPath`, cloud specific options such as `awsElasticBlockStore`, distributed storage such as `ceph` or `nfs`, and many many more.
 
@@ -41,13 +41,13 @@ There are a large number of implementations to back the storage. From local opti
 
 ---
 
- * The volume is of type `emptyDir`. 
- * The kubelet will create an empty directory on the node when the Pod is scheduled. 
+ * The volume is of type `emptyDir`.
+ * The kubelet will create an empty directory on the node when the Pod is scheduled.
  * Once the Pod is destroyed, the kubelet will delete the directory.
 
 ---
 
-Find the `empty-dir.yaml` file in the `./kuberetes/` folder
+Find the `pod-empty-dir.yaml` file in the `./real-app/` folder
 
 ```
 apiVersion: v1
@@ -61,7 +61,7 @@ spec:
     volumeMounts:
     - name: test
       mountPath: /busy
-    command:  
+    command:
       - sleep
       - "3600"
   - name: box
@@ -74,15 +74,15 @@ spec:
       - "3600"
   volumes:
   - name: test
-    emptyDir: {} 
-``` 
+    emptyDir: {}
+```
 
 ---
 
 Apply the configuration file:
 
 ```
-kubectl apply -f ./kubernetes/empty-dir.yaml
+kubectl apply -f ./real-app/pod-empty-dir.yaml
 ```
 
 This create a single pod with two containers and one volume.
@@ -105,7 +105,7 @@ $ ls /box
 
 ---
 
-Exit from the ccontainer and exec into the second:
+Exit from the container and exec into the second:
 
 ```
 #exit
@@ -162,7 +162,7 @@ $ kubectl describe storageclass standard
 
 ---
 
-First we create a persistent volume claim including the above storage class. (This file can be found at `./kubernetes/pvc.yaml`). Be sure to replace the <MY_SC_CLAIM>.
+First we create a persistent volume claim including the above storage class. (This file can be found at `./real-app/persistent-volume.yaml`). Be sure to replace the <MY_SC_CLAIM>.
 
 ```
 kind: PersistentVolumeClaim
@@ -184,7 +184,7 @@ spec:
 Let's create the claim and then verify that a persistent volume is created automatically. It should be bound to the claim requesting storage.
 
 ```
-$ kubectl create -f pvc.yaml
+$ kubectl create -f real-app/persistent-volume.yaml
 $ kubectl get pv
 $ kubectl get pvc
 ```
@@ -338,7 +338,7 @@ kubectl expose deployment echoheaders --type=NodePort --port=80 \
 
 ---
 
-### Add ingress rules (in `./kubernetes/echo-ingress.yaml`)
+### Add ingress rules (in `./real-app/ingress-echo.yaml`)
 
 ```
   rules:
@@ -348,7 +348,7 @@ kubectl expose deployment echoheaders --type=NodePort --port=80 \
           - path: /foo
             backend:
               serviceName: echoheaders-x
-              servicePort: 80           
+              servicePort: 80
     - host: bar.baz.com
       http:
         paths:
@@ -366,7 +366,7 @@ kubectl expose deployment echoheaders --type=NodePort --port=80 \
 
 
 ```
-kubectl create -f ./kubernetes/echo-ingress.yaml
+kubectl create -f ./real-app/ingress-echo.yaml
 ```
 
 Note this may take a few minutes spin up.
@@ -392,14 +392,14 @@ curl -H "Host: bar.baz.com" http://<INGRESS_ADDRESS>/foo
 ### Do it yourself
 
 * Expose our application via Ingress.
-* Write an ingress manifest to expose the front-end service on port 80 listening on goto-chicago.example.com/demo
+* Write an ingress manifest to expose the front-end service on port 80 listening on pgk.example.com/demo
 * Access the application via `curl` or a browser on port 80.
 
 ---
 
 ## Auto Scaling
 
-As we have seen in the previous section scaling our applications is very simple. `kubectl scale deployment/k8s-real-demo replicas=5`.  However, ideally this would not be a manual action.
+As we have seen in the previous section scaling our applications is very simple using kubectl. However, ideally this would not be a manual action.
 
 Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
@@ -424,17 +424,17 @@ Kubernetes supports this via the `HorizontalPodAutoscaler` resource.
 
 We can add an HPA to our existing Deployment
 
-./kubernetes/hpa.yaml
+./real-app/pod-auto-scaler.yaml
 
 ```
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: k8s-real-demo-hpa
+  name: pgk-hpa
 spec:
   scaleTargetRef:
     kind: Deployment
-    name: k8s-real-demo
+    name: pgk-back-deployment
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 50
@@ -445,7 +445,7 @@ spec:
 We can create this resource on the cluster just as we have done with the others:
 
 ```
-$ kubectl apply -f ./kubernetes/hpa.yaml
+$ kubectl apply -f ./real-app/pod-auto-scaler.yaml
 ```
 
 And view the resource with `kubectl get` and `kubectl describe`
@@ -470,7 +470,7 @@ Kubernetes offers a variety of ways to release an application.
 
 The correct option depends on your specific requirements and use case.
 
-In this section we will try out several options and look at some possible use cases.
+In this section we will look at several options.
 
 ---
 
@@ -479,161 +479,192 @@ In this section we will try out several options and look at some possible use ca
 - **Recreate**: Terminate the old version then release a new one
 - **Ramped**: Release a new version via a rolling update
 - **Blue/Green**: Release a new version alongside the old version then switch traffic
-- **Canary**: Release a new version to a subset of users, then proceed to a full rollout
+- **Canary**: Release a new version to a subset of users, then proceed to a full roll-out
 - **A/B testing**: release a new version to a subset of users in a precise way (HTTP headers, cookie, weight, etc.).
 
 ---
 
-## Recreate deployment
+## Recreate
 
-First terminate (all instances of) the old version and then release the new one.
+---
 
-Add the below `strategy` section to your existing deployment.yaml and remove the `env` section
+* Best for Development environments
+* Terminates all the running instances then recreates them with the newer version
 
-```yaml
-...
+```
 spec:
   replicas: 3
   strategy:
     type: Recreate
-...
-
-```
-
-```
-$ kubectl apply -f ./resources/deployment.yaml
 ```
 
 ---
 
-Verify the deployment:
+### Pros
+* Application state entirely renewed
 
-```
-$ curl $EXTERNAL_IP:[NodePort]
-Hello from Container Solutions.
-I'm running version 2.1 on k8s-real-demo-5449767b94-hnk78
-```
-
-In the output we can see both the Pod ID as well as the version of the application.
+### Cons
+* Downtime that depends on both shutdown and boot duration of the application
 
 ---
 
-To see the deployment in action, open a new terminal and run the following command in another terminal:
-
-```
-$ watch -n1 kubectl get po
-```
-or
-```
-$ kubectl get po -w
-```
-
-Then deploy the version 2 of the application:
-
-```
-$ kubectl set image deploy/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
-```
+## Ramped
 
 ---
 
-Now test the second deployment progress.
+* When you need a slow rollout
+* Updates pods in a rolling update fashion, a secondary ReplicaSet is created with the new version of the application, then the number of replicas of the old version is decreased and the new version is increased until the correct number of replicas is reached.
+* You can specify maxUnavailable and maxSurge to control the rolling update process
 
-(N.B. Since we are not removing the service, the NodePort will not change)
+---
+
+<img src="img/deployment_strategy_ramped.png" alt="Ramped deployment">
+
+---
 
 ```
-$ export SERVICE_URL=$EXTERNAL_IP:[NodePort]
-$ while sleep 0.1; do curl $SERVICE_URL; done;
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2        # how many pods we can add at a time
+      maxUnavailable: 0  # maxUnavailable define how many pods can be unavailable
+                         # during the rolling update
 ```
 
 ---
 
-## Blue/Green Deployment
-Release a new version alongside the old version then switch traffic
+### Pros
+* Version is slowly released across instances
+* Convenient for stateful applications that can handle rebalancing of the data
 
+### Cons
+* Rollout/rollback can take time
+* Supporting multiple APIs is hard
+* No control over traffic
 
-Deploy the first application
+---
+
+## Blue/Green
+
+---
+
+* Best to avoid API versioning issues
+* Differs from a ramped deployment because the “green” version of the application is deployed alongside the “blue” version
+* After testing that the new version meets the requirements, update the Kubernetes Service object that plays the role of load balancer to send traffic to the new version by replacing the version label in the selector field
+
+---
+
+<img src="img/deployment_strategy_blue_green.png" alt="Blue/Green deployment">
+
+---
 
 ```
-$ kubectl apply -f ./resources/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+ name: my-app
+ labels:
+   app: my-app
+spec:
+ type: NodePort
+ ports:
+ - name: http
+   port: 8080
+   targetPort: 8080
+
+ # Note here that we match both the app and the version.
+ # When switching traffic, we update the label “version” with
+ # the appropriate value, ie: v2.0.0
+ selector:
+   app: my-app
+   version: v1.0.0
 ```
 
 ---
 
-Test if the deployment was successful
+### Pros
+* Instant rollout/rollback
+* Avoid versioning issue, change the entire cluster state in one go
 
-```
-$ curl $EXTERNAL_IP:[NodePort]
-Hello from Container Solutions.
-I'm running version 1.0 on k8s-real-demo-5449767b94-hnk78
-```
-
----
-
-To see the deployment in action, open a new terminal and run the following command:
-
-```
-$ kubectl get po -w
-```
-
-Then create a second deploy with version 2 of the application:
-
-```
-$ kubectl apply -f ./resources/deployment-v2.yaml
-```
+### Cons
+* Requires double the resources
+* Proper test of the entire platform should be done before releasing to production
+* Handling stateful applications can be hard
 
 ---
 
-Side by side, 3 pods are running with version 2 but the service still send traffic to the first deployment.
-
-Try manually test one of the new pods by port-forwarding it to your local environment.
+## Canary
 
 ---
 
-Once your are ready, you can switch the traffic to the new version by patching the service to send traffic
-to all pods with label app: k8s-real-demo-v2:
-
-```
-$ kubectl patch service my-app -p \
-'{"spec":{"selector":{"app: k8s-real-demo-v2}}}'
-```
-
-Alternatively you can use
-
-```
-$ kubectl edit service k8s-real-demo
-```
+* Let the consumer do the testing
+* Routing a subset of users to a new functionality
+* Can be done using two Deployments with common pod labels.
+  * One replica of the new version is released alongside the old version.
+  * Then after some time and if no error is detected, scale up the number of replicas of the new version and delete the old deployment
+* Requires spinning-up as many pods as necessary to get the right percentage of traffic
 
 ---
 
-Test if the second deployment was successful:
-
-```
-$ export SERVICE_URL=$EXTERNAL_IP:[NodePort]
-$ while sleep 0.1; do curl $SERVICE_URL; done;
-```
-
-In case you need to rollback to the previous version:
-
-```bash
-$ kubectl patch service my-app -p \
-'{"spec":{"selector":{"version":"v1.0.0"}}}'
-```
+<img src="img/deployment_strategy_canary.png" alt="Canary deployment">
 
 ---
 
-If everything is working as expected, you can then delete the v1.0.0 deployment:
+### Pros
+* Version released for a subset of users
+* Convenient for error rate and performance monitoring
+* Fast rollback
 
-```
-$ kubectl delete deploy my-app-v1
-```
+### Cons
+* Slow rollout
+* Fine tuned traffic distribution can be expensive (99% A/ 1%B = 99 pod A, 1 pod B)
 
 ---
 
-### Clean Up
+## A/B testing
 
-```
-$ kubectl deployment k8s-real-demo
-```
+---
+
+* Best for feature testing on a subset of users
+* Actually a technique for making business decisions based on statistics, rather than a deployment strategy
+* However, it is related and can be implemented using a canary deployment
+* In addition to distributing traffic amongst versions based on weight, you can precisely target a given pool of users based on a few parameters (cookie, user agent, etc.)
+* This technique is widely used to test conversion of a given feature and only rollout the version that converts the most
+
+---
+
+<img src="img/deployment_strategy_a_b_testing.png" alt="A/B deployment">
+
+---
+
+### Pros
+* Requires intelligent load balancer
+* Several versions run in parallel
+* Full control over the traffic distribution
+
+### Cons
+* Hard to troubleshoot errors for a given session, distributed tracing becomes mandatory
+* Not straightforward, you need to setup additional tools
+  * e.g. Istio, Linkerd, Traefik, NGINX, HAProxy
+---
+
+## In Summary
+
+* Development/Staging environments: Recreate or Ramped deployment is usually a good choice
+* Production: Ramped or Blue/Green deployment is usually a good fit
+* Not confident with the stability of the platform? A canary release should be the way to go
+* Business requires testing of a new feature amongst a specific pool of users? A/B testing
+
+---
+
+## What have we Learned?
+
+- How to persist data in the cluster using Volumes
+- How to expose your application with an Ingress
+- Autoscaling
+- Advanced Deployments strategies
 
 ---
 
