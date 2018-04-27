@@ -276,15 +276,18 @@ An Ingress controller is responsible for fulfilling the Ingress, usually with a 
 
 In order for the Ingress resource to work, the cluster must have an `Ingress Controller` running.
 
-An `Ingress Controller` is a daemon, deployed as a Kubernetes Pod, that watches the ApiServer's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for ingress.
+An `Ingress Controller` is a daemon, deployed as a Kubernetes Pod, that watches the ApiServer's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for ingress or configures a Cloud LoadBalancer such as ELB or Google Cloud LoadBalancer.
 
 ---
 
 ### Ingress Workflow
 
 * Poll until apiserver reports a new Ingress.
-* Write the LB config file based on a go text/template.
-* Reload LB config.
+* Hosted LB:
+  * Write the LB config file based on a go text/template.
+  * Reload LB config.
+* Cloud LB:
+  * Update configuration
 
 ---
 
