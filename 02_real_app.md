@@ -34,7 +34,7 @@ We will deploy these pieces one at a time on our cluster.
 Clone the demo application's repository to your VM
 
 ```bash
-$ git clone https://github.com/idcrosby/k8s-example.git
+$ git clone https://github.com/ContainerSolutions/ws-production-grade-kubernetes.git
 ```
 
 ---
@@ -58,34 +58,35 @@ A Pod is a group of one or more containers deployed and scheduled together.
 
 ### Deployment Configuration
 
-The "./kubernetes" directory of the git repo contains all of the yaml configurations we will need:
+The "./real-app" directory of the git repo contains all of the yaml configurations we will need:
 
 ```
-# ./kubernetes/be-deployment.yaml
+# ./real-app/deployment-back-end.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-real-demo
+  name: pgk-back-deployment
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: k8s-real-demo
+        app: real-app
+        tier: backend
     spec:
       containers:
-      - name: k8s-real-demo
-        image: icrosby/k8s-real-demo
-        ports:
-        - containerPort: 8080
+        - name: production-grade-be
+          image: icrosby/k8s-real-demo:latest
+          ports:
+            - containerPort: 8080
 ```
 
 ---
 
-### Deploy to the Cluster
+### Deploy Back-end to the cluster
 
 ```
-$ kubectl apply -f kubernetes/be-deployment.yaml
+$ kubectl apply -f real-app/deployment-back-end.yaml
 ```
 
 ---
@@ -101,7 +102,7 @@ $ kubectl get pods
 ```
 
 ```
-$ kubectl describe pods <pod-name>
+$ kubectl describe pods <POD-NAME>
 ```
 
 ---
@@ -110,20 +111,20 @@ $ kubectl describe pods <pod-name>
 
 * Pods get a private IP address by default.
 * Cannot be reached from outside the cluster.
-* Use `kubectl port-forward` to map a local port to a port inside the `k8s-real-demo` pod.
+* Use `kubectl port-forward` to map a local port to a port inside a pod.
 
 
 ---
 
 ```
-$ kubectl port-forward <pod-name> 8080 &
+$ kubectl port-forward <POD-NAME> 8080 &
 ```
 
 ```
 $ curl 0.0.0.0:8080
 
 Hello from Container Solutions.
-I'm running version 1.0 on k8s-real-demo-648d67845-hh8bn
+I'm running version 1.0 on ...
 ```
 
 ---
@@ -150,7 +151,7 @@ $ kill %2
 $ kubectl get rs
 
 NAME                   DESIRED   CURRENT   READY     AGE
-k8s-real-demo-364036756   1         1         1         16s
+...                    1         1         1         16s
 ```
 
 ---
@@ -158,9 +159,9 @@ k8s-real-demo-364036756   1         1         1         16s
 ### Scale up/down the Deployment
 
 ```
-$ kubectl scale deployments k8s-real-demo --replicas=2
+$ kubectl scale deployments pgk-back-deployment --replicas=2
 
-deployment "k8s-real-demo" scaled
+deployment "pgk-back-deployment" scaled
 ```
 
 ---
@@ -175,7 +176,7 @@ $ kubectl get pods
 Look at the `Events` at the bottom
 
 ```
-$ kubectl describe deployment k8s-real-demo
+$ kubectl describe deployment pgk-back-deployment
 ```
 
 ---
@@ -186,7 +187,7 @@ What happens if we kill one of the Pods?
 
 ```
 $ kubectl get pods
-$ kubectl delete pod <pod-name>
+$ kubectl delete pod <POD-NAME>
 ```
 
 ---
@@ -197,10 +198,10 @@ $ kubectl delete pod <pod-name>
 
 ### View the logs of a Pod
 
-Use `kubectl logs` to view the logs for the `<pod-name>` Pod:
+Use `kubectl logs` to view the logs for the `<POD-NAME>` Pod:
 
 ```
-$ kubectl logs <pod-name>
+$ kubectl logs <POD-NAME>
 ```
 
 > Use the -f flag and observe what happens.
@@ -212,7 +213,7 @@ $ kubectl logs <pod-name>
 Execute a shell in a Pod, like in Docker:
 
 ```
-$ kubectl exec -ti <pod-name> /bin/sh
+$ kubectl exec -ti <POD-NAME> /bin/sh
 ```
 
 ---
@@ -259,16 +260,14 @@ $ kubectl exec -ti <pod-name> /bin/sh
 
 ### Service Configuration
 
-Look in "./kubernetes" folder of the git repo for the Service configuration.
+Look in "./real-app" folder of the Git repo for the Service configuration.
 
 ```
-# kubernetes/be-service.yaml
+# real-app/service-back-end.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: k8s-real-demo
-  labels:
-    app: k8s-real-demo
+  name: pgk-back-service
 spec:
   type: NodePort
   ports:
@@ -276,7 +275,8 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: k8s-real-demo
+    tier: backend
+
 ```
 
 ---
@@ -284,7 +284,7 @@ spec:
 ### Create the Service
 
 ```
-$ kubectl apply -f ./kubernetes/be-service.yaml
+$ kubectl apply -f ./real-app/service-back-end.yaml
 ```
 
 ---
@@ -330,14 +330,14 @@ First check the current version running
 $ curl [EXTERNAL_IP]:[NodePort]
 
 Hello from Container Solutions.
-I'm running version 1.0 on k8s-real-demo-648d67845-jml8j
+I'm running version 1.0 on ...
 ```
 
 Next, update the image:
 
 ```
 $ kubectl set image \
-  deployment/k8s-real-demo k8s-real-demo=icrosby/k8s-real-demo:v2
+  deployment/pgk-back-deployment k8s-real-demo=icrosby/k8s-real-demo:v2
 ```
 
 ---
@@ -347,7 +347,7 @@ $ kubectl set image \
 Check status via
 
 ```
-kubectl rollout status deployment k8s-real-demo
+kubectl rollout status deployment pgk-back-deployment
 ```
 
 Now verify the new version
@@ -365,8 +365,6 @@ $ curl [EXTERNAL_IP]:[NodePort]
 ## Step 1: Build your own Image
 
 Build your own image and push to Docker Hub.
-
-Open the example application in "k8s-example/"
 
 ```
 docker build -t [DOCKERHUB_USER]/k8s-real-demo:v1.0.0 .
@@ -405,18 +403,19 @@ docker push [DOCKERHUB_USER]/k8s-real-demo:v1.0.0
 
 ## Step 5: Deploy the Front-end
 
-In the `./kubernetes/` folder you will find configuration files for the front-end (Deployment and Service).
+In the `./real-app/` folder you will find configuration files for the front-end (Deployment and Service).
 
-* ./kubernetes/fe-deployment.yaml
-* ./kubernetes/fe-service.yaml
+* ./real-app/deployment-front-end.yaml
+* ./real-app/service-front-end.yaml
 
 Using these configuration files deploy and expose the application on to the cluster.
 
 ```
-$ kubectl apply -f ./kubernetes/fe-deployment.yaml
+$ kubectl apply -f ./real-app/deployment-front-end.yaml
 ```
+
 ```
-$ kubectl apply -f ./kubernetes/fe-service.yaml
+$ kubectl apply -f ./real-app/service-front-end.yaml
 
 ```
 
@@ -427,7 +426,7 @@ $ kubectl apply -f ./kubernetes/fe-service.yaml
 Find the port on which the front end is exposed (via the Service) and access this in your browser.
 
 ```
-$ kubectl get svc front-end
+$ kubectl get svc pgk-front-service
 ```
 
 ---
@@ -457,14 +456,14 @@ We want the state to be shared across all instances.
 Kill one of the pods and see how this affects the front end view.
 
 ```
-$ kubectl delete pod k8s-real-demo-364036756
+$ kubectl delete pod <POD-NAME>
 ```
 
 ---
 
 ## No more state
 
-The state currently shares the same lifetime as the pod. This not an acceptible setup.
+The state currently shares the same lifetime as the pod. This not an acceptable setup.
 
 How can we solve this?
 
