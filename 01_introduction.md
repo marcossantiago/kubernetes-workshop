@@ -26,7 +26,7 @@ title: Production Grade Kubernetes
 
 ---
 
-# DevOps
+# Dev & Ops
 
 ---
 
@@ -38,18 +38,6 @@ title: Production Grade Kubernetes
 
 ---
 
-## A "Wall of Confusion"
-
- - Long release cycles
- - Painful deployments
- - Constant push back on new software/libraries
- - Problems with upgrades
- - Poor relations between Developers and Operations
-
----
-
-## Hello DevOps!
-
  * Acknowledges Dev and Ops are on the same team
  * Attempts to tear down the Wall
  * **Teams** become responsible for running services
@@ -60,15 +48,13 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/ci_manual_deployment.jpg" alt="Wall of Confusion" width="200%">
+<img src="img/ci_manual_deployment.jpg" alt="Manual Deployment" width="200%">
 
 ---
 
 <img src="img/continous_delivery.png" alt="Continuous Delivery">
 
 ---
-
-## Hello Continuous Delivery!
 
 * Build, Test and ship code all with the push of a button
 * Development becomes more efficient, reliable and continuous
@@ -88,8 +74,6 @@ title: Production Grade Kubernetes
 <img src="img/13. Abstract diagram to represent a MicroServices architecture-01.png" alt="Microservices">
 
 ---
-
-## Hello Microservices!
 
 * Architectural ideas from lightweight Service Oriented Architecture
  * services are small - fine-grained to perform a single function
@@ -112,8 +96,6 @@ title: Production Grade Kubernetes
 <img src="img/containers.png" alt="Containers">
 
 ---
-
-## Hello Containers!
 
  - Portable format for developing and deploying applications
  - Almost synonymous with Microservices
@@ -222,4 +204,4 @@ effect, **especially surreptitiously**"
 
 ---
 
-[Next up, Kubernetes!](../02_real_app.md)
+[Next up, Kubernetes!](../02_kubernetes.md)
