@@ -71,15 +71,30 @@ title: Production Grade Kubernetes
 
 ---
 
-## Flat networking space
+## Kubernetes Configuration
 
- - All pods, across all hosts, are in the same network space
-   - Can see each other without NAT
- - Simple cross host communication
+ - Use configuration files to manage resources
+ - Specified in YAML or JSON
+  - YAML tends to be more user-friendly
+ - Can be combined
+ - Should be stored in version control
 
 ---
 
-<img src="img/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
+## Pod Config Example
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    ports:
+    - containerPort: 80
+```
 
 ---
 
@@ -112,6 +127,18 @@ title: Production Grade Kubernetes
 
 ---
 
+## Flat networking space
+
+ - All pods, across all hosts, are in the same network space
+   - Can see each other without NAT
+ - Simple cross host communication
+
+---
+
+<img src="img/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
+
+---
+
 ## Services
 
  - Stable endpoints addressed by name
@@ -131,6 +158,24 @@ title: Production Grade Kubernetes
 ---
 
 <img src="img/36. Kubernetes Selectors diagram-01.png" alt="Kubernetes Services 3">
+
+---
+
+## Service Config Example
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  ports:
+  - protocol: TCP
+    port: 8000 # Listen on inside the cluster
+    targetPort: 80 # Forward to port on endpoints
+  selector:
+    app: nginx
+```
 
 ---
 
@@ -254,60 +299,6 @@ title: Production Grade Kubernetes
 ---
 
 <img src="img/dashboard.png" alt="Kubernetes Dashboard">
-
----
-
-# Kubernetes Configuration
-
----
-
-## Configuring a Cluster
-
- - Use configuration files to manage resources
- - Specified in YAML or JSON
-  - YAML tends to be more user-friendly
- - Can be combined
- - Should be stored in version control
-
----
-
-## Pod Example
-
-```
-apiVersion: v1
-   kind: Pod
-   metadata:
-     name: hello-node
-     labels:
-       app: hello-node
-   spec:
-     containers:
-       - name: hello-node
-         image: hello-node:v1
-         ports:
-           - containerPort: 8080
-```
-
----
-
-## Service Example
-
-```
-apiVersion: v1
-kind: Service
-metadata:
-  name: railsapp
-spec:
-  type: NodePort
-  selector:
-    app: railsapp
-  ports:
-    - name: http
-      nodePort: 36000
-      targetPort: 80
-      port: 80
-      protocol: TCP
-```
 
 ---
 
