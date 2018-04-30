@@ -41,21 +41,18 @@ We will deploy these pieces one at a time on our cluster.
 Clone the demo application's repository to your VM
 
 ```bash
-$ git clone https://github.com/ContainerSolutions/ws-production-grade-kubernetes.git
+$ git clone https://github.com/ContainerSolutions/ws-production-grade-kubernetes.git .
 ```
 
 ---
 
 ## Recap of Resource Hierarchy
 
-### Deployment
-A Deployment manages ReplicaSets and defines how updates to Pods should be rolled out.
+* **Deployment**: Manages ReplicaSets and defines how updates to Pods should be rolled out
 
-### ReplicaSet
-A ReplicaSet ensures that a specified number of Pods are running at any given time.
+* **ReplicaSet**: Ensures that a specified number of Pods are running at any given time
 
-### Pod
-A Pod is a group of one or more containers deployed and scheduled together.
+* **Pod**: A group of one or more containers deployed and scheduled together
 
 ---
 
@@ -65,11 +62,11 @@ A Pod is a group of one or more containers deployed and scheduled together.
 
 ### Deployment Configuration
 
-The "./real-app" directory of the git repo contains all of the yaml configurations we will need:
+The "./real-app" directory of the Git repo contains all of the yaml configurations we will need:
 
 ```
 # ./real-app/deployment-back-end.yaml
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: pgk-back-deployment

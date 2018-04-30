@@ -22,7 +22,7 @@ The following steps will get you access to your cluster.
 Open a Terminal window and login to the VM via SSH
 
 ```
-$ ssh csuser@[PROVIDED IP]
+$ ssh csuser@[VIRTUAL MACHINE IP]
 ```
 
 Enter the password provided to you.
@@ -34,7 +34,7 @@ Enter the password provided to you.
 Retrieve the permissions file
 
 ```
-$ wget https://storage.googleapis.com/goto-chicago/ca.pem
+$ wget https://storage.googleapis.com/kubecon-2018-pgk/ca.pem
 ```
 
 ---
@@ -49,7 +49,7 @@ Execute the following commands to setup your cluster
 
 ```bash
 $ kubectl config set-cluster workshop \
-  --server=https://35.184.157.223 \
+  --server=https://35.195.196.5 \
   --certificate-authority=ca.pem
 ```
 
@@ -59,8 +59,8 @@ $ kubectl config set-cluster workshop \
 
 ```bash
 $ kubectl config set-credentials workshop-user \
-  --username=[PROVIDED USERNAME] \
-  --password=[PROVIDED PASSWORD]
+  --username=[CLUSTER USERNAME] \
+  --password=[CLUSTER PASSWORD]
 ```
 
 ---
@@ -71,7 +71,7 @@ $ kubectl config set-credentials workshop-user \
 $ kubectl config set-context workshop \
   --cluster=workshop \
   --user=workshop-user \
-  --namespace=[PROVIDED USERNAME]
+  --namespace=[CLUSTER USERNAME]
 ```
 
 ---
