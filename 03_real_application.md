@@ -341,7 +341,7 @@ Next, update the image:
 
 ```
 $ kubectl set image \
-  deployment/pgk-back-deployment k8s-real-demo=icrosby/k8s-real-demo:v2
+  deployment/pgk-back-deployment production-grade-be=icrosby/k8s-real-demo:v2
 ```
 
 ---
