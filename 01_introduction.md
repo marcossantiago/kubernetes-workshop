@@ -10,23 +10,7 @@ title: Production Grade Kubernetes
 
 ---
 
-<img src="img/cloud_native.png" alt="Cloud Native" width="50%">
-
----
-
-## "Cloud Native"
-
-* Architect applications for the Cloud - **First**
-* Delivery - Minimise cycle-time, Automate deployment
-* Performance - Responsiveness, Concurrency, Efficiency
-* Resilience - Fault-tolerance, Self-healing
-* Elasticity - Automatic scaling
-* Diagnosability - Logs, Traces & Metrics
-* **Assume something will go wrong**
-
----
-
-# Dev & Ops
+# In the Beginning...
 
 ---
 
@@ -38,13 +22,11 @@ title: Production Grade Kubernetes
 
 ---
 
+## DevOps
+
  * Acknowledges Dev and Ops are on the same team
  * Attempts to tear down the Wall
  * **Teams** become responsible for running services
-
----
-
-# Continuous Delivery
 
 ---
 
@@ -56,14 +38,12 @@ title: Production Grade Kubernetes
 
 ---
 
+# Continuous Delivery
+
 * Build, Test and ship code all with the push of a button
 * Development becomes more efficient, reliable and continuous
 * Enable developers to safely push new features at a rapid pace
 * Removes risk from the build process
-
----
-
-# Microservices
 
 ---
 
@@ -75,6 +55,8 @@ title: Production Grade Kubernetes
 
 ---
 
+# Microservices
+
 * Architectural ideas from lightweight Service Oriented Architecture
  * services are small - fine-grained to perform a single function
  * talk over uniform APIs
@@ -85,21 +67,36 @@ title: Production Grade Kubernetes
 
 ---
 
+<img src="img/containers_meme.jpeg" alt="Containers Everywhere" width="120%">
+
+---
+
+<img src="img/containers.png" alt="Containers" width="60%">
+
+---
+
 # Containers
 
----
-
-<img src="img/containers_meme.jpeg" alt="Containers Everywhere">
-
----
-
-<img src="img/containers.png" alt="Containers">
+- Enables separation of applications from infrastructure
+- Allows developers to package up an application and ship it all out as one
+- **Developers** can focus on writing code
+- **Operations** get flexibility and a (potential) reduction in the number of systems needed
 
 ---
 
- - Portable format for developing and deploying applications
- - Almost synonymous with Microservices
- - Also great fit for DevOps
+<img src="img/cloud_native.png" alt="Cloud Native" width="50%">
+
+---
+
+## Cloud Native
+
+* Architect applications for the Cloud - **First**
+* Delivery - Minimise cycle-time, Automate deployment
+* Performance - Responsiveness, Concurrency, Efficiency
+* Resilience - Fault-tolerance, Self-healing
+* Elasticity - Automatic scaling
+* Diagnosability - Logs, Traces & Metrics
+* **Assume something will go wrong**
 
 ---
 
@@ -107,7 +104,7 @@ title: Production Grade Kubernetes
 
 ---
 
-## Coordination Challenges
+## Co-ordination Challenges
 
  * DevOps everything
  * Code flowing from Dev to Production
@@ -117,7 +114,7 @@ title: Production Grade Kubernetes
 
 ---
 
-# Orchestration?
+# Orchestration
 
 ---
 
@@ -185,10 +182,15 @@ effect, **especially surreptitiously**"
 ## Common Components
 
  - Container Runtime
+  - e.g. Docker
  - Resource Manager
+  - Manages CPU, Memory and Disk
  - Workload Scheduler
+  - Makes sure containers run in the desired number on hosts
  - Service Discovery
+  - Allow containers to be found by other containers or services
  - Networking
+  - e.g. flannel, Weave, Calico, Pipeworks...
 
 ---
 
@@ -204,4 +206,4 @@ effect, **especially surreptitiously**"
 
 ---
 
-[Next up, Kubernetes!](../02_kubernetes.md)
+[Tell me more about Kubernetes](../02_kubernetes.md)
