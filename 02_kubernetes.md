@@ -27,11 +27,15 @@ title: Production Grade Kubernetes
 
 ---
 
+# The Kubernetes Cluster
+
+---
+
 <img src="img/30. High-level Kubernetes architecture diagram-01.png" alt="Kubernetes Architecture">
 
 ---
 
-## Components
+## Core Components
 
  - Nodes
  - Pods
@@ -59,9 +63,11 @@ title: Production Grade Kubernetes
 
 ## Pods
 
- - Groups of containers deployed and scheduled together
+ - A group of one or more running containers
+ - Always co-located, co-scheduled, and run in a shared context
  - Atomic unit (scaling and deployment)
- - Containers in a pod share IP address
+ - Containers in a Pod share an IP address
+ - Containers share resources within the pod
  - Single container pods are common
  - Pods are ephemeral
 
@@ -76,12 +82,14 @@ title: Production Grade Kubernetes
  - Use configuration files to manage resources
  - Specified in YAML or JSON
   - YAML tends to be more user-friendly
- - Can be combined
+ - Made up of 3 parts:
+  - API, Metadata, Spec
+ - Often combined
  - Should be stored in version control
 
 ---
 
-## Pod Config Example
+## Pod Configuration
 
 ```
 apiVersion: v1
@@ -104,11 +112,31 @@ spec:
     - e.g: "version: dev", "tier: frontend"
  - Objects include Pods, ReplicaSets, Services
  - Label selectors then used to identify groups
- - Used for load-balancing etc
+ - Used for load-balancing etc...
 
 ---
 
 <img src="img/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Labels">
+
+---
+
+## Pod with Labels
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: workshop-demo
+    tier: front
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    ports:
+    - containerPort: 80
+```
 
 ---
 
@@ -124,18 +152,6 @@ spec:
 ---
 
 <img src="img/35. Kubernetes Labels diagram-01.png" alt="Kubernetes Selectors">
-
----
-
-## Flat networking space
-
- - All pods, across all hosts, are in the same network space
-   - Can see each other without NAT
- - Simple cross host communication
-
----
-
-<img src="img/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
 
 ---
 
@@ -161,7 +177,7 @@ spec:
 
 ---
 
-## Service Config Example
+## Service Configuration
 
 ```
 apiVersion: v1
@@ -227,6 +243,18 @@ spec:
  * For forwarding to resources outside of Kubernetes
    * e.g. Existing database
  * CNAME created
+
+---
+
+## Flat networking space
+
+ - All pods, across all hosts, are in the same network space
+   - Can see each other without NAT
+ - Simple cross host communication
+
+---
+
+<img src="img/34. Flat Networking Space-01.png" alt="Kubernetes Networking">
 
 ---
 
