@@ -569,4 +569,4 @@ Don't worry, we will cover StatefulSets and PersistentVolumes later on
 
 ---
 
-[Next up, heading to Production...](/#/running-in-production)
+<!-- [Next up, heading to Production...](/#/running-in-production) -->
