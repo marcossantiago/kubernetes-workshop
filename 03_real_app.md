@@ -31,10 +31,10 @@ We will deploy these pieces one at a time on our cluster.
 
 ## Demo application
 
-Clone the demo application's repository to your VM
+Clone the workshop repository to your environment
 
 ```bash
-$ git clone https://github.com/idcrosby/k8s-example.git
+git clone https://github.com/marcossantiago/kubernetes-workshop
 ```
 
 ---
@@ -466,38 +466,38 @@ docker push [DOCKERHUB_USER]/k8s-real-demo:v1.0.0
 * Verify the new version by making an HTTP request.
 * View the logs of the application.
 
----
+<!-- ---  -->
 
-## Step 5: Deploy the Front-end
+<!-- ## Step 5: Deploy the Front-end -->
 
-In the /resources folder you will find configuration files for the front-end (Deployment and Service).
+<!-- In the /resources folder you will find configuration files for the front-end (Deployment and Service). -->
 
-* ./resources/front-end-deploy.yaml
-* ./resources/front-end-svc.yaml
+<!-- * ./resources/front-end-deploy.yaml -->
+<!-- * ./resources/front-end-svc.yaml -->
 
-Using these configuration files deploy and expose the application on to the cluster.
+<!-- Using these configuration files deploy and expose the application on to the cluster. -->
 
-```
-$ kubectl apply -f ./resources/front-end-deploy.yaml
-```
-```
-$ kubectl apply -f ./resources/front-end-svc.yaml
+<!-- ``` -->
+<!-- $ kubectl apply -f ./resources/front-end-deploy.yaml -->
+<!-- ``` -->
+<!-- ``` -->
+<!-- $ kubectl apply -f ./resources/front-end-svc.yaml -->
 
-```
+<!-- ``` -->
 
----
+<!-- --- -->
 
-## Step 6: Accessing the Front-end
+<!-- ## Step 6: Accessing the Front-end -->
 
-Find the port on which the front end is exposed (via the Service) and access this in your browser.
+<!-- Find the port on which the front end is exposed (via the Service) and access this in your browser. -->
 
-```
-$ kubectl get svc front-end
-```
+<!-- ``` -->
+<!-- $ kubectl get svc front-end -->
+<!-- ``` -->
 
----
+<!-- --- -->
 
-## Bonus Exercise
+<!-- ## Bonus Exercise -->
 
 ---
 
@@ -524,6 +524,21 @@ service "cockroachdb-public" created
 service "cockroachdb" created
 poddisruptionbudget "cockroachdb-budget" unchanged
 statefulset "cockroachdb" created
+```
+
+---
+
+### Init CockroachDB Cluster
+
+```
+$ kubectl create -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+job "cluster-init" created
+
+$ kubectl get job 
+NAME           DESIRED   SUCCESSFUL   AGE
+cluster-init   1         1            2m
+
+$ kubectl port-forward cockroachdb-0 8080 &
 ```
 
 ---
@@ -555,4 +570,3 @@ Don't worry, we will cover StatefulSets and PersistentVolumes later on
 ---
 
 [Next up, heading to Production...](/#/running-in-production)
-

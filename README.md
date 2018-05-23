@@ -5,7 +5,6 @@
 
 This repository contains the materials for a Kubernetes Workshop and it was forked from this repo [goto-k8s](https://github.com/container-solutions/goto-k8s.git).
 
-
 Clone this
 ```
 git clone https://github.com/marcossantiago/kubernetes-workshop
