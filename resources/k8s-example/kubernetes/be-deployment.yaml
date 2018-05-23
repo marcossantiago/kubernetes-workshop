@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: k8s-example
+  labels:
+    app: k8s-real-demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-real-demo
+    spec:
+      containers:
+        - name: k8s-example
+          image: icrosby/k8s-real-demo
+          ports:
+            - containerPort: 8080

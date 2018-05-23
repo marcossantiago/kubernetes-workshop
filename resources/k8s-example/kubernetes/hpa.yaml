@@ -1,0 +1,11 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: k8s-real-demo-hpa
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: k8s-real-demo
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
